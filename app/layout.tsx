@@ -32,19 +32,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div className="h-0.5 w-full bg-gradient-to-r from-teal-700 via-teal-500 to-teal-700" />
 
         <header className="no-print sticky top-0 z-30 bg-white/95 shadow-sm shadow-slate-200/60 backdrop-blur-xl">
-          <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
+          <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3 group">
-              <div className="relative h-11 w-11 shrink-0 md:h-12 md:w-12">
-                <img
-                  src="/images/ymch-logo.png"
-                  alt="Yenepoya Medical College Logo"
-                  className="h-full w-full object-contain drop-shadow-sm transition-transform duration-200 group-hover:scale-105"
-                />
-              </div>
+              <img
+                src="/images/ymch-logo.png"
+                alt="Yenepoya Medical College Logo"
+                className="h-14 w-auto object-contain md:h-16"
+                style={{ borderRadius: 0 }}
+              />
               <div className="leading-tight">
-                <div className="text-sm font-bold tracking-tight text-slate-900 md:text-base">YMC CRMI Portal</div>
-                <div className="text-[11px] text-slate-400 font-medium">MBBS 2021 CBME · w.e.f. 01.06.2026</div>
+                <div className="text-base font-bold tracking-tight text-slate-900 md:text-lg">YMC CRMI Portal</div>
+                <div className="text-[12px] text-slate-400 font-medium">MBBS 2021 CBME · w.e.f. 01.06.2026</div>
               </div>
             </Link>
 
