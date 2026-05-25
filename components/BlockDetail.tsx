@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Users, Filter, AlertCircle } from "lucide-react";
 import { LEAVE_TYPE_COLORS, loadLeaves, isOnLeave, LeaveRecord } from "@/lib/leaves";
+import { isPreLaunch } from "@/lib/rotation";
 
 export default function BlockDetail({
   block,
@@ -101,7 +102,8 @@ export default function BlockDetail({
             <tbody>
               {filtered.map((a) => {
                 const cell = a.rotation.find((r: any) => r.weekIdx === currentWeek.idx);
-                const leave = isOnLeave(a.student.regNo, leaves);
+                const pre = isPreLaunch();
+                const leave = pre ? undefined : isOnLeave(a.student.regNo, leaves);
                 return (
                   <tr key={a.student.regNo} className="border-t border-slate-100 hover:bg-brand-50/40">
                     <td className="px-3 py-2">
@@ -112,11 +114,19 @@ export default function BlockDetail({
                     <td className="px-3 py-2 font-medium">{a.student.name}</td>
                     <td className="px-3 py-2 font-mono text-slate-600">{a.subBatch}</td>
                     <td className="px-3 py-2">
-                      {cell && <span className={`dept-chip ${cell.color}`}>{cell.deptShort}</span>}{" "}
-                      <span className="text-slate-600">{cell?.deptName}</span>
+                      {pre ? (
+                        <span className="text-xs text-slate-400">— pending start —</span>
+                      ) : (
+                        <>
+                          {cell && <span className={`dept-chip ${cell.color}`}>{cell.deptShort}</span>}{" "}
+                          <span className="text-slate-600">{cell?.deptName}</span>
+                        </>
+                      )}
                     </td>
                     <td className="px-3 py-2">
-                      {leave ? (
+                      {pre ? (
+                        <span className="badge bg-slate-100 text-slate-600 ring-1 ring-slate-200">Awaiting start</span>
+                      ) : leave ? (
                         <span className={`badge ring-1 ${LEAVE_TYPE_COLORS[leave.type]}`}>
                           <AlertCircle size={11} /> {leave.type} leave
                         </span>

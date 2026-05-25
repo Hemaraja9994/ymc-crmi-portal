@@ -5,6 +5,15 @@ export type Student = {
   name: string;
   regNo: string;
   campusId: string; // alias of regNo for login
+  phone?: string;
+  email?: string;
+};
+
+// Demo / tester credentials — for QA only. Any of these resolves to the demo student.
+// In production: remove this and route credentials through institutional SSO.
+export const DEMO_LOGIN = {
+  phones: ["9449499659"],
+  emails: ["hemaraja@yenepoya.edu.in"],
 };
 
 const raw: Array<[string, string]> = [
@@ -127,14 +136,25 @@ export const STUDENTS: Student[] = raw.map(([name, regNo], i) => ({
   name,
   regNo,
   campusId: regNo,
+  // Demo credentials attached to the first roll number for QA login.
+  // Remove or replace with real institutional contact records in production.
+  phone: i === 0 ? DEMO_LOGIN.phones[0] : undefined,
+  email: i === 0 ? DEMO_LOGIN.emails[0] : undefined,
 }));
 
 export function findStudent(query: string): Student | undefined {
   const q = query.trim().toLowerCase();
+  if (!q) return undefined;
+  // Demo credentials → resolve to the first roll number so any tester can browse the portal.
+  if (DEMO_LOGIN.phones.includes(q) || DEMO_LOGIN.emails.includes(q)) {
+    return STUDENTS[0];
+  }
   return STUDENTS.find(
     (s) =>
       s.regNo.toLowerCase() === q ||
       s.campusId.toLowerCase() === q ||
-      s.name.toLowerCase() === q
+      s.name.toLowerCase() === q ||
+      (s.phone && s.phone === q) ||
+      (s.email && s.email.toLowerCase() === q)
   );
 }

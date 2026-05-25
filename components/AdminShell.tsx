@@ -125,7 +125,10 @@ function FloatingBar() {
   }
 
   return (
-    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 w-[min(720px,calc(100%-1rem))]">
+    <div
+      className="fixed left-1/2 -translate-x-1/2 z-40 w-[min(720px,calc(100%-1rem))]"
+      style={{ bottom: "calc(1rem + env(safe-area-inset-bottom, 0px))" }}
+    >
       <div className="rounded-2xl bg-slate-900/95 backdrop-blur text-white shadow-2xl ring-1 ring-white/10 flex items-center gap-2 px-3 py-2">
         <form onSubmit={go} className="flex items-center gap-2 flex-1">
           <Search size={16} className="text-slate-300" />

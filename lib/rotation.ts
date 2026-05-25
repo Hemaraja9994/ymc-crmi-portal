@@ -168,8 +168,34 @@ export function currentWeekIndex(today = new Date()): number {
   return Math.max(0, Math.min(TOTAL_WEEKS - 1, wk));
 }
 
+export function isPreLaunch(today = new Date()): boolean {
+  return today.getTime() < START_DATE.getTime();
+}
+
+export function isCompleted(today = new Date()): boolean {
+  const end = new Date(START_DATE);
+  end.setDate(end.getDate() + TOTAL_WEEKS * 7);
+  return today.getTime() >= end.getTime();
+}
+
+export function daysUntilStart(today = new Date()): number {
+  return Math.max(0, Math.ceil((START_DATE.getTime() - today.getTime()) / 86_400_000));
+}
+
+export function lifecycleStatus(today = new Date()): "pre-launch" | "active" | "completed" {
+  if (isPreLaunch(today)) return "pre-launch";
+  if (isCompleted(today)) return "completed";
+  return "active";
+}
+
 // Aggregate: # students currently posted in each dept (for HR-style analytics).
-export function departmentDistribution(weekIdx: number): Record<string, number> {
+// Returns all-zeros before the internship start date.
+export function departmentDistribution(weekIdx: number, today = new Date()): Record<string, number> {
+  if (isPreLaunch(today)) {
+    const z: Record<string, number> = {};
+    for (const b of BLOCKS) for (const d of b.depts) z[d.code] = 0;
+    return z;
+  }
   const out: Record<string, number> = {};
   for (const a of buildAssignments()) {
     const cell = a.rotation.find((r) => r.weekIdx === weekIdx);

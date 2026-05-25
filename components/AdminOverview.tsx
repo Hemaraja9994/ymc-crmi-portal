@@ -14,6 +14,8 @@ import {
 } from "lucide-react";
 import { ANNOUNCEMENTS, CATEGORY_STYLES } from "@/lib/announcements";
 import { LeaveRecord, loadLeaves, LEAVE_TYPE_COLORS, isOnLeave } from "@/lib/leaves";
+import { Hourglass } from "lucide-react";
+import { isPreLaunch, daysUntilStart, START_DATE } from "@/lib/rotation";
 
 export default function AdminOverview({
   assignments,
@@ -29,15 +31,17 @@ export default function AdminOverview({
   const [leaves, setLeaves] = useState<LeaveRecord[]>([]);
   useEffect(() => setLeaves(loadLeaves()), []);
 
+  const preLaunch = isPreLaunch();
+  const days = daysUntilStart();
   const todayLeaveCount = useMemo(
-    () => assignments.filter((a) => isOnLeave(a.student.regNo, leaves)).length,
-    [assignments, leaves]
+    () => (preLaunch ? 0 : assignments.filter((a) => isOnLeave(a.student.regNo, leaves)).length),
+    [assignments, leaves, preLaunch]
   );
   const pending = leaves.filter((l) => l.status === "Pending").length;
   const approved = leaves.filter((l) => l.status === "Approved").length;
 
-  const totalDeptsActive = Object.keys(dist).length;
-  const maxDept = Object.entries(dist).sort((a, b) => b[1] - a[1])[0];
+  const totalDeptsActive = preLaunch ? 0 : Object.values(dist).filter((v) => v > 0).length;
+  const maxDept = Object.entries(dist).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1])[0];
 
   return (
     <div className="space-y-6">
@@ -63,6 +67,29 @@ export default function AdminOverview({
           </div>
         </div>
       </section>
+
+      {/* Pre-launch countdown */}
+      {preLaunch && (
+        <section className="card p-5 bg-gradient-to-r from-amber-50 via-white to-xcel-50">
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 grid place-items-center">
+                <Hourglass size={18} />
+              </div>
+              <div>
+                <div className="text-xs uppercase tracking-wider text-amber-700">Pre-launch</div>
+                <div className="text-lg font-bold">
+                  Internship begins in {days} day{days === 1 ? "" : "s"}
+                </div>
+                <div className="text-xs text-slate-500">
+                  Start date: {START_DATE.toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" })}.
+                  All counters reset to zero until then.
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Live announcements ticker */}
       <Announcements />

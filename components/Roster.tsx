@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Search, Filter, Download, AlertCircle, CheckCircle2 } from "lucide-react";
 import { LeaveRecord, LEAVE_TYPE_COLORS, loadLeaves, isOnLeave } from "@/lib/leaves";
+import { isPreLaunch } from "@/lib/rotation";
 
 export default function Roster({
   assignments,
@@ -131,7 +132,8 @@ export default function Roster({
             <tbody>
               {rows.map((a) => {
                 const cell = a.rotation.find((r: any) => r.weekIdx === currentWeek.idx);
-                const lv = isOnLeave(a.student.regNo, leaves);
+                const pre = isPreLaunch();
+                const lv = pre ? undefined : isOnLeave(a.student.regNo, leaves);
                 return (
                   <tr key={a.student.regNo} className="border-t border-slate-100 hover:bg-xcel-50/40">
                     <td className="px-3 py-2 font-mono">
@@ -143,10 +145,16 @@ export default function Roster({
                     <td className="px-3 py-2">{a.blockId}</td>
                     <td className="px-3 py-2 font-mono text-slate-600">{a.subBatch}</td>
                     <td className="px-3 py-2">
-                      {cell && <span className={`dept-chip ${cell.color}`}>{cell.deptShort}</span>}
+                      {pre
+                        ? <span className="text-xs text-slate-400">— pending start —</span>
+                        : cell && <span className={`dept-chip ${cell.color}`}>{cell.deptShort}</span>}
                     </td>
                     <td className="px-3 py-2">
-                      {lv ? (
+                      {pre ? (
+                        <span className="badge bg-slate-100 text-slate-600 ring-1 ring-slate-200">
+                          Awaiting start
+                        </span>
+                      ) : lv ? (
                         <span className={`badge ring-1 ${LEAVE_TYPE_COLORS[lv.type]}`}>
                           <AlertCircle size={11} /> {lv.type}
                         </span>

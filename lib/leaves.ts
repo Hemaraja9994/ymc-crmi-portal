@@ -1,5 +1,3 @@
-import { STUDENTS } from "./students";
-
 export type LeaveType = "Casual" | "Medical" | "Emergency" | "Bereavement" | "Academic";
 export type LeaveStatus = "Pending" | "Approved" | "Rejected";
 
@@ -25,20 +23,9 @@ export const LEAVE_TYPE_COLORS: Record<LeaveType, string> = {
 
 // Seed sample leave records so the admin dashboard is alive on first visit.
 // In production, persist to Postgres/Vercel KV.
-function iso(daysFromToday: number) {
-  const d = new Date();
-  d.setDate(d.getDate() + daysFromToday);
-  return d.toISOString().slice(0, 10);
-}
-
-export const SEED_LEAVES: LeaveRecord[] = [
-  { id: "l1", regNo: STUDENTS[2]?.regNo || "21M003", type: "Medical", from: iso(-1), to: iso(2), reason: "Viral fever — MC attached", status: "Approved", submittedAt: iso(-3), doc: "mc_21m003.pdf" },
-  { id: "l2", regNo: STUDENTS[7]?.regNo || "21M012", type: "Casual", from: iso(0), to: iso(1), reason: "Personal", status: "Pending", submittedAt: iso(-1) },
-  { id: "l3", regNo: STUDENTS[15]?.regNo || "21M021", type: "Emergency", from: iso(-2), to: iso(0), reason: "Family emergency", status: "Approved", submittedAt: iso(-2) },
-  { id: "l4", regNo: STUDENTS[30]?.regNo || "21M035", type: "Academic", from: iso(3), to: iso(4), reason: "Conference presentation", status: "Pending", submittedAt: iso(0) },
-  { id: "l5", regNo: STUDENTS[42]?.regNo || "21M053", type: "Casual", from: iso(-5), to: iso(-4), reason: "Personal work", status: "Rejected", submittedAt: iso(-7) },
-  { id: "l6", regNo: STUDENTS[55]?.regNo || "21M070", type: "Medical", from: iso(0), to: iso(3), reason: "Suspected dengue — under observation", status: "Approved", submittedAt: iso(-1), doc: "mc_21m070.pdf" },
-];
+// Empty by default — the system starts with a clean state.
+// Records accumulate as students apply for leave through the portal.
+export const SEED_LEAVES: LeaveRecord[] = [];
 
 const STORE_KEY = "ymc_leaves_v1";
 

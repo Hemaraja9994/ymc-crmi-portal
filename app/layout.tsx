@@ -9,6 +9,13 @@ export const metadata: Metadata = {
     "Compulsory Rotatory Medical Internship Programme — Yenepoya Medical College, Mangalore. Effective 01.06.2026.",
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover" as const,
+  themeColor: "#0046af",
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">

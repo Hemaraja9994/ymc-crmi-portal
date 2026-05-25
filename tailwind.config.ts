@@ -2,6 +2,7 @@ import type { Config } from "tailwindcss";
 
 const config: Config = {
   content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}"],
+  safelist: ["xl:grid-cols-13", "grid-cols-13"],
   theme: {
     extend: {
       colors: {
@@ -41,6 +42,9 @@ const config: Config = {
       },
       boxShadow: {
         card: "0 1px 2px rgba(15,23,42,0.04), 0 8px 24px -12px rgba(15,23,42,0.08)",
+      },
+      gridTemplateColumns: {
+        13: "repeat(13, minmax(0, 1fr))",
       },
     },
   },
