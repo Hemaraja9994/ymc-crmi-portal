@@ -93,6 +93,14 @@ body {
 }
 
 @media print {
+  @page {
+    size: A4 portrait;
+    margin: 18mm 14mm 22mm 14mm;
+  }
+  @page :first {
+    margin-top: 14mm;
+  }
+
   header,
   footer,
   .no-print {
@@ -102,6 +110,7 @@ body {
   html,
   body {
     background: #ffffff !important;
+    font-size: 11pt;
   }
 
   main {
@@ -114,9 +123,33 @@ body {
     border: 1px solid #cbd5e1 !important;
     box-shadow: none !important;
     break-inside: avoid;
+    border-radius: 0 !important;
   }
 
   .print-page {
     color: #0f172a;
   }
+
+  /* Only show print letterhead when printing */
+  .print-letterhead { display: block !important; }
+  .screen-only      { display: none !important; }
+
+  /* Force page breaks between major report sections */
+  .print-page-break { page-break-before: always; break-before: page; }
+
+  /* Running footer on every page */
+  .print-running-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0; right: 0;
+    text-align: center;
+    font-size: 8pt;
+    color: #64748b;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 4px;
+  }
+
+  /* Tables should not break across rows */
+  tr { break-inside: avoid; }
+  thead { display: table-header-group; }
 }
