@@ -9,23 +9,23 @@ export default function LiveUpdatesBanner() {
   );
 
   return (
-    <section className="card overflow-hidden">
-      <div className="flex items-center justify-between border-b border-slate-200/70 px-4 py-3">
+    <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div className="flex items-center justify-between border-b-2 border-teal-600/10 bg-gradient-to-r from-teal-700 to-teal-800 px-4 py-2.5">
         <div className="flex min-w-0 items-center gap-2.5">
-          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-rose-50 text-rose-500 ring-1 ring-rose-100">
-            <Megaphone size={16} />
+          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-white/15 text-white">
+            <Megaphone size={14} />
           </span>
           <div className="min-w-0">
-            <h2 className="truncate text-sm font-bold text-slate-950">Live Updates - Rules & Notices</h2>
-            <p className="text-xs text-slate-500">Hover over the ticker to pause important notices.</p>
+            <h2 className="truncate text-sm font-bold text-white">Live Updates – Rules & Notices</h2>
+            <p className="text-[11px] text-teal-200">Hover over the ticker to pause.</p>
           </div>
         </div>
-        <span className="badge border border-rose-100 bg-rose-50 text-rose-600">
-          <Radio size={12} /> LIVE
+        <span className="flex items-center gap-1.5 rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-white">
+          <Radio size={11} /> LIVE
         </span>
       </div>
 
-      <div className="ymc-ticker overflow-hidden whitespace-nowrap bg-gradient-to-r from-rose-50 via-amber-50 to-cyan-50 px-4 py-3 text-sm">
+      <div className="ymc-ticker overflow-hidden whitespace-nowrap border-t border-teal-100 bg-gradient-to-r from-teal-50 via-white to-amber-50 px-4 py-2.5 text-sm">
         {/* Slower marquee keeps compliance notices readable; hover pauses it instantly. */}
         <div className="ymc-marquee inline-flex gap-8 pr-8 will-change-transform hover:[animation-play-state:paused]">
           {[...items, ...items].map((announcement, index) => (

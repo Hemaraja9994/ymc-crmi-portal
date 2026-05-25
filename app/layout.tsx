@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import Link from "next/link";
+import HeaderNav from "@/components/HeaderNav";
 
 export const metadata: Metadata = {
   title: "YMC CRMI Portal - MBBS 2021 CBME Batch",
@@ -12,7 +13,7 @@ export const viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover" as const,
-  themeColor: "#0d9488",
+  themeColor: "#0d3b3a",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -27,64 +28,38 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="min-h-screen bg-slate-50 font-sans antialiased">
-        <header className="sticky top-0 z-30 border-b border-white/70 bg-slate-50/85 backdrop-blur-xl">
+        {/* ── Top accent line ── */}
+        <div className="h-0.5 w-full bg-gradient-to-r from-teal-700 via-teal-500 to-teal-700" />
+
+        <header className="no-print sticky top-0 z-30 bg-white/95 shadow-sm shadow-slate-200/60 backdrop-blur-xl">
           <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
-            <Link href="/" className="flex items-center gap-2.5">
+            {/* Logo */}
+            <Link href="/" className="flex items-center gap-3 group">
               <img
                 src="/images/ymch-logo.png"
                 alt="Yenepoya Medical College Logo"
-                className="h-10 w-auto rounded-lg bg-white object-contain shadow-sm ring-1 ring-slate-200 md:h-11"
+                className="h-10 w-auto rounded-lg bg-white object-contain shadow-sm ring-1 ring-slate-200 transition-shadow group-hover:shadow-md md:h-11"
               />
               <div className="leading-tight">
-                <div className="text-sm font-bold tracking-tight md:text-base">YMC CRMI Portal</div>
-                <div className="text-[11px] text-slate-500">MBBS 2021 CBME - w.e.f. 01.06.2026</div>
+                <div className="text-sm font-bold tracking-tight text-slate-900 md:text-base">YMC CRMI Portal</div>
+                <div className="text-[11px] text-slate-400 font-medium">MBBS 2021 CBME · w.e.f. 01.06.2026</div>
               </div>
             </Link>
-            <nav className="hidden items-center gap-1 text-sm md:flex">
-              <Link className="btn-primary mr-2" href="/admin">
-                Coordinator Login
-              </Link>
-              <Link className="btn-ghost" href="/student">
-                Student
-              </Link>
-              <Link className="btn-ghost" href="/postings-overview">
-                Postings (Dept - Year)
-              </Link>
-              <Link className="btn-ghost" href="/guidelines">
-                Guidelines
-              </Link>
-              <Link className="btn-ghost" href="/leave-attendance">
-                Leave & Attendance
-              </Link>
-              <Link className="btn-ghost" href="/support">
-                Support
-              </Link>
-            </nav>
+
+            {/* Desktop nav rendered by client component */}
+            <HeaderNav />
           </div>
-          <div className="flex gap-1 overflow-x-auto border-t border-white/70 px-2 py-2 text-xs md:hidden">
-            <Link className="btn-primary whitespace-nowrap" href="/admin">
-              Coordinator
-            </Link>
-            <Link className="btn-ghost whitespace-nowrap" href="/student">
-              Student
-            </Link>
-            <Link className="btn-ghost whitespace-nowrap" href="/postings-overview">
-              Postings
-            </Link>
-            <Link className="btn-ghost whitespace-nowrap" href="/guidelines">
-              Guidelines
-            </Link>
-            <Link className="btn-ghost whitespace-nowrap" href="/leave-attendance">
-              Leave
-            </Link>
-            <Link className="btn-ghost whitespace-nowrap" href="/support">
-              Support
-            </Link>
-          </div>
+
+          {/* Mobile tabs are inside HeaderNav */}
         </header>
+
         <main className="mx-auto max-w-7xl px-4 py-6">{children}</main>
-        <footer className="mx-auto max-w-7xl px-4 py-10 text-xs text-slate-500">
-          &copy; {new Date().getFullYear()} Yenepoya Medical College, Mangalore. CRMI Coordination Cell.
+
+        <footer className="mx-auto max-w-7xl border-t border-slate-100 px-4 py-8 text-xs text-slate-400">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <span>&copy; {new Date().getFullYear()} Yenepoya Medical College, Mangalore · CRMI Coordination Cell</span>
+            <span className="font-mono text-slate-300">MBBS 2021 CBME · NMC Regulation</span>
+          </div>
         </footer>
       </body>
     </html>

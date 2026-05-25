@@ -61,7 +61,7 @@ body {
 
 /* Live notice ticker: slow enough to read, paused by hovering anywhere over the strip. */
 .ymc-marquee {
-  animation: ymcMarquee 50s linear infinite;
+  animation: ymcMarquee 120s linear infinite;
 }
 
 .ymc-ticker:hover .ymc-marquee,

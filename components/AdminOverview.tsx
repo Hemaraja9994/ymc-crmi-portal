@@ -175,7 +175,7 @@ export default function AdminOverview({
             View all <ArrowUpRight size={13} />
           </Link>
         </div>
-        <div className="p-4 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+        <div className="p-4" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(155px, 1fr))", gap: "10px" }}>
           {deptTiles.map(({ block, dept, count, onLeave }: any) => {
             const width = count ? Math.min(100, Math.round((count / Math.max(1, assignments.length / 4)) * 100)) : 3;
             return (
