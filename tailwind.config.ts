@@ -47,14 +47,12 @@ const config: Config = {
         13: "repeat(13, minmax(0, 1fr))",
       },
       animation: {
-        "ticker-fade": "tickerFade var(--ticker-cycle, 16s) cubic-bezier(0.4, 0, 0.2, 1) infinite",
+        "ticker-in": "tickerIn 0.35s cubic-bezier(0.4, 0, 0.2, 1)",
       },
       keyframes: {
-        tickerFade: {
-          "0%, 20%":   { opacity: "1", transform: "translateY(0)" },
-          "23%":       { opacity: "0", transform: "translateY(-10px)" },
-          "24%, 97%":  { opacity: "0", transform: "translateY(10px)" },
-          "100%":      { opacity: "1", transform: "translateY(0)" },
+        tickerIn: {
+          "0%":   { opacity: "0", transform: "translateY(8px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
         },
       },
     },
