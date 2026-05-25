@@ -30,7 +30,23 @@ export default function LeaveInbox({
   currentWeek: number;
 }) {
   const [leaves, setLeaves] = useState<LeaveRecord[]>([]);
-  useEffect(() => setLeaves(loadLeaves()), []);
+  useEffect(() => {
+    let cancelled = false;
+    async function refreshLeaves() {
+      try {
+        const response = await fetch("/api/leave", { cache: "no-store" });
+        if (!response.ok) throw new Error("Leave API unavailable");
+        const result = await response.json();
+        if (!cancelled) setLeaves(result.leaves || []);
+      } catch {
+        if (!cancelled) setLeaves(loadLeaves());
+      }
+    }
+    void refreshLeaves();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   const [q, setQ] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | LeaveStatus>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
@@ -38,10 +54,22 @@ export default function LeaveInbox({
 
   const allDepts = blocks.flatMap((b: any) => b.depts);
 
-  function decide(id: string, status: LeaveStatus) {
+  async function decide(id: string, status: LeaveStatus) {
     const next = leaves.map((l) => (l.id === id ? { ...l, status } : l));
     setLeaves(next);
-    saveLeaves(next);
+    try {
+      const response = await fetch("/api/leave", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", "x-coordinator-id": "coordinator" },
+        body: JSON.stringify({ id, status, actor: "coordinator" }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Leave decision failed");
+      setLeaves((current) => current.map((leave) => (leave.id === id ? result.leave : leave)));
+    } catch {
+      setLeaves(next);
+      saveLeaves(next);
+    }
   }
 
   const enriched = useMemo(

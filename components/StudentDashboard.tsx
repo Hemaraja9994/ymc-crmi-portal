@@ -73,10 +73,34 @@ export default function StudentDashboard({
 }) {
   const [view, setView] = useState<"year" | "month" | "week">("year");
   const [leaves, setLeaves] = useState<
-    { id: number; from: string; to: string; reason: string; type: string; category: LeaveCategory; status: "Pending" | "Approved" | "Rejected"; doc?: string }[]
+    { id: string; from: string; to: string; reason: string; type: string; category: LeaveCategory; status: "Pending" | "Approved" | "Rejected"; doc?: string }[]
   >([]);
   const [globalLeaves, setGlobalLeaves] = useState<LeaveRecord[]>([]);
-  useEffect(() => setGlobalLeaves(loadLeaves()), []);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadPersistedLeaves() {
+      try {
+        const [mine, all] = await Promise.all([
+          fetch(`/api/leave?regNo=${encodeURIComponent(assignment.student.regNo)}`, { cache: "no-store" }),
+          fetch("/api/leave", { cache: "no-store" }),
+        ]);
+        if (!mine.ok || !all.ok) throw new Error("Leave API unavailable");
+        const mineJson = await mine.json();
+        const allJson = await all.json();
+        if (!cancelled) {
+          setLeaves(mineJson.leaves || []);
+          setGlobalLeaves(allJson.leaves || []);
+        }
+      } catch {
+        if (!cancelled) setGlobalLeaves(loadLeaves());
+      }
+    }
+    void loadPersistedLeaves();
+    return () => {
+      cancelled = true;
+    };
+  }, [assignment.student.regNo]);
   const attendance = attendanceFor(assignment.student.regNo, globalLeaves);
 
   const totalWeeksCompleted = preLaunch ? 0 : completed.reduce((s, c) => s + c.weeks, 0);
@@ -712,7 +736,7 @@ function LeaveSection({
         {tab === "advance" ? (
           <AdvanceLeaveForm leaves={leaves} setLeaves={setLeaves} regNo={regNo} globalLeaves={globalLeaves} preLaunch={preLaunch} />
         ) : (
-          <RetroLeaveForm leaves={leaves} setLeaves={setLeaves} />
+          <RetroLeaveForm leaves={leaves} setLeaves={setLeaves} regNo={regNo} />
         )}
         <MyLeaves leaves={leaves} />
       </div>
@@ -752,20 +776,35 @@ function AdvanceLeaveForm({
   const [to, setTo] = useState("");
   const [type, setType] = useState("Casual");
   const [reason, setReason] = useState("");
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   // Live projection: if this leave were approved, would the intern fall under 80%?
   const projection = from && to
     ? projectedDeficitForPlannedLeave(regNo, globalLeaves, from, to)
     : null;
 
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!from || !to) return;
-    setLeaves([
-      ...leaves,
-      { id: Date.now(), from, to, reason, type, category: "Advance" as LeaveCategory, status: "Pending" },
-    ]);
-    setFrom(""); setTo(""); setReason(""); setType("Casual");
+    setError("");
+    setSubmitting(true);
+    try {
+      const response = await fetch("/api/leave", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ regNo, from, to, reason, type, category: "Advance" }),
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        setError(result.error || "Could not submit leave request.");
+        return;
+      }
+      setLeaves([...leaves, result.leave]);
+      setFrom(""); setTo(""); setReason(""); setType("Casual");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -811,7 +850,10 @@ function AdvanceLeaveForm({
         </div>
       )}
 
-      <button className="btn-primary w-full justify-center">Submit advance notification</button>
+      {error && <div className="text-xs text-rose-600">{error}</div>}
+      <button className="btn-primary w-full justify-center" disabled={submitting}>
+        {submitting ? "Submitting..." : "Submit advance notification"}
+      </button>
     </form>
   );
 }
@@ -819,24 +861,41 @@ function AdvanceLeaveForm({
 function RetroLeaveForm({
   leaves,
   setLeaves,
+  regNo,
 }: {
   leaves: any[];
   setLeaves: (l: any[]) => void;
+  regNo: string;
 }) {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [type, setType] = useState("Medical");
   const [reason, setReason] = useState("");
   const [docName, setDocName] = useState("");
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!from || !to || !docName) return;
-    setLeaves([
-      ...leaves,
-      { id: Date.now(), from, to, reason, type, category: "Retroactive" as LeaveCategory, status: "Pending", doc: docName },
-    ]);
-    setFrom(""); setTo(""); setReason(""); setDocName(""); setType("Medical");
+    setError("");
+    setSubmitting(true);
+    try {
+      const response = await fetch("/api/leave", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ regNo, from, to, reason, type, category: "Retroactive", doc: docName }),
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        setError(result.error || "Could not submit leave request.");
+        return;
+      }
+      setLeaves([...leaves, result.leave]);
+      setFrom(""); setTo(""); setReason(""); setDocName(""); setType("Medical");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -880,8 +939,9 @@ function RetroLeaveForm({
           <AlertCircle size={14} /> A document (MC/letter) is required for retroactive leave.
         </div>
       )}
-      <button disabled={!docName} className={`btn w-full justify-center ${docName ? "btn-primary" : "bg-slate-200 text-slate-500 cursor-not-allowed"}`}>
-        Submit retroactive request
+      {error && <div className="text-xs text-rose-600">{error}</div>}
+      <button disabled={!docName || submitting} className={`btn w-full justify-center ${docName ? "btn-primary" : "bg-slate-200 text-slate-500 cursor-not-allowed"}`}>
+        {submitting ? "Submitting..." : "Submit retroactive request"}
       </button>
     </form>
   );

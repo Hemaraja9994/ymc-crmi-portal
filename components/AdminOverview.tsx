@@ -36,7 +36,23 @@ export default function AdminOverview({
 }) {
   const [leaves, setLeaves] = useState<LeaveRecord[]>([]);
 
-  useEffect(() => setLeaves(loadLeaves()), []);
+  useEffect(() => {
+    let cancelled = false;
+    async function refreshLeaves() {
+      try {
+        const response = await fetch("/api/leave", { cache: "no-store" });
+        if (!response.ok) throw new Error("Leave API unavailable");
+        const result = await response.json();
+        if (!cancelled) setLeaves(result.leaves || []);
+      } catch {
+        if (!cancelled) setLeaves(loadLeaves());
+      }
+    }
+    void refreshLeaves();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const preLaunch = isPreLaunch();
   const days = daysUntilStart();

@@ -1,0 +1,129 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum LeaveType {
+  Casual
+  Medical
+  Emergency
+  Bereavement
+  Academic
+}
+
+enum LeaveCategory {
+  Retroactive
+  Advance
+}
+
+enum LeaveStatus {
+  Pending
+  Approved
+  Rejected
+}
+
+enum AuditAction {
+  LeaveSubmitted
+  LeaveDecisionChanged
+  PostingOverrideCreated
+}
+
+enum EmailStatus {
+  Sent
+  Skipped
+  Failed
+}
+
+model Student {
+  id        String   @id @default(cuid())
+  slNo      Int
+  name      String
+  regNo     String   @unique
+  campusId  String   @unique
+  phone     String?
+  email     String?
+  batchYear Int      @default(2021)
+  batchSlug String   @default("2021-cbme")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  leaves          LeaveRequest[]
+  weeklyEmailLogs WeeklyEmailLog[]
+
+  @@index([batchYear])
+  @@index([batchSlug])
+}
+
+model LeaveRequest {
+  id           String        @id @default(cuid())
+  studentId    String
+  student      Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  regNo        String
+  type         LeaveType
+  category     LeaveCategory @default(Advance)
+  from         DateTime      @db.Date
+  to           DateTime      @db.Date
+  reason       String
+  status       LeaveStatus   @default(Pending)
+  doc          String?
+  submittedAt  DateTime      @default(now())
+  decidedAt    DateTime?
+  decidedBy    String?
+  decisionNote String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([regNo])
+  @@index([status])
+  @@index([from, to])
+}
+
+model PostingOverride {
+  id               String   @id @default(cuid())
+  regNo            String
+  weekIdx          Int
+  previousDeptCode String?
+  previousDeptName String?
+  newDeptCode      String
+  newDeptName      String?
+  reason           String
+  actor            String
+  createdAt        DateTime @default(now())
+
+  @@index([regNo, weekIdx])
+}
+
+model AuditLog {
+  id         String      @id @default(cuid())
+  action     AuditAction
+  actor      String
+  entityType String
+  entityId   String?
+  before     Json?
+  after      Json?
+  reason     String?
+  createdAt  DateTime    @default(now())
+
+  @@index([action])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+}
+
+model WeeklyEmailLog {
+  id        String      @id @default(cuid())
+  studentId String
+  student   Student     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  regNo     String
+  weekIdx   Int
+  status    EmailStatus @default(Sent)
+  messageId String?
+  error     String?
+  sentAt    DateTime    @default(now())
+
+  @@unique([regNo, weekIdx])
+  @@index([weekIdx])
+}

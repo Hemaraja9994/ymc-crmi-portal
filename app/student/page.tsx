@@ -1,14 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { findStudent, DEMO_LOGIN } from "@/lib/students";
-import {
-  findAssignmentByCampusId,
-  getWeekDates,
-  TOTAL_WEEKS,
-  currentWeekIndex,
-  isPreLaunch,
-} from "@/lib/rotation";
+import { DEMO_LOGIN } from "@/lib/students";
 import {
   GraduationCap,
   Search,
@@ -34,31 +27,41 @@ export default function StudentLogin() {
   const [otp, setOtp] = useState("");
   const [resolved, setResolved] = useState<{ regNo: string; name: string; blockId: number; subBatch: string } | null>(null);
   const [weeks, setWeeks] = useState<WeekCell[]>([]);
+  const [currentWeek, setCurrentWeek] = useState(-1);
+  const [preLaunch, setPreLaunch] = useState(true);
   const [stage, setStage] = useState<"search" | "otp">("search");
   const [err, setErr] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  function search(e?: React.FormEvent) {
+  async function search(e?: React.FormEvent, overrideQuery?: string) {
     e?.preventDefault();
     setErr("");
-    const s = findStudent(q);
-    if (!s) {
-      setErr("No student found. Try your Roll No, registered phone or institutional email.");
-      setResolved(null);
-      setWeeks([]);
-      return;
+    setLoading(true);
+    try {
+      const response = await fetch("/api/student-search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: overrideQuery ?? q }),
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        setErr(result.error || "No student found. Try your Roll No, registered phone or institutional email.");
+        setResolved(null);
+        setWeeks([]);
+        return;
+      }
+      setResolved({
+        regNo: result.student.regNo,
+        name: result.student.name,
+        blockId: result.assignment.blockId,
+        subBatch: result.assignment.subBatch,
+      });
+      setWeeks(result.weeks);
+      setCurrentWeek(result.currentWeek);
+      setPreLaunch(result.preLaunch);
+    } finally {
+      setLoading(false);
     }
-    const a = findAssignmentByCampusId(s.regNo);
-    if (!a) {
-      setErr("Schedule not yet generated for this student.");
-      return;
-    }
-    const rows: WeekCell[] = Array.from({ length: TOTAL_WEEKS }, (_, i) => ({
-      idx: i,
-      ...getWeekDates(i),
-      cell: a.rotation.find((r) => r.weekIdx === i)!,
-    }));
-    setResolved({ regNo: s.regNo, name: s.name, blockId: a.blockId, subBatch: a.subBatch });
-    setWeeks(rows);
   }
 
   function submitOtp(e: React.FormEvent) {
@@ -71,8 +74,9 @@ export default function StudentLogin() {
   }
 
   function useDemo() {
-    setQ(DEMO_LOGIN.phones[0]);
-    setTimeout(() => search(), 0);
+    const demo = DEMO_LOGIN.phones[0];
+    setQ(demo);
+    void search(undefined, demo);
   }
 
   return (
@@ -102,8 +106,8 @@ export default function StudentLogin() {
                 className="w-full pl-10 pr-3 py-3 rounded-xl text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-white"
               />
             </div>
-            <button className="btn bg-white text-xcel-700 hover:bg-xcel-50 px-5 py-3 rounded-xl font-semibold">
-              <Search size={16} /> Search
+            <button className="btn bg-white text-xcel-700 hover:bg-xcel-50 px-5 py-3 rounded-xl font-semibold" disabled={loading}>
+              <Search size={16} /> {loading ? "Searching" : "Search"}
             </button>
           </form>
 
@@ -132,8 +136,8 @@ export default function StudentLogin() {
           blockId={resolved.blockId}
           subBatch={resolved.subBatch}
           weeks={weeks}
-          currentWeek={isPreLaunch() ? -1 : currentWeekIndex()}
-          preLaunch={isPreLaunch()}
+          currentWeek={currentWeek}
+          preLaunch={preLaunch}
           onContinue={() => setStage("otp")}
         />
       )}

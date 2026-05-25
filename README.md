@@ -1,80 +1,92 @@
-# YMC CRMI Management Portal — MBBS 2021 CBME Batch
+# YMC CRMI Management Portal - MBBS 2021 CBME Batch
 
-Compulsory Rotatory Medical Internship management portal for **Yenepoya Medical College, Mangalore**. Effective **01 June 2026**.
+Compulsory Rotatory Medical Internship management portal for Yenepoya Medical College, Mangalore. Effective 01 June 2026.
 
 ## Stack
-- **Next.js 14** (App Router) + **TypeScript** + **Tailwind CSS**
-- **lucide-react** icons, **date-fns** for calendar math
-- Deploy target: **Vercel** (zero-config)
 
-## Quick start
+- Next.js 14 App Router, TypeScript, Tailwind CSS
+- Prisma ORM with PostgreSQL, compatible with Neon or Vercel Postgres
+- Resend for scheduled weekly posting emails
+- lucide-react icons and date-fns calendar utilities
+- Deploy target: Vercel
+
+## Quick Start
+
 ```bash
 npm install
-npm run dev          # http://localhost:3000
-npm run build        # production build
+npm run dev
+npm run build
 ```
 
-## Project structure
+After `DATABASE_URL` is configured:
+
+```bash
+npm run prisma:migrate
+npm run prisma:seed
 ```
+
+## Project Structure
+
+```text
 app/
-  layout.tsx                # global shell + nav
-  page.tsx                  # landing
-  student/page.tsx          # Campus-ID + OTP login (passwordless demo)
-  student/[id]/page.tsx     # Personalised dashboard
-  admin/page.tsx            # Coordinator HR-style dashboard
-  guidelines/               # CBME compliance
-  posting-guidelines/       # Shift / rotation protocols
-  leave-attendance/         # Casual leave + attendance %
-  support/                  # Coordinator contacts
+  layout.tsx
+  page.tsx
+  student/page.tsx
+  student/[id]/page.tsx
+  admin/page.tsx
+  api/leave/route.ts
+  api/student-search/route.ts
+  api/posting-overrides/route.ts
+  api/cron/weekly-schedules/route.ts
 components/
-  StudentDashboard.tsx      # Year / Month / Week views + Leave UI
-  AdminDashboard.tsx        # KPIs + dept distribution + roster
+  StudentDashboard.tsx
+  AdminOverview.tsx
+  LeaveInbox.tsx
 lib/
-  students.ts               # 113 interns extracted from official YMC list
-  rotation.ts               # Block I–IV engine + 52-week calendar
-  admins.ts                 # Authorised coordinators
+  students.ts
+  rotation.ts
+  leaves.ts
+  server/prisma.ts
+prisma/
+  schema.prisma
+  migrations/
+  seed.ts
 ```
 
-## Posting engine (`lib/rotation.ts`)
+## Production Data Setup
 
-Implements the **NMC 2021 CBME** structure used at YMC:
+Add these environment variables in Vercel:
 
-| Block | Departments | Weeks |
-|-------|-------------|------:|
-| I  | Gen Med 6 · ENT 2 · Ophth 2 · Psych 2 · Geriat 1 | 13 |
-| II | Gen Surg 6 · Anaes 2 · Ortho 2 · Emerg 2 · Radio 1 | 13 |
-| III | Com.Med 12 · Resp 1 | 13 |
-| IV | OBG 7 · Paeds 3 · DVL 1 · Forensic 1 · Lab 1 | 13 |
+```bash
+DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DATABASE?sslmode=require"
+RESEND_API_KEY="re_xxxxxxxxx"
+SCHEDULE_EMAIL_FROM="YMC CRMI Portal <no-reply@your-domain.edu>"
+CRON_SECRET="replace-with-a-long-random-secret"
+```
 
-- 113 interns split into 4 blocks (A/B/C/D) → 13 sub-batches per block (A1–A13, …).
-- Each sub-batch enters its starting block, then rotates through all four blocks across the 52-week year — staggered so departments are never empty and never overloaded.
-- Calendar anchored at **01.06.2026**; current-week is computed live from the server clock.
+Run the database migration and seed once from a trusted shell:
 
-## Roles
-- **Student** — Campus-ID / Roll-No login (demo OTP). Reaches `/student/<regNo>`.
-- **Admin / Coordinator** — see `lib/admins.ts`:
-  - Dr. Prakash Saldanha (Principal)
-  - Dr. Jeevan · Dr. Imaad · Dr. S · Dr. Rashmi Jain · Dr. Rohith (Gen Med)
+```bash
+npm run prisma:migrate
+npm run prisma:seed
+```
 
-## Features delivered
-- Year / Month / Week timeline views (responsive — table on desktop, cards on mobile)
-- Leave request form with **drag-and-drop** PDF/JPG upload + status badges (Pending / Approved / Rejected)
-- **Share to WhatsApp** action that auto-formats the schedule message
-- Email-schedule trigger button (wire to SendGrid / Resend on deploy)
-- Admin KPIs, live department distribution per week, filterable intern roster
-- Mandatory information tabs: Guidelines · Posting Guidelines · Leave & Attendance · Support
+## Implemented Backend Functions
 
-## Deploy to Vercel
-1. Push the repo to GitHub.
-2. Import the repo in Vercel — **no configuration needed**.
-3. (Optional) add env vars for production auth + notifications:
-   - `RESEND_API_KEY` (email)
-   - `TWILIO_*` (WhatsApp Business)
-   - `NEXTAUTH_*` (if migrating from demo OTP to NextAuth + SAML / Microsoft365)
+- Student records are modeled in Postgres via Prisma and seeded from the current 2021 CBME roster.
+- Leave requests persist in Postgres through `/api/leave`.
+- `/api/leave` supports `GET`, `POST` submit, and `PATCH` approve/reject.
+- Leave decisions write audit records.
+- Coordinator posting overrides can be recorded through `/api/posting-overrides`; every override writes an audit record.
+- Weekly schedule emails are sent by `/api/cron/weekly-schedules` using Resend.
+- `vercel.json` schedules the weekly email job every Monday at 02:00 UTC.
 
-## Next steps for production hardening
-- Replace demo OTP with real institutional SSO (NextAuth + Microsoft 365 / Google Workspace).
-- Move student / leave data into Postgres (Neon, Vercel Postgres) via Prisma.
-- Add `/api/leave` route handlers (POST submit, PATCH approve/reject) + Postgres persistence.
-- Background job to send weekly schedule emails (Vercel Cron + Resend).
-- Audit log for any coordinator override on the posting schedule.
+## Posting Engine
+
+The rotation engine in `lib/rotation.ts` still computes the deterministic 52-week posting matrix used across the UI. Postgres now stores students, leave workflow state, weekly email logs, posting override records, and audit entries.
+
+## Next Steps
+
+- Add authenticated coordinator identity checks to API route guards.
+- Store uploaded leave documents in object storage instead of filename references.
+- Add a coordinator UI for posting overrides and audit log review.
