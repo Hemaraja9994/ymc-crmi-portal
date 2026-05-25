@@ -159,55 +159,47 @@ export default function AdminOverview({
 
       <Announcements />
 
-      <section className="card p-5">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <div className="badge border border-teal-100 bg-teal-50 text-teal-700">Live allocation map</div>
-            <h2 className="mt-2 text-xl font-extrabold tracking-tight text-slate-950">Department Distribution</h2>
-            <p className="text-xs text-slate-500">Click a tile for roster details, leave status and HOD actions.</p>
+      {/* ── Department Distribution ──────────────────────────── */}
+      <section className="card overflow-hidden">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-5 py-4">
+          <div className="flex items-center gap-3">
+            <div className="grid h-9 w-9 place-items-center rounded-xl bg-teal-50 text-teal-700">
+              <Building2 size={17} />
+            </div>
+            <div>
+              <h2 className="font-extrabold text-slate-900">Department Distribution</h2>
+              <p className="text-[11px] text-slate-500">Click a tile · roster details, leave status, HOD actions</p>
+            </div>
           </div>
-          <Link href="/admin/departments" className="btn-ghost">
-            View all <ArrowUpRight size={14} />
+          <Link href="/admin/departments" className="btn-ghost text-sm">
+            View all <ArrowUpRight size={13} />
           </Link>
         </div>
-
-        <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-5">
+        <div className="p-4 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
           {deptTiles.map(({ block, dept, count, onLeave }: any) => {
-            const width = count ? Math.min(100, Math.round((count / Math.max(1, assignments.length / 4)) * 100)) : 4;
+            const width = count ? Math.min(100, Math.round((count / Math.max(1, assignments.length / 4)) * 100)) : 3;
             return (
               <Link
                 key={dept.code}
                 href={`/admin/departments/${dept.code}`}
-                className="group rounded-2xl border border-slate-200 bg-white/90 p-4 transition-all duration-300 hover:-translate-y-1 hover:border-teal-200 hover:shadow-xl hover:shadow-slate-200/70"
+                className="group flex flex-col rounded-xl border border-slate-200 bg-white p-3 transition-all hover:-translate-y-0.5 hover:border-teal-300 hover:shadow-lg hover:shadow-teal-900/8"
               >
-                <div className="flex items-start justify-between gap-2">
-                  <span className={`dept-chip ${dept.color}`}>{dept.short}</span>
-                  <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-500">
-                    Block {block.id}
-                  </span>
+                <div className="flex items-center justify-between gap-1 mb-2">
+                  <span className={`dept-chip text-[10px] ${dept.color}`}>{dept.short}</span>
+                  <span className="rounded-full bg-slate-100 px-1.5 py-0.5 text-[9px] font-bold text-slate-400">B{block.id}</span>
                 </div>
-                <div className="mt-4 flex items-end justify-between gap-3">
-                  <div>
-                    <div className="text-3xl font-extrabold leading-none text-slate-950">{count}</div>
-                    <div className="mt-1 text-[11px] font-medium text-slate-500">students posted</div>
-                  </div>
+                <div className="text-2xl font-extrabold leading-none text-slate-900">{count}</div>
+                <div className="mt-0.5 text-[10px] text-slate-400 truncate">{dept.name}</div>
+                <div className="mt-2 h-1 overflow-hidden rounded-full bg-slate-100">
+                  <div className="h-full rounded-full bg-teal-500 transition-all" style={{ width: `${width}%` }} />
+                </div>
+                <div className="mt-2 flex items-center justify-between">
+                  <span className="text-[9px] text-slate-400">{dept.weeks}w</span>
                   {onLeave > 0 ? (
-                    <span className="badge bg-rose-50 text-rose-700 ring-1 ring-rose-200">
-                      <ShieldAlert size={11} /> {onLeave} leave
-                    </span>
+                    <span className="text-[9px] font-semibold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded-full">{onLeave} leave</span>
                   ) : (
-                    <span className="badge bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100">
-                      <CheckCircle2 size={11} /> clear
-                    </span>
+                    <span className="text-[9px] font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full">clear</span>
                   )}
-                </div>
-                <div className="mt-3 truncate text-xs text-slate-600">{dept.name}</div>
-                <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-slate-100">
-                  <div className="h-full rounded-full bg-gradient-to-r from-teal-600 to-teal-400" style={{ width: `${width}%` }} />
-                </div>
-                <div className="mt-3 flex items-center justify-between text-[11px] text-slate-500">
-                  <span>{dept.weeks} week posting</span>
-                  <span>CL: {dept.casualLeaveDays === "Nil" ? "Nil" : `${dept.casualLeaveDays}d`}</span>
                 </div>
               </Link>
             );
@@ -215,40 +207,62 @@ export default function AdminOverview({
         </div>
       </section>
 
-      <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-        {blocks.map((block: any) => {
-          const inBlock = assignments.filter((a) => a.blockId === block.id).length;
-          const totalWeeks = block.depts.reduce((sum: number, dept: any) => sum + dept.weeks, 0);
-          return (
-            <Link
-              key={block.id}
-              href={`/admin/blocks/${block.id}`}
-              className="card group overflow-hidden p-5 transition-all duration-300 hover:-translate-y-1 hover:border-teal-200 hover:shadow-2xl hover:shadow-teal-900/10"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <div className="text-xs font-semibold uppercase tracking-widest text-slate-500">{block.title}</div>
-                  <div className="mt-1 text-3xl font-extrabold text-slate-950">{inBlock}</div>
-                  <div className="text-xs text-slate-500">interns assigned</div>
+      {/* ── Rotation Blocks ──────────────────────────────────── */}
+      <section>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-extrabold text-slate-900">Rotation Blocks</h2>
+          <Link href="/admin/blocks" className="text-xs text-teal-700 hover:underline inline-flex items-center gap-1">
+            All blocks <ArrowUpRight size={12} />
+          </Link>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {blocks.map((block: any) => {
+            const inBlock = assignments.filter((a) => a.blockId === block.id).length;
+            const totalWeeks = block.depts.reduce((sum: number, dept: any) => sum + dept.weeks, 0);
+            return (
+              <Link
+                key={block.id}
+                href={`/admin/blocks/${block.id}`}
+                className="card group overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-teal-900/10"
+              >
+                {/* Block header */}
+                <div className="brand-panel relative overflow-hidden px-5 py-4 text-white">
+                  <div className="geo-overlay absolute inset-0 opacity-40" />
+                  <div className="relative flex items-center justify-between">
+                    <div>
+                      <div className="text-[10px] font-bold uppercase tracking-widest text-teal-200">Block {block.id}</div>
+                      <div className="mt-0.5 font-extrabold leading-tight">{block.title}</div>
+                    </div>
+                    <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 grid place-items-center font-extrabold text-2xl backdrop-blur-sm">
+                      {block.id}
+                    </div>
+                  </div>
                 </div>
-                <div className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-teal-700 to-teal-900 text-white shadow-lg shadow-teal-950/10">
-                  <BarChart3 size={18} />
+                {/* Block body */}
+                <div className="p-4">
+                  <div className="flex items-end justify-between">
+                    <div>
+                      <div className="text-3xl font-extrabold text-slate-950">{inBlock}</div>
+                      <div className="text-xs text-slate-500">interns assigned</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-lg font-bold text-slate-700">{totalWeeks}w</div>
+                      <div className="text-xs text-slate-400">{block.depts.length} depts</div>
+                    </div>
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-1">
+                    {block.depts.map((dept: any) => (
+                      <span key={dept.code} className={`dept-chip text-[10px] ${dept.color}`}>{dept.short}</span>
+                    ))}
+                  </div>
+                  <div className="mt-3 flex items-center justify-end text-xs text-teal-700 group-hover:gap-1.5 gap-1 transition-all">
+                    Open block <ArrowUpRight size={12} />
+                  </div>
                 </div>
-              </div>
-              <div className="mt-4 flex flex-wrap gap-1.5">
-                {block.depts.map((dept: any) => (
-                  <span key={dept.code} className={`dept-chip ${dept.color}`}>{dept.short}</span>
-                ))}
-              </div>
-              <div className="mt-4 flex items-center justify-between text-xs text-slate-500">
-                <span>{totalWeeks} weeks</span>
-                <span className="inline-flex items-center gap-1 text-teal-700">
-                  Open block <ArrowUpRight size={12} />
-                </span>
-              </div>
-            </Link>
-          );
-        })}
+              </Link>
+            );
+          })}
+        </div>
       </section>
 
       {!preLaunch && deficientCount > 0 && <DeficiencyAlerts assignments={assignments} leaves={leaves} />}
