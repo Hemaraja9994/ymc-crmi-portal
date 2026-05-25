@@ -1,57 +1,87 @@
 import { ADMINS } from "@/lib/admins";
-import { MessageCircle, Mail, Phone, HeartHandshake } from "lucide-react";
+import { MessageCircle, Mail, Phone, HeartHandshake, Sparkles } from "lucide-react";
 
 export default function SupportPage() {
   return (
     <div className="space-y-6">
-      <header className="card p-6 bg-gradient-to-br from-brand-50 via-white to-white">
-        <div className="flex items-center gap-2 text-brand-700">
-          <HeartHandshake />
-          <div className="text-xs uppercase tracking-wide">Support & Clarifications</div>
+      <header className="rounded-3xl overflow-hidden relative brand-panel text-white p-8 md:p-10">
+        <div className="geo-overlay absolute inset-0 opacity-60" />
+        <div className="relative">
+          <div className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-xcel-100">
+            <Sparkles size={14} /> Support & Clarifications
+          </div>
+          <h1 className="mt-3 text-3xl md:text-4xl font-bold tracking-tight">
+            We&apos;re with you, every posting.
+          </h1>
+          <p className="mt-3 max-w-2xl text-xcel-100/90 text-sm md:text-base">
+            Your internship is a defining year — and you are not navigating it alone. Reach out to
+            any coordinator below for academic, posting, or personal concerns. All conversations
+            are confidential.
+          </p>
         </div>
-        <h1 className="text-2xl font-bold mt-1">We're here to help</h1>
-        <p className="text-slate-600 text-sm mt-2 max-w-3xl">
-          Your internship year is one of the most important years of your medical journey — and
-          you are not navigating it alone. Reach out to any of the coordinators below for academic,
-          posting or personal concerns. All conversations are confidential.
-        </p>
       </header>
 
       <section className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {ADMINS.map((a) => (
-          <div key={a.name} className="card p-5">
-            <div className="flex items-start justify-between">
-              <div>
-                <div className="font-semibold">{a.name}</div>
-                <div className="text-xs text-slate-500 mt-0.5">{a.role}</div>
+        {ADMINS.map((a) => {
+          const initials = a.name
+            .replace(/^Dr\.\s*/i, "")
+            .split(" ")
+            .map((n) => n[0])
+            .slice(0, 2)
+            .join("")
+            .toUpperCase();
+          return (
+            <div key={a.name} className="card p-5 hover:shadow-md transition">
+              <div className="flex items-start gap-3">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-xcel-600 to-xcel-800 text-white grid place-items-center font-bold">
+                  {initials}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <div className="font-semibold">{a.name}</div>
+                    {a.isPrincipal && (
+                      <span className="badge bg-amber-100 text-amber-800 ring-1 ring-amber-200">
+                        Principal
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-xs text-slate-500 mt-0.5">{a.role}</div>
+                </div>
               </div>
-              {a.isPrincipal && (
-                <span className="badge bg-amber-100 text-amber-800">Principal</span>
-              )}
+              <div className="mt-4 grid grid-cols-3 gap-2 text-xs">
+                <a className="btn-outline justify-center" href="#">
+                  <Mail size={13} /> Email
+                </a>
+                <a className="btn-outline justify-center" href="#">
+                  <Phone size={13} /> Call
+                </a>
+                <a className="btn-outline justify-center" href="#">
+                  <MessageCircle size={13} /> Chat
+                </a>
+              </div>
             </div>
-            <div className="mt-4 flex flex-wrap gap-2 text-sm">
-              <a className="btn-ghost border border-slate-200" href="#">
-                <Mail size={14} /> Email
-              </a>
-              <a className="btn-ghost border border-slate-200" href="#">
-                <Phone size={14} /> Call
-              </a>
-              <a className="btn-ghost border border-slate-200" href="#">
-                <MessageCircle size={14} /> WhatsApp
-              </a>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </section>
 
-      <section className="card p-5">
-        <h2 className="font-semibold">Other Resources</h2>
-        <ul className="mt-2 text-sm space-y-1 text-slate-700 list-disc pl-5">
-          <li>Student Cell, YMC</li>
-          <li>Wardens — Boys&apos; Hostel / Girls&apos; Hostel</li>
-          <li>Examination Section, YMC</li>
-          <li>Medical Superintendent, YMCH</li>
-          <li>Dean, Faculty of Medicine</li>
+      <section className="card p-6">
+        <div className="flex items-center gap-2">
+          <HeartHandshake className="text-xcel-600" />
+          <h2 className="font-semibold">Other Resources</h2>
+        </div>
+        <ul className="mt-3 grid sm:grid-cols-2 gap-2 text-sm text-slate-700">
+          {[
+            "Student Cell, YMC",
+            "Wardens — Boys' Hostel / Girls' Hostel",
+            "Examination Section, YMC",
+            "Medical Superintendent, YMCH",
+            "Dean, Faculty of Medicine",
+            "IT Helpdesk — portal access issues",
+          ].map((x) => (
+            <li key={x} className="flex items-start gap-2">
+              <span className="mt-1 w-1.5 h-1.5 rounded-full bg-xcel-500 shrink-0" /> {x}
+            </li>
+          ))}
         </ul>
       </section>
     </div>

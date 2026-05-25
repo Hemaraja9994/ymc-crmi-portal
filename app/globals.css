@@ -5,11 +5,46 @@
 :root {
   --bg: #f8fafc;
 }
-html, body { background: var(--bg); color: #0f172a; }
+html, body {
+  background: var(--bg);
+  color: #0b1220;
+  -webkit-font-smoothing: antialiased;
+}
 
-.card { @apply bg-white rounded-2xl shadow-sm border border-slate-200; }
-.btn { @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition; }
-.btn-primary { @apply btn bg-brand-600 text-white hover:bg-brand-700; }
-.btn-ghost { @apply btn text-slate-700 hover:bg-slate-100; }
-.badge { @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium; }
-.dept-chip { @apply inline-block rounded-md px-2 py-1 text-xs font-semibold; }
+.card {
+  @apply bg-white rounded-2xl shadow-card border border-slate-200/70;
+}
+.btn {
+  @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition focus:outline-none focus:ring-2 focus:ring-xcel-500/40;
+}
+.btn-primary {
+  @apply btn bg-xcel-600 text-white hover:bg-xcel-700 shadow-sm;
+}
+.btn-ghost {
+  @apply btn text-slate-700 hover:bg-slate-100;
+}
+.btn-outline {
+  @apply btn border border-slate-300 bg-white hover:bg-slate-50;
+}
+.badge {
+  @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+.dept-chip {
+  @apply inline-block rounded-md px-2 py-1 text-xs font-semibold;
+}
+
+/* Brand background panel — used on auth split-screens */
+.brand-panel {
+  background:
+    radial-gradient(1200px 600px at 0% 0%, rgba(255,255,255,0.10), transparent 60%),
+    radial-gradient(800px 400px at 100% 100%, rgba(255,255,255,0.08), transparent 60%),
+    linear-gradient(135deg, #002f78 0%, #0046af 50%, #003a92 100%);
+}
+
+.geo-overlay {
+  background-image:
+    radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px),
+    radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 36px 36px, 18px 18px;
+  background-position: 0 0, 9px 9px;
+}

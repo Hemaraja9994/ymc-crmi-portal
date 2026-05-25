@@ -1,4 +1,4 @@
-import AdminDashboard from "@/components/AdminDashboard";
+import AdminOverview from "@/components/AdminOverview";
 import {
   buildAssignments,
   departmentDistribution,
@@ -6,19 +6,17 @@ import {
   getWeekDates,
   BLOCKS,
 } from "@/lib/rotation";
-import { ADMINS } from "@/lib/admins";
 
-export default function AdminPage() {
+export default function Page() {
   const all = buildAssignments();
   const week = currentWeekIndex();
   const dist = departmentDistribution(week);
   const wk = getWeekDates(week);
   return (
-    <AdminDashboard
+    <AdminOverview
       assignments={JSON.parse(JSON.stringify(all))}
       dist={dist}
-      blocks={BLOCKS}
-      admins={ADMINS}
+      blocks={JSON.parse(JSON.stringify(BLOCKS))}
       currentWeek={{ idx: week, label: wk.label }}
     />
   );

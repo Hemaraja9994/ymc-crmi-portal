@@ -5,3 +5,9 @@ node_modules
 _extract
 *.tsbuildinfo
 .vercel
+
+# Source reference files (not part of the deployed app)
+*.PDF
+*.pdf
+*.docx
+*.xlsx
