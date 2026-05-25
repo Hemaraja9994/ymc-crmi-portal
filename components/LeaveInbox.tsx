@@ -17,6 +17,8 @@ import {
   loadLeaves,
   saveLeaves,
 } from "@/lib/leaves";
+import { attendanceFor, ATTENDANCE_THRESHOLD } from "@/lib/attendance";
+import { ShieldAlert } from "lucide-react";
 
 export default function LeaveInbox({
   assignments,
@@ -142,9 +144,22 @@ export default function LeaveInbox({
               {rows.map((l) => (
                 <tr key={l.id} className="border-t border-slate-100 hover:bg-xcel-50/40">
                   <td className="px-3 py-2">
-                    <Link href={`/admin/student/${l.regNo}`} className="font-medium text-xcel-700 hover:underline">
-                      {l.name}
-                    </Link>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <Link href={`/admin/student/${l.regNo}`} className="font-medium text-xcel-700 hover:underline">
+                        {l.name}
+                      </Link>
+                      {(() => {
+                        const att = attendanceFor(l.regNo, leaves);
+                        return !att.preLaunch && att.deficient ? (
+                          <span
+                            title={`${att.attendancePct}% — below ${ATTENDANCE_THRESHOLD}%`}
+                            className="badge bg-rose-100 text-rose-800 ring-1 ring-rose-200"
+                          >
+                            <ShieldAlert size={10} /> {att.attendancePct}%
+                          </span>
+                        ) : null;
+                      })()}
+                    </div>
                     <div className="text-[11px] text-slate-500 font-mono">{l.regNo} · Block {l.blockId}</div>
                   </td>
                   <td className="px-3 py-2">

@@ -1,10 +1,12 @@
 export type LeaveType = "Casual" | "Medical" | "Emergency" | "Bereavement" | "Academic";
 export type LeaveStatus = "Pending" | "Approved" | "Rejected";
+export type LeaveCategory = "Retroactive" | "Advance";
 
 export type LeaveRecord = {
   id: string;
   regNo: string;
   type: LeaveType;
+  category?: LeaveCategory; // advance notification vs retroactive/emergency
   from: string; // ISO date
   to: string;
   reason: string;

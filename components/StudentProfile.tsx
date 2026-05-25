@@ -12,6 +12,8 @@ import {
   IdCard,
 } from "lucide-react";
 import { LeaveRecord, LEAVE_TYPE_COLORS, loadLeaves } from "@/lib/leaves";
+import { attendanceFor, ATTENDANCE_THRESHOLD } from "@/lib/attendance";
+import { ShieldAlert } from "lucide-react";
 
 type Seg = {
   deptCode: string;
@@ -43,6 +45,7 @@ export default function StudentProfile({
   const [leaves, setLeaves] = useState<LeaveRecord[]>([]);
   useEffect(() => setLeaves(loadLeaves()), []);
   const myLeaves = leaves.filter((l) => l.regNo === assignment.student.regNo);
+  const attendance = attendanceFor(assignment.student.regNo, leaves);
 
   const initials = assignment.student.name
     .split(" ")
@@ -123,6 +126,42 @@ export default function StudentProfile({
           <Stat label="Leaves on file" value={myLeaves.length} icon={<CalendarRange size={14} className="text-rose-600" />} />
         </div>
       </header>
+
+      {/* Attendance status */}
+      {!attendance.preLaunch && (
+        <section className={`card p-5 ring-1 ${attendance.deficient ? "bg-rose-50 ring-rose-200" : attendance.attendancePct >= ATTENDANCE_THRESHOLD + 5 ? "bg-emerald-50 ring-emerald-200" : "bg-amber-50 ring-amber-200"}`}>
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <div className="flex items-center gap-4">
+              <div className="relative w-16 h-16 shrink-0">
+                <svg viewBox="0 0 36 36" className="w-16 h-16 -rotate-90">
+                  <circle cx="18" cy="18" r="15.9155" className="fill-none stroke-white" strokeWidth="3" />
+                  <circle cx="18" cy="18" r="15.9155"
+                    className={`fill-none ${attendance.deficient ? "stroke-rose-500" : attendance.attendancePct >= ATTENDANCE_THRESHOLD + 5 ? "stroke-emerald-500" : "stroke-amber-500"}`}
+                    strokeWidth="3"
+                    strokeDasharray={`${Math.min(100, attendance.attendancePct)} 100`}
+                    strokeLinecap="round"
+                  />
+                </svg>
+                <div className="absolute inset-0 grid place-items-center text-sm font-bold">{attendance.attendancePct}%</div>
+              </div>
+              <div>
+                <div className="text-xs uppercase tracking-wider text-slate-500">Attendance</div>
+                <div className="text-lg font-bold">
+                  {attendance.deficient ? "Below NMC threshold" : attendance.attendancePct >= ATTENDANCE_THRESHOLD + 5 ? "On track" : "Approaching threshold"}
+                </div>
+                <div className="text-xs text-slate-500">
+                  {attendance.daysAttended}/{attendance.daysElapsed} days · {attendance.daysOnLeave} on approved leave · minimum {ATTENDANCE_THRESHOLD}%
+                </div>
+              </div>
+            </div>
+            {attendance.deficient && (
+              <div className="inline-flex items-center gap-2 text-rose-700 text-sm font-medium">
+                <ShieldAlert size={16} /> Repeat-posting risk
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* Current posting */}
       <section className="grid md:grid-cols-3 gap-4">

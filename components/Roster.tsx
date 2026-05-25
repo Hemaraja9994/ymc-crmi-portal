@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Search, Filter, Download, AlertCircle, CheckCircle2 } from "lucide-react";
 import { LeaveRecord, LEAVE_TYPE_COLORS, loadLeaves, isOnLeave } from "@/lib/leaves";
 import { isPreLaunch } from "@/lib/rotation";
+import { attendanceFor, ATTENDANCE_THRESHOLD } from "@/lib/attendance";
+import { ShieldAlert } from "lucide-react";
 
 export default function Roster({
   assignments,
@@ -141,7 +143,22 @@ export default function Roster({
                         {a.student.regNo}
                       </Link>
                     </td>
-                    <td className="px-3 py-2 font-medium">{a.student.name}</td>
+                    <td className="px-3 py-2 font-medium">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span>{a.student.name}</span>
+                        {!pre && (() => {
+                          const att = attendanceFor(a.student.regNo, leaves);
+                          return att.deficient ? (
+                            <span
+                              title={`${att.attendancePct}% — below ${ATTENDANCE_THRESHOLD}% NMC threshold`}
+                              className="badge bg-rose-100 text-rose-800 ring-1 ring-rose-200"
+                            >
+                              <ShieldAlert size={10} /> {att.attendancePct}%
+                            </span>
+                          ) : null;
+                        })()}
+                      </div>
+                    </td>
                     <td className="px-3 py-2">{a.blockId}</td>
                     <td className="px-3 py-2 font-mono text-slate-600">{a.subBatch}</td>
                     <td className="px-3 py-2">

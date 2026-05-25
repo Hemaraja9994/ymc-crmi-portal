@@ -14,8 +14,9 @@ import {
 } from "lucide-react";
 import { ANNOUNCEMENTS, CATEGORY_STYLES } from "@/lib/announcements";
 import { LeaveRecord, loadLeaves, LEAVE_TYPE_COLORS, isOnLeave } from "@/lib/leaves";
-import { Hourglass } from "lucide-react";
+import { Hourglass, ShieldAlert } from "lucide-react";
 import { isPreLaunch, daysUntilStart, START_DATE } from "@/lib/rotation";
+import { attendanceFor, ATTENDANCE_THRESHOLD } from "@/lib/attendance";
 
 export default function AdminOverview({
   assignments,
@@ -42,6 +43,10 @@ export default function AdminOverview({
 
   const totalDeptsActive = preLaunch ? 0 : Object.values(dist).filter((v) => v > 0).length;
   const maxDept = Object.entries(dist).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1])[0];
+  const deficientCount = useMemo(
+    () => (preLaunch ? 0 : assignments.filter((a) => attendanceFor(a.student.regNo, leaves).deficient).length),
+    [assignments, leaves, preLaunch]
+  );
 
   return (
     <div className="space-y-6">
@@ -59,11 +64,12 @@ export default function AdminOverview({
           <p className="text-brand-100/80 text-sm mt-1">
             Live operational view · Week <strong>W{currentWeek.idx + 1}</strong> · {currentWeek.label}
           </p>
-          <div className="mt-5 grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="mt-5 grid grid-cols-2 md:grid-cols-5 gap-3">
             <GlassKPI icon={<Users size={16} />} label="Total Interns" value={assignments.length} sub="Active roster" />
-            <GlassKPI icon={<Building2 size={16} />} label="Departments Live" value={totalDeptsActive} sub={maxDept ? `${maxDept[0]} highest (${maxDept[1]})` : ""} />
+            <GlassKPI icon={<Building2 size={16} />} label="Depts Live" value={totalDeptsActive} sub={maxDept ? `${maxDept[0]} (${maxDept[1]})` : ""} />
             <GlassKPI icon={<ClipboardCheck size={16} />} label="Pending Leaves" value={pending} sub={`${approved} approved`} accent="amber" />
             <GlassKPI icon={<Activity size={16} />} label="On Leave Today" value={todayLeaveCount} sub="Across all depts" accent="rose" />
+            <GlassKPI icon={<ShieldAlert size={16} />} label={`< ${ATTENDANCE_THRESHOLD}% Attendance`} value={deficientCount} sub="Deficiency alerts" accent="rose" />
           </div>
         </div>
       </section>
@@ -182,6 +188,50 @@ export default function AdminOverview({
           );
         })}
       </section>
+
+      {/* Deficiency alerts */}
+      {!preLaunch && deficientCount > 0 && (
+        <section className="card overflow-hidden ring-1 ring-rose-200">
+          <div className="p-4 border-b border-rose-200 bg-rose-50/60 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <ShieldAlert className="text-rose-600" size={18} />
+              <h2 className="font-semibold text-rose-800">
+                Attendance Deficiency Alerts ({deficientCount})
+              </h2>
+            </div>
+            <Link href="/admin/roster" className="text-sm text-rose-700 hover:underline">
+              View all in roster →
+            </Link>
+          </div>
+          <ul className="divide-y divide-rose-100">
+            {assignments
+              .map((a: any) => ({ a, att: attendanceFor(a.student.regNo, leaves) }))
+              .filter(({ att }) => att.deficient)
+              .sort((x: any, y: any) => x.att.attendancePct - y.att.attendancePct)
+              .slice(0, 8)
+              .map(({ a, att }: any) => (
+                <li key={a.student.regNo} className="px-4 py-3 flex items-center justify-between text-sm gap-3">
+                  <div className="min-w-0">
+                    <Link href={`/admin/student/${a.student.regNo}`} className="font-medium hover:text-xcel-700">
+                      {a.student.name}
+                    </Link>
+                    <div className="text-xs text-slate-500 font-mono">
+                      {a.student.regNo} · Block {a.blockId} · {a.subBatch}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-slate-500">
+                      {att.daysOnLeave}d leave / {att.daysElapsed}d
+                    </span>
+                    <span className="badge bg-rose-100 text-rose-800 ring-1 ring-rose-200">
+                      <ShieldAlert size={11} /> {att.attendancePct}%
+                    </span>
+                  </div>
+                </li>
+              ))}
+          </ul>
+        </section>
+      )}
 
       {/* Recent leaves */}
       <section className="card">
