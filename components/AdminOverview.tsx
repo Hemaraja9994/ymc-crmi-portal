@@ -93,17 +93,17 @@ export default function AdminOverview({
 
   return (
     <div className="space-y-6">
-      <section className="brand-panel relative overflow-hidden rounded-[2rem] p-6 text-white shadow-2xl shadow-blue-950/10 md:p-8">
+      <section className="brand-panel relative overflow-hidden rounded-[2rem] p-6 text-white shadow-2xl shadow-teal-950/10 md:p-8">
         <div className="geo-overlay absolute inset-0 opacity-70" />
         <div className="relative grid gap-6 xl:grid-cols-[1.25fr_0.75fr]">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-cyan-100 backdrop-blur">
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-teal-100 backdrop-blur">
               <Sparkles size={14} /> Coordinator Console
             </div>
             <h1 className="mt-4 text-3xl font-extrabold tracking-tight md:text-4xl">
               CRMI Operations Dashboard
             </h1>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-blue-50/90 md:text-base">
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-teal-50/90 md:text-base">
               MBBS 2021 CBME live overview for postings, leave approvals, attendance alerts,
               report exports and principal-ready documentation.
             </p>
@@ -118,9 +118,9 @@ export default function AdminOverview({
           </div>
 
           <div className="rounded-3xl border border-white/15 bg-white/10 p-4 backdrop-blur-md">
-            <div className="text-xs font-semibold uppercase tracking-widest text-cyan-100">This week</div>
+            <div className="text-xs font-semibold uppercase tracking-widest text-teal-100">This week</div>
             <div className="mt-2 text-2xl font-extrabold">W{currentWeek.idx + 1}</div>
-            <p className="mt-1 text-sm text-blue-50/80">{currentWeek.label}</p>
+            <p className="mt-1 text-sm text-teal-50/80">{currentWeek.label}</p>
             <div className="mt-4 grid gap-2">
               <QuickAction href="/admin/reports" icon={<FileText size={16} />} label="PDF reports" />
               <QuickAction href="/admin/leaves" icon={<ClipboardCheck size={16} />} label="Review leave inbox" />
@@ -131,7 +131,7 @@ export default function AdminOverview({
       </section>
 
       {preLaunch && (
-        <section className="card overflow-hidden border-amber-100 bg-gradient-to-r from-amber-50 via-white to-cyan-50 p-5">
+        <section className="card overflow-hidden border-amber-100 bg-gradient-to-r from-amber-50 via-white to-teal-50 p-5">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="grid h-11 w-11 place-items-center rounded-2xl bg-amber-100 text-amber-700">
@@ -160,7 +160,7 @@ export default function AdminOverview({
       <section className="card p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <div className="badge border border-cyan-100 bg-cyan-50 text-cyan-700">Live allocation map</div>
+            <div className="badge border border-teal-100 bg-teal-50 text-teal-700">Live allocation map</div>
             <h2 className="mt-2 text-xl font-extrabold tracking-tight text-slate-950">Department Distribution</h2>
             <p className="text-xs text-slate-500">Click a tile for roster details, leave status and HOD actions.</p>
           </div>
@@ -176,7 +176,7 @@ export default function AdminOverview({
               <Link
                 key={dept.code}
                 href={`/admin/departments/${dept.code}`}
-                className="group rounded-2xl border border-slate-200 bg-white/90 p-4 transition-all duration-300 hover:-translate-y-1 hover:border-cyan-200 hover:shadow-xl hover:shadow-slate-200/70"
+                className="group rounded-2xl border border-slate-200 bg-white/90 p-4 transition-all duration-300 hover:-translate-y-1 hover:border-teal-200 hover:shadow-xl hover:shadow-slate-200/70"
               >
                 <div className="flex items-start justify-between gap-2">
                   <span className={`dept-chip ${dept.color}`}>{dept.short}</span>
@@ -201,7 +201,7 @@ export default function AdminOverview({
                 </div>
                 <div className="mt-3 truncate text-xs text-slate-600">{dept.name}</div>
                 <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-slate-100">
-                  <div className="h-full rounded-full bg-gradient-to-r from-teal-500 to-cyan-500" style={{ width: `${width}%` }} />
+                  <div className="h-full rounded-full bg-gradient-to-r from-teal-600 to-teal-400" style={{ width: `${width}%` }} />
                 </div>
                 <div className="mt-3 flex items-center justify-between text-[11px] text-slate-500">
                   <span>{dept.weeks} week posting</span>
@@ -221,7 +221,7 @@ export default function AdminOverview({
             <Link
               key={block.id}
               href={`/admin/blocks/${block.id}`}
-              className="card group overflow-hidden p-5 transition-all duration-300 hover:-translate-y-1 hover:border-cyan-200 hover:shadow-2xl hover:shadow-cyan-900/10"
+              className="card group overflow-hidden p-5 transition-all duration-300 hover:-translate-y-1 hover:border-teal-200 hover:shadow-2xl hover:shadow-teal-900/10"
             >
               <div className="flex items-start justify-between gap-3">
                 <div>
@@ -229,7 +229,7 @@ export default function AdminOverview({
                   <div className="mt-1 text-3xl font-extrabold text-slate-950">{inBlock}</div>
                   <div className="text-xs text-slate-500">interns assigned</div>
                 </div>
-                <div className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-blue-700 to-indigo-900 text-white shadow-lg shadow-blue-950/10">
+                <div className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-teal-700 to-teal-900 text-white shadow-lg shadow-teal-950/10">
                   <BarChart3 size={18} />
                 </div>
               </div>
@@ -240,7 +240,7 @@ export default function AdminOverview({
               </div>
               <div className="mt-4 flex items-center justify-between text-xs text-slate-500">
                 <span>{totalWeeks} weeks</span>
-                <span className="inline-flex items-center gap-1 text-cyan-700">
+                <span className="inline-flex items-center gap-1 text-teal-700">
                   Open block <ArrowUpRight size={12} />
                 </span>
               </div>
@@ -278,11 +278,11 @@ function GlassKPI({
 
   return (
     <div className={`rounded-2xl border p-3 backdrop-blur-md ${tone}`}>
-      <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-cyan-100">
+      <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-teal-100">
         {icon} {label}
       </div>
       <div className="mt-2 text-2xl font-extrabold leading-none">{value}</div>
-      {sub && <div className="mt-1 truncate text-[11px] text-blue-50/70">{sub}</div>}
+      {sub && <div className="mt-1 truncate text-[11px] text-teal-50/70">{sub}</div>}
     </div>
   );
 }
@@ -309,11 +309,11 @@ function Announcements() {
           <h2 className="font-semibold">Live Updates - Rules & Notices</h2>
           <span className="badge bg-rose-50 text-rose-600 ring-1 ring-rose-100">LIVE</span>
         </div>
-        <Link href="/admin/announcements" className="text-sm font-medium text-cyan-700 hover:underline">
+        <Link href="/admin/announcements" className="text-sm font-medium text-teal-700 hover:underline">
           View all
         </Link>
       </div>
-      <div className="ymc-ticker overflow-hidden whitespace-nowrap bg-gradient-to-r from-rose-50 via-amber-50 to-cyan-50 px-4 py-2 text-sm">
+      <div className="ymc-ticker overflow-hidden whitespace-nowrap bg-gradient-to-r from-rose-50 via-amber-50 to-teal-50 px-4 py-2 text-sm">
         <div className="ymc-marquee inline-flex gap-8 pr-8">
           {[...highlights, ...highlights].map((announcement, index) => (
             <span key={index} className="inline-flex items-center gap-2">
@@ -350,7 +350,7 @@ function DeficiencyAlerts({ assignments, leaves }: { assignments: any[]; leaves:
         {rows.map(({ assignment, attendance }: any) => (
           <li key={assignment.student.regNo} className="flex items-center justify-between gap-3 px-4 py-3 text-sm">
             <div className="min-w-0">
-              <Link href={`/admin/student/${assignment.student.regNo}`} className="font-medium hover:text-cyan-700">
+              <Link href={`/admin/student/${assignment.student.regNo}`} className="font-medium hover:text-teal-700">
                 {assignment.student.name}
               </Link>
               <div className="font-mono text-xs text-slate-500">
@@ -370,10 +370,10 @@ function RecentLeaves({ assignments, leaves }: { assignments: any[]; leaves: Lea
     <section className="card overflow-hidden">
       <div className="flex items-center justify-between border-b border-slate-200/70 p-4">
         <div className="flex items-center gap-2">
-          <CalendarDays className="text-cyan-600" size={18} />
+          <CalendarDays className="text-teal-600" size={18} />
           <h2 className="font-semibold">Recent Leave Activity</h2>
         </div>
-        <Link href="/admin/leaves" className="text-sm font-medium text-cyan-700 hover:underline">Manage</Link>
+        <Link href="/admin/leaves" className="text-sm font-medium text-teal-700 hover:underline">Manage</Link>
       </div>
       <div className="divide-y divide-slate-100">
         {leaves.slice(0, 5).map((leave) => {

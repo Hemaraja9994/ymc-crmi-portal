@@ -61,8 +61,8 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
                 href={n.href}
                 className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition ${
                   active
-                    ? "bg-gradient-to-r from-blue-700 to-indigo-900 text-white shadow-lg shadow-blue-950/10"
-                    : "text-slate-700 hover:bg-cyan-50 hover:text-cyan-800"
+                    ? "bg-gradient-to-r from-teal-700 to-teal-900 text-white shadow-lg shadow-teal-950/10"
+                    : "text-slate-700 hover:bg-teal-50 hover:text-teal-800"
                 }`}
               >
                 <Icon size={16} /> {n.label}

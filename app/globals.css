@@ -32,7 +32,7 @@ body {
 }
 
 .btn-outline {
-  @apply btn border border-slate-200 bg-white/90 text-slate-800 hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-800;
+  @apply btn border border-slate-200 bg-white/90 text-slate-800 hover:border-teal-200 hover:bg-teal-50 hover:text-teal-800;
 }
 
 .badge {
@@ -46,8 +46,8 @@ body {
 /* Shared brand surface used by hero and auth split-screens. */
 .brand-panel {
   background:
-    linear-gradient(125deg, rgba(6, 182, 212, 0.22) 0%, rgba(6, 182, 212, 0) 34%),
-    linear-gradient(135deg, #1d4ed8 0%, #1e40af 48%, #312e81 100%);
+    linear-gradient(125deg, rgba(217, 106, 74, 0.18) 0%, rgba(217, 106, 74, 0) 34%),
+    linear-gradient(135deg, #0d3b3a 0%, #062825 55%, #041f1e 100%);
 }
 
 .geo-overlay {
