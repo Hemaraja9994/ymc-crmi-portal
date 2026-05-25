@@ -64,6 +64,12 @@ body {
   animation: ymcMarquee 120s linear infinite;
 }
 
+/* Fade-in / fade-out mask on the ticker scroll area */
+.ymc-ticker-mask {
+  mask-image: linear-gradient(to right, transparent 0%, black 4%, black 96%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 4%, black 96%, transparent 100%);
+}
+
 .ymc-ticker:hover .ymc-marquee,
 .ymc-marquee:hover {
   animation-play-state: paused;

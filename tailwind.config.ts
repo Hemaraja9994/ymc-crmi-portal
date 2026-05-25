@@ -46,6 +46,17 @@ const config: Config = {
       gridTemplateColumns: {
         13: "repeat(13, minmax(0, 1fr))",
       },
+      animation: {
+        "ticker-fade": "tickerFade var(--ticker-cycle, 16s) cubic-bezier(0.4, 0, 0.2, 1) infinite",
+      },
+      keyframes: {
+        tickerFade: {
+          "0%, 20%":   { opacity: "1", transform: "translateY(0)" },
+          "23%":       { opacity: "0", transform: "translateY(-10px)" },
+          "24%, 97%":  { opacity: "0", transform: "translateY(10px)" },
+          "100%":      { opacity: "1", transform: "translateY(0)" },
+        },
+      },
     },
   },
   plugins: [],
