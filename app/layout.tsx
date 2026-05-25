@@ -1,7 +1,6 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Stethoscope } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "YMC CRMI Portal - MBBS 2021 CBME Batch",
@@ -31,9 +30,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <header className="sticky top-0 z-30 border-b border-white/70 bg-slate-50/85 backdrop-blur-xl">
           <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
             <Link href="/" className="flex items-center gap-2.5">
-              <div className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-blue-700 to-indigo-900 text-white shadow-lg shadow-blue-950/10">
-                <Stethoscope size={18} />
-              </div>
+              <img
+                src="/images/ymch-logo.png"
+                alt="Yenepoya Medical College Logo"
+                className="h-10 w-auto rounded-lg bg-white object-contain shadow-sm ring-1 ring-slate-200 md:h-11"
+              />
               <div className="leading-tight">
                 <div className="text-sm font-bold tracking-tight md:text-base">YMC CRMI Portal</div>
                 <div className="text-[11px] text-slate-500">MBBS 2021 CBME - w.e.f. 01.06.2026</div>
