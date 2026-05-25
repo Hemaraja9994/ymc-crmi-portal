@@ -1,7 +1,13 @@
 "use client";
 
-import { Megaphone, Radio } from "lucide-react";
-import { ANNOUNCEMENTS, CATEGORY_STYLES } from "@/lib/announcements";
+import { ANNOUNCEMENTS } from "@/lib/announcements";
+
+const DARK_BADGE: Record<string, string> = {
+  Rule:     "bg-rose-500/10 text-rose-400 border-rose-500/20",
+  Alert:    "bg-amber-500/10 text-amber-400 border-amber-500/20",
+  Schedule: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+  Notice:   "bg-blue-500/10 text-blue-400 border-blue-500/20",
+};
 
 export default function LiveUpdatesBanner() {
   const items = [...ANNOUNCEMENTS].sort((a, b) =>
@@ -9,37 +15,30 @@ export default function LiveUpdatesBanner() {
   );
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-      <div className="flex items-center justify-between border-b-2 border-xcel-900/10 bg-gradient-to-r from-xcel-700 to-xcel-900 px-4 py-2.5">
-        <div className="flex min-w-0 items-center gap-2.5">
-          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-white/15 text-white">
-            <Megaphone size={14} />
-          </span>
-          <div className="min-w-0">
-            <h2 className="truncate text-sm font-bold text-white">Live Updates – Rules & Notices</h2>
-            <p className="text-[11px] text-teal-200">Hover over the ticker to pause.</p>
-          </div>
-        </div>
-        <span className="flex items-center gap-1.5 rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-white">
-          <Radio size={11} /> LIVE
-        </span>
+    <div className="relative flex h-12 items-center overflow-hidden rounded-xl border border-slate-800 bg-slate-900 shadow-inner">
+
+      {/* ── Left anchor chip ── */}
+      <div className="z-10 flex h-full shrink-0 items-center gap-1.5 bg-emerald-600 px-4 text-xs font-bold uppercase tracking-wider text-white shadow-[4px_0_16px_rgba(0,0,0,0.35)]">
+        <span>⚡</span> CRMI Live
       </div>
 
-      <div className="ymc-ticker overflow-hidden whitespace-nowrap border-t border-xcel-100 bg-gradient-to-r from-xcel-100/60 via-white to-amber-50 px-4 py-2.5 text-sm">
-        {/* Slower marquee keeps compliance notices readable; hover pauses it instantly. */}
-        <div className="ymc-marquee inline-flex gap-8 pr-8 will-change-transform hover:[animation-play-state:paused]">
-          {[...items, ...items].map((announcement, index) => (
-            <span key={index} className="inline-flex items-center gap-2">
-              <span className={`badge ring-1 ${CATEGORY_STYLES[announcement.category]}`}>
-                {announcement.category}
+      {/* ── Scrolling ticker ── */}
+      <div className="ymc-ticker min-w-0 overflow-hidden">
+        <div className="ymc-marquee inline-flex items-center gap-0 whitespace-nowrap text-sm hover:[animation-play-state:paused]">
+          {[...items, ...items].map((item, i) => (
+            <span key={i} className="inline-flex items-center">
+              <span className="mx-6 inline-flex items-center gap-2">
+                <span className={`inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-semibold ${DARK_BADGE[item.category]}`}>
+                  {item.category.toUpperCase()}
+                </span>
+                <strong className="text-white">{item.title}:</strong>
+                <span className="text-slate-300">{item.body}</span>
               </span>
-              <strong className="text-slate-950">{announcement.title}</strong>
-              <span className="text-slate-500">- {announcement.body}</span>
+              <span className="text-slate-600">│</span>
             </span>
           ))}
         </div>
       </div>
-
-    </section>
+    </div>
   );
 }
