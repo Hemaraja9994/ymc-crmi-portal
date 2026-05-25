@@ -1,12 +1,22 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Users, AlertCircle, CheckCircle2, Calendar } from "lucide-react";
+import {
+  Users,
+  AlertCircle,
+  CheckCircle2,
+  Calendar,
+  PlusCircle,
+  CalendarRange,
+  ExternalLink,
+} from "lucide-react";
 import {
   LeaveRecord,
+  LeaveType,
   LEAVE_TYPE_COLORS,
   loadLeaves,
   isOnLeave,
+  saveLeaves,
 } from "@/lib/leaves";
 
 export default function DeptDetail({
@@ -28,6 +38,35 @@ export default function DeptDetail({
   const onLeaveNow = roster.filter((s) => isOnLeave(s.student.regNo, leaves));
   const onDuty = roster.filter((s) => !isOnLeave(s.student.regNo, leaves));
   const maxH = Math.max(1, ...history);
+
+  // Quick "Mark on leave" form state
+  const [qaReg, setQaReg] = useState("");
+  const [qaType, setQaType] = useState<LeaveType>("Casual");
+  const [qaFrom, setQaFrom] = useState("");
+  const [qaTo, setQaTo] = useState("");
+  const [qaReason, setQaReason] = useState("");
+  const [qaOk, setQaOk] = useState("");
+
+  function quickAdd(e: React.FormEvent) {
+    e.preventDefault();
+    if (!qaReg || !qaFrom || !qaTo) return;
+    const rec: LeaveRecord = {
+      id: `qa_${Date.now()}`,
+      regNo: qaReg,
+      type: qaType,
+      from: qaFrom,
+      to: qaTo,
+      reason: qaReason || "Logged by coordinator",
+      status: "Approved",
+      submittedAt: new Date().toISOString().slice(0, 10),
+    };
+    const next = [...leaves, rec];
+    setLeaves(next);
+    saveLeaves(next);
+    setQaOk(`Recorded ${qaType} leave for ${qaReg}.`);
+    setQaReg(""); setQaFrom(""); setQaTo(""); setQaReason(""); setQaType("Casual");
+    setTimeout(() => setQaOk(""), 3000);
+  }
 
   return (
     <div className="space-y-5">
@@ -51,6 +90,86 @@ export default function DeptDetail({
           </div>
         </div>
       </header>
+
+      <section className="grid md:grid-cols-3 gap-3">
+        <Link
+          href={`/postings-overview/${dept.code}`}
+          className="card p-4 hover:shadow-md hover:border-xcel-400 transition flex items-center gap-3"
+        >
+          <CalendarRange className="text-xcel-600" />
+          <div className="min-w-0">
+            <div className="font-semibold text-sm">Year view (Dept × 52 weeks)</div>
+            <div className="text-xs text-slate-500">Public — students & HODs can view</div>
+          </div>
+          <ExternalLink size={14} className="ml-auto text-slate-400" />
+        </Link>
+        <Link
+          href={`/hod/${dept.code}`}
+          className="card p-4 hover:shadow-md hover:border-xcel-400 transition flex items-center gap-3"
+        >
+          <PlusCircle className="text-emerald-600" />
+          <div className="min-w-0">
+            <div className="font-semibold text-sm">HOD / Unit Head console</div>
+            <div className="text-xs text-slate-500">Log leaves at unit level</div>
+          </div>
+          <ExternalLink size={14} className="ml-auto text-slate-400" />
+        </Link>
+        <div className="card p-4 flex items-center gap-3">
+          <AlertCircle className="text-rose-500" />
+          <div className="min-w-0">
+            <div className="font-semibold text-sm">{onLeaveNow.length} on leave today</div>
+            <div className="text-xs text-slate-500">in {dept.short}</div>
+          </div>
+        </div>
+      </section>
+
+      {/* Quick add — coordinator can record leave inline */}
+      <section className="card p-5">
+        <h2 className="font-semibold flex items-center gap-2">
+          <PlusCircle size={18} className="text-xcel-600" /> Quick-add leave for {dept.short}
+        </h2>
+        <p className="text-xs text-slate-500 mt-1">
+          Record leave for any intern currently posted in {dept.short}. For department-only access without admin login, share <code>/hod/{dept.code}</code> with the unit head.
+        </p>
+        <form onSubmit={quickAdd} className="mt-4 grid sm:grid-cols-2 md:grid-cols-6 gap-2 text-sm">
+          <select
+            value={qaReg}
+            onChange={(e) => setQaReg(e.target.value)}
+            className="md:col-span-2 px-3 py-2 border border-slate-300 rounded-lg"
+            required
+          >
+            <option value="">Intern…</option>
+            {roster.map((a: any) => (
+              <option key={a.student.regNo} value={a.student.regNo}>
+                {a.student.regNo} — {a.student.name}
+              </option>
+            ))}
+          </select>
+          <select
+            value={qaType}
+            onChange={(e) => setQaType(e.target.value as LeaveType)}
+            className="px-3 py-2 border border-slate-300 rounded-lg"
+          >
+            {(["Casual", "Medical", "Emergency", "Bereavement", "Academic"] as LeaveType[]).map((t) => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
+          <input type="date" value={qaFrom} onChange={(e) => setQaFrom(e.target.value)} required className="px-3 py-2 border border-slate-300 rounded-lg" />
+          <input type="date" value={qaTo} onChange={(e) => setQaTo(e.target.value)} required className="px-3 py-2 border border-slate-300 rounded-lg" />
+          <button className="btn-primary justify-center">Record</button>
+          <input
+            value={qaReason}
+            onChange={(e) => setQaReason(e.target.value)}
+            placeholder="Reason / remarks (optional)"
+            className="md:col-span-6 px-3 py-2 border border-slate-300 rounded-lg"
+          />
+        </form>
+        {qaOk && (
+          <div className="mt-2 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
+            {qaOk}
+          </div>
+        )}
+      </section>
 
       <section className="card p-5">
         <div className="flex items-center justify-between">

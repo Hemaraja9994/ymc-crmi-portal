@@ -40,21 +40,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </div>
             </Link>
             <nav className="hidden md:flex items-center gap-1 text-sm">
+              <Link className="btn-primary mr-2" href="/admin">Coordinator Login</Link>
               <Link className="btn-ghost" href="/student">Student</Link>
+              <Link className="btn-ghost" href="/postings-overview">Postings (Dept · Year)</Link>
               <Link className="btn-ghost" href="/guidelines">Guidelines</Link>
-              <Link className="btn-ghost" href="/posting-guidelines">Postings</Link>
               <Link className="btn-ghost" href="/leave-attendance">Leave & Attendance</Link>
               <Link className="btn-ghost" href="/support">Support</Link>
-              <Link className="btn-primary ml-2" href="/admin">Coordinator Login</Link>
             </nav>
           </div>
           <div className="md:hidden border-t border-slate-200 px-2 py-2 flex overflow-x-auto gap-1 text-xs">
+            <Link className="btn-primary whitespace-nowrap" href="/admin">Coordinator</Link>
             <Link className="btn-ghost whitespace-nowrap" href="/student">Student</Link>
+            <Link className="btn-ghost whitespace-nowrap" href="/postings-overview">Postings</Link>
             <Link className="btn-ghost whitespace-nowrap" href="/guidelines">Guidelines</Link>
-            <Link className="btn-ghost whitespace-nowrap" href="/posting-guidelines">Postings</Link>
             <Link className="btn-ghost whitespace-nowrap" href="/leave-attendance">Leave</Link>
             <Link className="btn-ghost whitespace-nowrap" href="/support">Support</Link>
-            <Link className="btn-primary whitespace-nowrap" href="/admin">Coordinator</Link>
           </div>
         </header>
         <main className="max-w-7xl mx-auto px-4 py-6">{children}</main>

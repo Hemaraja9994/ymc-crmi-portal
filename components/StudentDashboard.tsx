@@ -231,6 +231,9 @@ export default function StudentDashboard({
               Completed postings carry the official seal · Current is highlighted · Upcoming postings unlock as you progress.
             </p>
           </div>
+          <Link href="/postings-overview" className="text-xs text-xcel-700 hover:underline inline-flex items-center gap-1">
+            See who else is in each dept →
+          </Link>
         </div>
 
         {/* Compact bar timeline */}

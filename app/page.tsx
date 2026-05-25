@@ -2,10 +2,14 @@ import Link from "next/link";
 import { GraduationCap, ShieldCheck, CalendarRange, FileCheck2, ArrowRight, Sparkles } from "lucide-react";
 import { STUDENTS } from "@/lib/students";
 import { BLOCKS } from "@/lib/rotation";
+import LiveUpdatesBanner from "@/components/LiveUpdatesBanner";
 
 export default function Landing() {
   return (
-    <div className="space-y-10">
+    <div className="space-y-8">
+      {/* Live updates pinned at top */}
+      <LiveUpdatesBanner />
+
       {/* Hero split */}
       <section className="grid lg:grid-cols-2 gap-6 items-stretch">
         {/* Brand panel */}
@@ -23,11 +27,11 @@ export default function Landing() {
               MBBS 2021 batch — in one premium portal.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
-              <Link href="/student" className="btn bg-white text-xcel-700 hover:bg-xcel-50 shadow-sm">
-                <GraduationCap size={16} /> Student Login
-              </Link>
-              <Link href="/admin" className="btn border border-white/30 text-white hover:bg-white/10">
+              <Link href="/admin" className="btn bg-white text-xcel-700 hover:bg-xcel-50 shadow-sm">
                 <ShieldCheck size={16} /> Coordinator Login <ArrowRight size={14} />
+              </Link>
+              <Link href="/student" className="btn border border-white/30 text-white hover:bg-white/10">
+                <GraduationCap size={16} /> Student Login
               </Link>
             </div>
             <div className="mt-8 grid grid-cols-3 gap-3 max-w-md">
