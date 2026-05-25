@@ -5,46 +5,83 @@
 :root {
   --bg: #f8fafc;
 }
-html, body {
+
+html,
+body {
   background: var(--bg);
   color: #0b1220;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
+/* Premium glass surface shared by dashboards, tables, and content panels. */
 .card {
-  @apply bg-white rounded-2xl shadow-card border border-slate-200/70;
+  @apply rounded-2xl border border-white/70 bg-white/85 shadow-xl shadow-slate-200/50 backdrop-blur-md;
 }
+
 .btn {
-  @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition focus:outline-none focus:ring-2 focus:ring-xcel-500/40;
+  @apply inline-flex items-center gap-2 rounded-xl px-4 py-2 font-semibold transition-all duration-300 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-teal-500/40;
 }
+
 .btn-primary {
-  @apply btn bg-xcel-600 text-white hover:bg-xcel-700 shadow-sm;
+  @apply btn bg-teal-600 text-white shadow-lg shadow-teal-900/10 hover:bg-teal-700;
 }
+
 .btn-ghost {
-  @apply btn text-slate-700 hover:bg-slate-100;
+  @apply btn text-slate-700 hover:bg-white hover:text-slate-950 hover:shadow-lg hover:shadow-slate-200/60;
 }
+
 .btn-outline {
-  @apply btn border border-slate-300 bg-white hover:bg-slate-50;
+  @apply btn border border-slate-200 bg-white/90 text-slate-800 hover:border-cyan-200 hover:bg-cyan-50 hover:text-cyan-800;
 }
+
 .badge {
-  @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium;
+  @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium;
 }
+
 .dept-chip {
   @apply inline-block rounded-md px-2 py-1 text-xs font-semibold;
 }
 
-/* Brand background panel — used on auth split-screens */
+/* Shared brand surface used by hero and auth split-screens. */
 .brand-panel {
   background:
-    radial-gradient(1200px 600px at 0% 0%, rgba(255,255,255,0.10), transparent 60%),
-    radial-gradient(800px 400px at 100% 100%, rgba(255,255,255,0.08), transparent 60%),
-    linear-gradient(135deg, #002f78 0%, #0046af 50%, #003a92 100%);
+    linear-gradient(125deg, rgba(6, 182, 212, 0.22) 0%, rgba(6, 182, 212, 0) 34%),
+    linear-gradient(135deg, #1d4ed8 0%, #1e40af 48%, #312e81 100%);
 }
 
 .geo-overlay {
   background-image:
-    radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px),
-    radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
-  background-size: 36px 36px, 18px 18px;
-  background-position: 0 0, 9px 9px;
+    radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 32px 32px, 64px 64px, 64px 64px;
+  background-position: 0 0, 0 0, 0 0;
+}
+
+/* Live notice ticker: slow enough to read, paused by hovering anywhere over the strip. */
+.ymc-marquee {
+  animation: ymcMarquee 50s linear infinite;
+}
+
+.ymc-ticker:hover .ymc-marquee,
+.ymc-marquee:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ymc-marquee {
+    animation: none;
+    transform: none;
+  }
+}
+
+@keyframes ymcMarquee {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
 }
