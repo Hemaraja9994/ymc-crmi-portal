@@ -2,15 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { DEMO_LOGIN } from "@/lib/students";
-import {
-  GraduationCap,
-  Search,
-  ShieldCheck,
-  Sparkles,
-  ArrowRight,
-  Smartphone,
-  Mail,
-} from "lucide-react";
+import { Search, Sparkles, Smartphone, Mail } from "lucide-react";
 import StudentMatrixPreview from "@/components/StudentMatrixPreview";
 
 type WeekCell = {
@@ -24,12 +16,10 @@ type WeekCell = {
 export default function StudentLogin() {
   const router = useRouter();
   const [q, setQ] = useState("");
-  const [otp, setOtp] = useState("");
   const [resolved, setResolved] = useState<{ regNo: string; name: string; blockId: number; subBatch: string } | null>(null);
   const [weeks, setWeeks] = useState<WeekCell[]>([]);
   const [currentWeek, setCurrentWeek] = useState(-1);
   const [preLaunch, setPreLaunch] = useState(true);
-  const [stage, setStage] = useState<"search" | "otp">("search");
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -64,12 +54,7 @@ export default function StudentLogin() {
     }
   }
 
-  function submitOtp(e: React.FormEvent) {
-    e.preventDefault();
-    if (otp.length !== 6) {
-      setErr("Enter the 6-digit OTP sent to your institutional email/phone.");
-      return;
-    }
+  function openDashboard() {
     router.push(`/student/${encodeURIComponent(resolved!.regNo)}`);
   }
 
@@ -129,7 +114,7 @@ export default function StudentLogin() {
       </section>
 
       {/* Matrix preview appears here as soon as a valid ID is entered */}
-      {resolved && weeks.length > 0 && stage === "search" && (
+      {resolved && weeks.length > 0 && (
         <StudentMatrixPreview
           studentName={resolved.name}
           regNo={resolved.regNo}
@@ -138,40 +123,10 @@ export default function StudentLogin() {
           weeks={weeks}
           currentWeek={currentWeek}
           preLaunch={preLaunch}
-          onContinue={() => setStage("otp")}
+          onContinue={openDashboard}
         />
       )}
 
-      {/* OTP step */}
-      {stage === "otp" && resolved && (
-        <section className="card p-6 md:p-8 max-w-md mx-auto">
-          <div className="flex items-center gap-2 text-xcel-700">
-            <GraduationCap />
-            <h2 className="font-semibold text-lg">Sign in to continue</h2>
-          </div>
-          <p className="text-sm text-slate-500 mt-1">
-            Continuing as <strong>{resolved.name}</strong> ({resolved.regNo}).
-          </p>
-          <form onSubmit={submitOtp} className="mt-5 space-y-3 text-sm">
-            <div className="text-sm text-slate-600 flex items-center gap-2">
-              <ShieldCheck size={16} className="text-emerald-600" />
-              OTP sent to your registered email / phone (demo: any 6 digits).
-            </div>
-            <input
-              autoFocus
-              value={otp}
-              onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
-              placeholder="••••••"
-              className="w-full text-center tracking-[0.5em] py-3 border border-slate-300 rounded-lg text-lg"
-            />
-            {err && <div className="text-sm text-rose-600">{err}</div>}
-            <button className="btn-primary w-full justify-center py-2.5">Verify & open dashboard</button>
-            <button type="button" onClick={() => setStage("search")} className="w-full text-xs text-slate-500 hover:underline">
-              ← Search again
-            </button>
-          </form>
-        </section>
-      )}
     </div>
   );
 }
