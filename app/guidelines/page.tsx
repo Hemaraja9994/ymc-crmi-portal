@@ -72,31 +72,35 @@ export default function GuidelinesPage() {
       {/* Blocks */}
       <section className="grid md:grid-cols-2 gap-5">
         {BLOCKS.map((b) => (
-          <div key={b.id} className="card p-6 hover:shadow-lg transition">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-xs uppercase tracking-wider text-xcel-700">{b.title}</div>
-                <h2 className="text-xl font-bold mt-1">
-                  {b.depts.reduce((s, d) => s + d.weeks, 0)} weeks · {b.depts.length} departments
-                </h2>
-              </div>
-              <div className="w-12 h-12 rounded-2xl bg-xcel-50 text-xcel-700 grid place-items-center font-bold text-lg">
-                {b.id}
+          <div key={b.id} className="card overflow-hidden hover:shadow-xl transition-shadow duration-300">
+            {/* Block header */}
+            <div className="brand-panel relative px-6 py-4 text-white overflow-hidden">
+              <div className="geo-overlay absolute inset-0 opacity-40" />
+              <div className="relative flex items-center justify-between">
+                <div>
+                  <div className="text-[10px] font-semibold uppercase tracking-widest text-teal-200">Block {b.id}</div>
+                  <h2 className="mt-0.5 text-lg font-extrabold tracking-tight">{b.title}</h2>
+                  <div className="mt-1 text-xs text-teal-100/80">
+                    {b.depts.reduce((s, d) => s + d.weeks, 0)} weeks · {b.depts.length} departments
+                  </div>
+                </div>
+                <div className="w-14 h-14 rounded-2xl bg-white/10 border border-white/20 grid place-items-center font-extrabold text-2xl text-white backdrop-blur-sm">
+                  {b.id}
+                </div>
               </div>
             </div>
-            <ul className="mt-4 divide-y divide-slate-100">
+            {/* Department list */}
+            <ul className="divide-y divide-slate-100 px-2">
               {b.depts.map((d) => (
-                <li key={d.code} className="py-2.5 flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-slate-50 text-slate-600 grid place-items-center shrink-0">
-                    {DEPT_ICONS[d.code] || <Stethoscope size={18} />}
+                <li key={d.code} className="py-2.5 px-2 flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-xl bg-teal-50 text-teal-700 grid place-items-center shrink-0">
+                    {DEPT_ICONS[d.code] || <Stethoscope size={16} />}
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className={`dept-chip ${d.color}`}>{d.short}</span>
-                      <span className="font-medium truncate">{d.name}</span>
-                    </div>
+                  <div className="min-w-0 flex-1 flex items-center gap-2 flex-wrap">
+                    <span className={`dept-chip ${d.color}`}>{d.short}</span>
+                    <span className="font-medium text-sm truncate">{d.name}</span>
                   </div>
-                  <div className="text-sm font-mono text-slate-500 shrink-0">{d.weeks}w</div>
+                  <div className="text-xs font-mono font-semibold text-slate-400 shrink-0 bg-slate-50 px-2 py-0.5 rounded-full">{d.weeks}w</div>
                 </li>
               ))}
             </ul>

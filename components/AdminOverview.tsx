@@ -92,43 +92,45 @@ export default function AdminOverview({
   );
 
   return (
-    <div className="space-y-6">
-      <section className="brand-panel relative overflow-hidden rounded-[2rem] p-6 text-white shadow-2xl shadow-teal-950/10 md:p-8">
-        <div className="geo-overlay absolute inset-0 opacity-70" />
-        <div className="relative grid gap-6 xl:grid-cols-[1.25fr_0.75fr]">
+    <div className="space-y-5">
+      {/* ── Hero banner ─────────────────────────────────────── */}
+      <section className="brand-panel relative overflow-hidden rounded-2xl px-7 py-6 text-white shadow-xl shadow-teal-950/10">
+        <div className="geo-overlay absolute inset-0 opacity-60" />
+        <div className="relative flex flex-wrap items-center justify-between gap-4">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-teal-100 backdrop-blur">
-              <Sparkles size={14} /> Coordinator Console
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-teal-100">
+              <Sparkles size={12} /> Coordinator Console
             </div>
-            <h1 className="mt-4 text-3xl font-extrabold tracking-tight md:text-4xl">
+            <h1 className="mt-3 text-2xl font-extrabold tracking-tight md:text-3xl">
               CRMI Operations Dashboard
             </h1>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-teal-50/90 md:text-base">
-              MBBS 2021 CBME live overview for postings, leave approvals, attendance alerts,
-              report exports and principal-ready documentation.
+            <p className="mt-1 text-sm leading-5 text-teal-50/80 max-w-2xl">
+              MBBS 2021 CBME · postings, leave approvals, attendance alerts and principal-ready reports.
             </p>
-
-            <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-              <GlassKPI icon={<Users size={16} />} label="Total Interns" value={assignments.length} sub="Active roster" />
-              <GlassKPI icon={<Building2 size={16} />} label="Depts Live" value={activeDeptCount} sub={activeLeader ? `${activeLeader[0]} (${activeLeader[1]})` : "Pre-launch"} />
-              <GlassKPI icon={<ClipboardCheck size={16} />} label="Pending Leaves" value={pending} sub={`${approved} approved`} accent="amber" />
-              <GlassKPI icon={<Activity size={16} />} label="On Leave Today" value={todayLeaveCount} sub="Across all postings" accent="rose" />
-              <GlassKPI icon={<ShieldAlert size={16} />} label={`Below ${ATTENDANCE_THRESHOLD}%`} value={deficientCount} sub="Attendance alerts" accent="rose" />
-            </div>
           </div>
-
-          <div className="rounded-3xl border border-white/15 bg-white/10 p-4 backdrop-blur-md">
-            <div className="text-xs font-semibold uppercase tracking-widest text-teal-100">This week</div>
-            <div className="mt-2 text-2xl font-extrabold">W{currentWeek.idx + 1}</div>
-            <p className="mt-1 text-sm text-teal-50/80">{currentWeek.label}</p>
-            <div className="mt-4 grid gap-2">
-              <QuickAction href="/admin/reports" icon={<FileText size={16} />} label="PDF reports" />
-              <QuickAction href="/admin/leaves" icon={<ClipboardCheck size={16} />} label="Review leave inbox" />
-              <QuickAction href="/admin/roster" icon={<Users size={16} />} label="Open full roster" />
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="rounded-2xl border border-white/15 bg-white/10 px-4 py-2 text-center backdrop-blur-md">
+              <div className="text-[11px] font-semibold uppercase tracking-widest text-teal-100">Week</div>
+              <div className="text-xl font-extrabold">W{currentWeek.idx + 1}</div>
+              <div className="text-[11px] text-teal-50/70">{currentWeek.label}</div>
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <QuickAction href="/admin/reports" icon={<FileText size={14} />} label="PDF reports" />
+              <QuickAction href="/admin/leaves" icon={<ClipboardCheck size={14} />} label="Leave inbox" />
+              <QuickAction href="/admin/roster" icon={<Users size={14} />} label="Full roster" />
             </div>
           </div>
         </div>
       </section>
+
+      {/* ── KPI row ──────────────────────────────────────────── */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
+        <StatCard icon={<Users size={18} className="text-teal-600" />} label="Total Interns" value={assignments.length} sub="Active roster" />
+        <StatCard icon={<Building2 size={18} className="text-teal-600" />} label="Depts Live" value={activeDeptCount} sub={activeLeader ? `${activeLeader[0]} (${activeLeader[1]})` : "Pre-launch"} />
+        <StatCard icon={<ClipboardCheck size={18} className="text-amber-500" />} label="Pending Leaves" value={pending} sub={`${approved} approved`} accent="amber" />
+        <StatCard icon={<Activity size={18} className="text-rose-500" />} label="On Leave Today" value={todayLeaveCount} sub="Across all postings" accent="rose" />
+        <StatCard icon={<ShieldAlert size={18} className="text-rose-500" />} label={`Below ${ATTENDANCE_THRESHOLD}%`} value={deficientCount} sub="Attendance alerts" accent="rose" />
+      </div>
 
       {preLaunch && (
         <section className="card overflow-hidden border-amber-100 bg-gradient-to-r from-amber-50 via-white to-teal-50 p-5">
@@ -256,7 +258,7 @@ export default function AdminOverview({
   );
 }
 
-function GlassKPI({
+function StatCard({
   icon,
   label,
   value,
@@ -269,18 +271,35 @@ function GlassKPI({
   sub?: string;
   accent?: "amber" | "rose";
 }) {
-  const tone =
-    accent === "amber"
-      ? "border-amber-200/25 bg-amber-300/10"
-      : accent === "rose"
-        ? "border-rose-200/25 bg-rose-300/10"
-        : "border-white/15 bg-white/10";
+  const border =
+    accent === "amber" ? "border-amber-100" :
+    accent === "rose"  ? "border-rose-100"  : "border-slate-200";
+  const bg =
+    accent === "amber" ? "bg-amber-50/60" :
+    accent === "rose"  ? "bg-rose-50/60"  : "bg-white";
 
   return (
-    <div className={`rounded-2xl border p-3 backdrop-blur-md ${tone}`}>
-      <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-teal-100">
+    <div className={`card p-4 flex flex-col gap-2 ${border} ${bg}`}>
+      <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
         {icon} {label}
       </div>
+      <div className="text-3xl font-extrabold leading-none text-slate-950">{value}</div>
+      {sub && <div className="truncate text-[11px] text-slate-400">{sub}</div>}
+    </div>
+  );
+}
+
+function GlassKPI({
+  icon, label, value, sub, accent,
+}: {
+  icon: ReactNode; label: string; value: number | string; sub?: string; accent?: "amber" | "rose";
+}) {
+  const tone =
+    accent === "amber" ? "border-amber-200/25 bg-amber-300/10" :
+    accent === "rose"  ? "border-rose-200/25 bg-rose-300/10"  : "border-white/15 bg-white/10";
+  return (
+    <div className={`rounded-2xl border p-3 backdrop-blur-md ${tone}`}>
+      <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-teal-100">{icon} {label}</div>
       <div className="mt-2 text-2xl font-extrabold leading-none">{value}</div>
       {sub && <div className="mt-1 truncate text-[11px] text-teal-50/70">{sub}</div>}
     </div>
