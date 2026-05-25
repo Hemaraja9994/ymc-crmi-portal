@@ -35,11 +35,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3 group">
-              <img
-                src="/images/ymch-logo.png"
-                alt="Yenepoya Medical College Logo"
-                className="h-10 w-auto rounded-lg bg-white object-contain shadow-sm ring-1 ring-slate-200 transition-shadow group-hover:shadow-md md:h-11"
-              />
+              <div className="relative h-11 w-11 shrink-0 md:h-12 md:w-12">
+                <img
+                  src="/images/ymch-logo.png"
+                  alt="Yenepoya Medical College Logo"
+                  className="h-full w-full object-contain drop-shadow-sm transition-transform duration-200 group-hover:scale-105"
+                />
+              </div>
               <div className="leading-tight">
                 <div className="text-sm font-bold tracking-tight text-slate-900 md:text-base">YMC CRMI Portal</div>
                 <div className="text-[11px] text-slate-400 font-medium">MBBS 2021 CBME · w.e.f. 01.06.2026</div>

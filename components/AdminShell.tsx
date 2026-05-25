@@ -108,7 +108,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
         </button>
       </div>
 
-      <section className="flex-1 px-4 md:px-0 pb-28 print:px-0 print:pb-0">{children}</section>
+      <section className="flex-1 min-w-0 overflow-hidden px-4 md:px-0 pb-28 print:px-0 print:pb-0">{children}</section>
 
       {/* Floating action bar */}
       <FloatingBar />

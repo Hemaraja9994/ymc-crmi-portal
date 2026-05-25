@@ -124,7 +124,7 @@ export default function AdminOverview({
       </section>
 
       {/* ── KPI row ──────────────────────────────────────────── */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(170px, 1fr))", gap: "12px" }}>
         <StatCard icon={<Users size={18} className="text-teal-600" />} label="Total Interns" value={assignments.length} sub="Active roster" />
         <StatCard icon={<Building2 size={18} className="text-teal-600" />} label="Depts Live" value={activeDeptCount} sub={activeLeader ? `${activeLeader[0]} (${activeLeader[1]})` : "Pre-launch"} />
         <StatCard icon={<ClipboardCheck size={18} className="text-amber-500" />} label="Pending Leaves" value={pending} sub={`${approved} approved`} accent="amber" />
