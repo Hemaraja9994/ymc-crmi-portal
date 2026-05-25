@@ -12,6 +12,7 @@ import {
   Search,
   Bell,
   Settings,
+  FileText,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { SESSION_KEY } from "@/lib/auth";
@@ -42,13 +43,14 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
     { href: "/admin/departments", icon: ClipboardList, label: "Departments" },
     { href: "/admin/roster", icon: Users, label: "Roster" },
     { href: "/admin/leaves", icon: CalendarRange, label: "Leaves" },
+    { href: "/admin/reports", icon: FileText, label: "Reports" },
     { href: "/admin/announcements", icon: Megaphone, label: "Announcements" },
   ];
 
   return (
     <div className="-mx-4 md:flex md:gap-4">
       {/* Sidebar (desktop) */}
-      <aside className="hidden md:block w-56 shrink-0 sticky top-20 self-start">
+      <aside className="no-print hidden md:block w-56 shrink-0 sticky top-20 self-start">
         <div className="card p-2">
           {nav.map((n) => {
             const active = path === n.href || (n.href !== "/admin" && path?.startsWith(n.href));
@@ -59,8 +61,8 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
                 href={n.href}
                 className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition ${
                   active
-                    ? "bg-brand-600 text-white shadow-sm"
-                    : "text-slate-700 hover:bg-slate-100"
+                    ? "bg-gradient-to-r from-blue-700 to-indigo-900 text-white shadow-lg shadow-blue-950/10"
+                    : "text-slate-700 hover:bg-cyan-50 hover:text-cyan-800"
                 }`}
               >
                 <Icon size={16} /> {n.label}
@@ -80,7 +82,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
       </aside>
 
       {/* Mobile top tabs */}
-      <div className="md:hidden px-4 pb-2 overflow-x-auto flex gap-1 text-xs">
+      <div className="no-print md:hidden px-4 pb-2 overflow-x-auto flex gap-1 text-xs">
         {nav.map((n) => {
           const active = path === n.href;
           const Icon = n.icon;
@@ -90,7 +92,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
               href={n.href}
               className={`flex items-center gap-1 whitespace-nowrap px-3 py-1.5 rounded-full border ${
                 active
-                  ? "bg-brand-600 text-white border-brand-600"
+                  ? "bg-teal-600 text-white border-teal-600"
                   : "bg-white border-slate-200"
               }`}
             >
@@ -106,7 +108,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
         </button>
       </div>
 
-      <section className="flex-1 px-4 md:px-0 pb-28">{children}</section>
+      <section className="flex-1 px-4 md:px-0 pb-28 print:px-0 print:pb-0">{children}</section>
 
       {/* Floating action bar */}
       <FloatingBar />
@@ -129,7 +131,7 @@ function FloatingBar() {
       className="fixed left-1/2 -translate-x-1/2 z-40 w-[min(720px,calc(100%-1rem))]"
       style={{ bottom: "calc(1rem + env(safe-area-inset-bottom, 0px))" }}
     >
-      <div className="rounded-2xl bg-slate-900/95 backdrop-blur text-white shadow-2xl ring-1 ring-white/10 flex items-center gap-2 px-3 py-2">
+      <div className="no-print rounded-2xl bg-slate-900/95 backdrop-blur text-white shadow-2xl ring-1 ring-white/10 flex items-center gap-2 px-3 py-2">
         <form onSubmit={go} className="flex items-center gap-2 flex-1">
           <Search size={16} className="text-slate-300" />
           <input
@@ -138,7 +140,7 @@ function FloatingBar() {
             placeholder="Jump to roll no (e.g. 21M001) or name…"
             className="bg-transparent flex-1 outline-none placeholder:text-slate-400 text-sm"
           />
-          <button className="text-xs bg-brand-500 hover:bg-brand-600 px-3 py-1 rounded-md">Go</button>
+          <button className="text-xs bg-teal-500 hover:bg-teal-600 px-3 py-1 rounded-md">Go</button>
         </form>
         <span className="hidden sm:inline w-px h-5 bg-white/15" />
         <Link href="/admin/announcements" className="p-2 rounded-lg hover:bg-white/10 relative" title="Announcements">

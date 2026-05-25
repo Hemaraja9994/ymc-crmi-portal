@@ -28,8 +28,8 @@ export const BLOCKS: Block[] = [
     title: "Block I",
     depts: [
       { code: "GMED", name: "General Medicine", short: "Gen.Med", weeks: 6, color: "bg-red-100 text-red-800", casualLeaveDays: 2 },
-      { code: "ENT", name: "Otorhinolaryngology (ENT)", short: "ENT", weeks: 2, color: "bg-amber-100 text-amber-800", casualLeaveDays: 2 },
-      { code: "OPH", name: "Ophthalmology", short: "Ophth", weeks: 2, color: "bg-emerald-100 text-emerald-800", casualLeaveDays: 0 },
+      { code: "ENT", name: "Otorhinolaryngology (ENT)", short: "ENT", weeks: 2, color: "bg-amber-100 text-amber-800", casualLeaveDays: 1 },
+      { code: "OPH", name: "Ophthalmology", short: "Ophth", weeks: 2, color: "bg-emerald-100 text-emerald-800", casualLeaveDays: 1 },
       { code: "PSY", name: "Psychiatry", short: "Psych", weeks: 2, color: "bg-violet-100 text-violet-800", casualLeaveDays: 0 },
       { code: "GER", name: "Geriatric Medicine", short: "Geriat", weeks: 1, color: "bg-slate-100 text-slate-800", casualLeaveDays: "Nil" },
     ],
