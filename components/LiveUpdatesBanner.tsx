@@ -10,7 +10,7 @@ export default function LiveUpdatesBanner() {
 
   return (
     <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-      <div className="flex items-center justify-between border-b-2 border-teal-600/10 bg-gradient-to-r from-teal-700 to-teal-800 px-4 py-2.5">
+      <div className="flex items-center justify-between border-b-2 border-xcel-900/10 bg-gradient-to-r from-xcel-700 to-xcel-900 px-4 py-2.5">
         <div className="flex min-w-0 items-center gap-2.5">
           <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-white/15 text-white">
             <Megaphone size={14} />
@@ -25,7 +25,7 @@ export default function LiveUpdatesBanner() {
         </span>
       </div>
 
-      <div className="ymc-ticker overflow-hidden whitespace-nowrap border-t border-teal-100 bg-gradient-to-r from-teal-50 via-white to-amber-50 px-4 py-2.5 text-sm">
+      <div className="ymc-ticker overflow-hidden whitespace-nowrap border-t border-xcel-100 bg-gradient-to-r from-xcel-100/60 via-white to-amber-50 px-4 py-2.5 text-sm">
         {/* Slower marquee keeps compliance notices readable; hover pauses it instantly. */}
         <div className="ymc-marquee inline-flex gap-8 pr-8 will-change-transform hover:[animation-play-state:paused]">
           {[...items, ...items].map((announcement, index) => (

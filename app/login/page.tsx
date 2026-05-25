@@ -14,8 +14,8 @@ const T = {
   ink3: "#7a8794",
   border: "#e6dfd0",
   borderStrong: "#d7cdb8",
-  primary: "#0d3b3a",
-  primaryDeep: "#062825",
+  primary: "#008B75",
+  primaryDeep: "#062E25",
   coral: "#d96a4a",
 };
 
@@ -76,12 +76,12 @@ function LoginInner() {
   }
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: "calc(100vh - 72px)" }}>
+    <div className="grid min-h-[calc(100vh-72px)] grid-cols-1 sm:grid-cols-2">
 
-      {/* ─── Left: brand panel ──────────────────────────────── */}
-      <div style={{
-        background: T.primary, color: "white",
-        padding: "60px 56px", display: "flex", flexDirection: "column",
+      {/* ─── Left: brand panel (hidden on mobile) ───────────── */}
+      <div className="hidden sm:flex brand-panel" style={{
+        color: "white",
+        padding: "60px 56px", flexDirection: "column",
         justifyContent: "center", position: "relative", overflow: "hidden",
       }}>
         <div style={{ position: "absolute", top: -80, right: -80, width: 260, height: 260, borderRadius: 130, background: T.coral, opacity: 0.2, filter: "blur(50px)" }} />
@@ -104,8 +104,8 @@ function LoginInner() {
       </div>
 
       {/* ─── Right: form panel ──────────────────────────────── */}
-      <div style={{ background: T.bg, display: "flex", alignItems: "center", justifyContent: "center", padding: 32 }}>
-        <div style={{ width: 380 }}>
+      <div style={{ background: T.bg, display: "flex", alignItems: "center", justifyContent: "center", padding: "32px 24px" }}>
+        <div style={{ width: "100%", maxWidth: 380 }}>
           <div style={{ fontSize: 28, fontWeight: 800, letterSpacing: "-0.02em", color: T.ink }}>
             Sign in
           </div>
@@ -186,13 +186,9 @@ function LoginInner() {
             <button
               type="submit"
               disabled={loading}
-              style={{
-                width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                padding: "13px 0", borderRadius: 999, border: "none",
-                background: loading ? T.ink2 : T.primary, color: "white",
-                fontSize: 14, fontWeight: 600, cursor: loading ? "not-allowed" : "pointer",
-                fontFamily: "inherit", transition: "background 0.15s", marginTop: 4,
-              }}
+              className={`mt-1 w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-full border-none font-semibold text-sm text-white transition-colors duration-150 ${
+                loading ? "bg-slate-400 cursor-not-allowed" : "bg-xcel-600 hover:bg-xcel-500 cursor-pointer"
+              }`}
             >
               {loading ? "Please wait…" : role === "student" ? "View my dashboard" : "Sign in"}
               {!loading && <ArrowRight size={14} />}

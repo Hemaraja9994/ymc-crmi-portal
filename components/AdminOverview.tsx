@@ -94,7 +94,7 @@ export default function AdminOverview({
   return (
     <div className="space-y-5">
       {/* ── Hero banner ─────────────────────────────────────── */}
-      <section className="brand-panel relative overflow-hidden rounded-2xl px-7 py-6 text-white shadow-xl shadow-teal-950/10">
+      <section className="brand-panel relative overflow-hidden rounded-2xl px-7 py-6 text-white shadow-xl shadow-xcel-900/10">
         <div className="geo-overlay absolute inset-0 opacity-60" />
         <div className="relative flex flex-wrap items-center justify-between gap-4">
           <div>
@@ -125,8 +125,8 @@ export default function AdminOverview({
 
       {/* ── KPI row ──────────────────────────────────────────── */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(170px, 1fr))", gap: "12px" }}>
-        <StatCard icon={<Users size={18} className="text-teal-600" />} label="Total Interns" value={assignments.length} sub="Active roster" />
-        <StatCard icon={<Building2 size={18} className="text-teal-600" />} label="Depts Live" value={activeDeptCount} sub={activeLeader ? `${activeLeader[0]} (${activeLeader[1]})` : "Pre-launch"} />
+        <StatCard icon={<Users size={18} className="text-xcel-700" />} label="Total Interns" value={assignments.length} sub="Active roster" />
+        <StatCard icon={<Building2 size={18} className="text-xcel-700" />} label="Depts Live" value={activeDeptCount} sub={activeLeader ? `${activeLeader[0]} (${activeLeader[1]})` : "Pre-launch"} />
         <StatCard icon={<ClipboardCheck size={18} className="text-amber-500" />} label="Pending Leaves" value={pending} sub={`${approved} approved`} accent="amber" />
         <StatCard icon={<Activity size={18} className="text-rose-500" />} label="On Leave Today" value={todayLeaveCount} sub="Across all postings" accent="rose" />
         <StatCard icon={<ShieldAlert size={18} className="text-rose-500" />} label={`Below ${ATTENDANCE_THRESHOLD}%`} value={deficientCount} sub="Attendance alerts" accent="rose" />
@@ -163,7 +163,7 @@ export default function AdminOverview({
       <section className="card overflow-hidden">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-5 py-4">
           <div className="flex items-center gap-3">
-            <div className="grid h-9 w-9 place-items-center rounded-xl bg-teal-50 text-teal-700">
+            <div className="grid h-9 w-9 place-items-center rounded-xl bg-xcel-100 text-xcel-800">
               <Building2 size={17} />
             </div>
             <div>
@@ -182,7 +182,7 @@ export default function AdminOverview({
               <Link
                 key={dept.code}
                 href={`/admin/departments/${dept.code}`}
-                className="group flex flex-col rounded-xl border border-slate-200 bg-white p-3 transition-all hover:-translate-y-0.5 hover:border-teal-300 hover:shadow-lg hover:shadow-teal-900/8"
+                className="group flex flex-col rounded-xl border border-slate-200 bg-white p-3 transition-all hover:-translate-y-0.5 hover:border-xcel-300 hover:shadow-lg hover:shadow-xcel-900/8"
               >
                 <div className="flex items-center justify-between gap-1 mb-2">
                   <span className={`dept-chip text-[10px] ${dept.color}`}>{dept.short}</span>
@@ -191,7 +191,7 @@ export default function AdminOverview({
                 <div className="text-2xl font-extrabold leading-none text-slate-900">{count}</div>
                 <div className="mt-0.5 text-[10px] text-slate-400 truncate">{dept.name}</div>
                 <div className="mt-2 h-1 overflow-hidden rounded-full bg-slate-100">
-                  <div className="h-full rounded-full bg-teal-500 transition-all" style={{ width: `${width}%` }} />
+                  <div className="h-full rounded-full bg-xcel-600 transition-all" style={{ width: `${width}%` }} />
                 </div>
                 <div className="mt-2 flex items-center justify-between">
                   <span className="text-[9px] text-slate-400">{dept.weeks}w</span>
@@ -211,7 +211,7 @@ export default function AdminOverview({
       <section>
         <div className="flex items-center justify-between mb-3">
           <h2 className="font-extrabold text-slate-900">Rotation Blocks</h2>
-          <Link href="/admin/blocks" className="text-xs text-teal-700 hover:underline inline-flex items-center gap-1">
+          <Link href="/admin/blocks" className="text-xs text-xcel-800 hover:underline inline-flex items-center gap-1">
             All blocks <ArrowUpRight size={12} />
           </Link>
         </div>
@@ -223,7 +223,7 @@ export default function AdminOverview({
               <Link
                 key={block.id}
                 href={`/admin/blocks/${block.id}`}
-                className="card group overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-teal-900/10"
+                className="card group overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-xcel-900/10"
               >
                 {/* Block header */}
                 <div className="brand-panel relative overflow-hidden px-5 py-4 text-white">
@@ -255,7 +255,7 @@ export default function AdminOverview({
                       <span key={dept.code} className={`dept-chip text-[10px] ${dept.color}`}>{dept.short}</span>
                     ))}
                   </div>
-                  <div className="mt-3 flex items-center justify-end text-xs text-teal-700 group-hover:gap-1.5 gap-1 transition-all">
+                  <div className="mt-3 flex items-center justify-end text-xs text-xcel-800 group-hover:gap-1.5 gap-1 transition-all">
                     Open block <ArrowUpRight size={12} />
                   </div>
                 </div>
@@ -342,7 +342,7 @@ function Announcements() {
           <h2 className="font-semibold">Live Updates - Rules & Notices</h2>
           <span className="badge bg-rose-50 text-rose-600 ring-1 ring-rose-100">LIVE</span>
         </div>
-        <Link href="/admin/announcements" className="text-sm font-medium text-teal-700 hover:underline">
+        <Link href="/admin/announcements" className="text-sm font-medium text-xcel-800 hover:underline">
           View all
         </Link>
       </div>
@@ -383,7 +383,7 @@ function DeficiencyAlerts({ assignments, leaves }: { assignments: any[]; leaves:
         {rows.map(({ assignment, attendance }: any) => (
           <li key={assignment.student.regNo} className="flex items-center justify-between gap-3 px-4 py-3 text-sm">
             <div className="min-w-0">
-              <Link href={`/admin/student/${assignment.student.regNo}`} className="font-medium hover:text-teal-700">
+              <Link href={`/admin/student/${assignment.student.regNo}`} className="font-medium hover:text-xcel-800">
                 {assignment.student.name}
               </Link>
               <div className="font-mono text-xs text-slate-500">
@@ -403,10 +403,10 @@ function RecentLeaves({ assignments, leaves }: { assignments: any[]; leaves: Lea
     <section className="card overflow-hidden">
       <div className="flex items-center justify-between border-b border-slate-200/70 p-4">
         <div className="flex items-center gap-2">
-          <CalendarDays className="text-teal-600" size={18} />
+          <CalendarDays className="text-xcel-700" size={18} />
           <h2 className="font-semibold">Recent Leave Activity</h2>
         </div>
-        <Link href="/admin/leaves" className="text-sm font-medium text-teal-700 hover:underline">Manage</Link>
+        <Link href="/admin/leaves" className="text-sm font-medium text-xcel-800 hover:underline">Manage</Link>
       </div>
       <div className="divide-y divide-slate-100">
         {leaves.slice(0, 5).map((leave) => {

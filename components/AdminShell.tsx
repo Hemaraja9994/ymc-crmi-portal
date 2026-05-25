@@ -61,8 +61,8 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
                 href={n.href}
                 className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition ${
                   active
-                    ? "bg-gradient-to-r from-teal-700 to-teal-900 text-white shadow-lg shadow-teal-950/10"
-                    : "text-slate-700 hover:bg-teal-50 hover:text-teal-800"
+                    ? "bg-gradient-to-r from-xcel-700 to-xcel-900 text-white shadow-lg shadow-xcel-900/15"
+                    : "text-slate-700 hover:bg-xcel-100 hover:text-xcel-800"
                 }`}
               >
                 <Icon size={16} /> {n.label}
@@ -92,7 +92,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
               href={n.href}
               className={`flex items-center gap-1 whitespace-nowrap px-3 py-1.5 rounded-full border ${
                 active
-                  ? "bg-teal-600 text-white border-teal-600"
+                  ? "bg-xcel-600 text-white border-xcel-600"
                   : "bg-white border-slate-200"
               }`}
             >
@@ -140,7 +140,7 @@ function FloatingBar() {
             placeholder="Jump to roll no (e.g. 21M001) or name…"
             className="bg-transparent flex-1 outline-none placeholder:text-slate-400 text-sm"
           />
-          <button className="text-xs bg-teal-500 hover:bg-teal-600 px-3 py-1 rounded-md">Go</button>
+          <button className="text-xs bg-xcel-600 hover:bg-xcel-500 px-3 py-1 rounded-md">Go</button>
         </form>
         <span className="hidden sm:inline w-px h-5 bg-white/15" />
         <Link href="/admin/announcements" className="p-2 rounded-lg hover:bg-white/10 relative" title="Announcements">

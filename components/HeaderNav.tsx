@@ -16,7 +16,7 @@ export default function HeaderNav() {
   return (
     <>
       {/* Desktop nav */}
-      <nav className="hidden items-center gap-1 text-sm md:flex">
+      <nav className="hidden items-center gap-1 text-sm lg:flex">
         <Link
           className="btn-primary mr-3"
           href="/admin"
@@ -32,7 +32,7 @@ export default function HeaderNav() {
               href={n.href}
               className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-150 ${
                 active
-                  ? "bg-teal-700 text-white shadow-sm shadow-teal-900/20"
+                  ? "bg-xcel-700 text-white shadow-sm shadow-xcel-900/20"
                   : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
               }`}
             >
@@ -42,8 +42,8 @@ export default function HeaderNav() {
         })}
       </nav>
 
-      {/* Mobile scrollable tabs */}
-      <div className="flex gap-1 overflow-x-auto border-t border-slate-100 px-3 py-2 text-xs md:hidden">
+      {/* Mobile/tablet scrollable tabs */}
+      <div className="flex gap-1 overflow-x-auto border-t border-slate-100 px-3 py-2 text-xs lg:hidden">
         <Link className="btn-primary whitespace-nowrap" href="/admin">Coordinator</Link>
         {NAV.map((n) => {
           const active = path === n.href || path?.startsWith(n.href + "/");
@@ -53,7 +53,7 @@ export default function HeaderNav() {
               href={n.href}
               className={`whitespace-nowrap rounded-full px-3 py-1.5 font-medium transition-all ${
                 active
-                  ? "bg-teal-700 text-white"
+                  ? "bg-xcel-700 text-white"
                   : "bg-white border border-slate-200 text-slate-600"
               }`}
             >

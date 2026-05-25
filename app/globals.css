@@ -16,15 +16,15 @@ body {
 
 /* Premium glass surface shared by dashboards, tables, and content panels. */
 .card {
-  @apply rounded-2xl border border-white/70 bg-white/85 shadow-xl shadow-slate-200/50 backdrop-blur-md;
+  @apply rounded-2xl border border-[#E6F4F1]/70 bg-white/85 shadow-xl shadow-slate-200/50 backdrop-blur-md;
 }
 
 .btn {
-  @apply inline-flex items-center gap-2 rounded-xl px-4 py-2 font-semibold transition-all duration-300 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-teal-500/40;
+  @apply inline-flex items-center gap-2 rounded-xl px-4 py-2 font-semibold transition-all duration-200 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-xcel-600/40;
 }
 
 .btn-primary {
-  @apply btn bg-teal-600 text-white shadow-lg shadow-teal-900/10 hover:bg-teal-700;
+  @apply btn bg-xcel-600 text-white shadow-lg shadow-xcel-900/15 hover:bg-xcel-500;
 }
 
 .btn-ghost {
@@ -32,7 +32,7 @@ body {
 }
 
 .btn-outline {
-  @apply btn border border-slate-200 bg-white/90 text-slate-800 hover:border-teal-200 hover:bg-teal-50 hover:text-teal-800;
+  @apply btn border border-slate-200 bg-white/90 text-slate-800 hover:border-xcel-200 hover:bg-xcel-100 hover:text-xcel-800;
 }
 
 .badge {
@@ -46,8 +46,8 @@ body {
 /* Shared brand surface used by hero and auth split-screens. */
 .brand-panel {
   background:
-    linear-gradient(125deg, rgba(217, 106, 74, 0.18) 0%, rgba(217, 106, 74, 0) 34%),
-    linear-gradient(135deg, #0d3b3a 0%, #062825 55%, #041f1e 100%);
+    linear-gradient(125deg, rgba(217, 106, 74, 0.15) 0%, rgba(217, 106, 74, 0) 36%),
+    linear-gradient(135deg, #0B5345 0%, #062E25 52%, #041c17 100%);
 }
 
 .geo-overlay {

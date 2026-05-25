@@ -65,14 +65,14 @@ export default function LeavePage() {
             Each individual posting requires ≥ 80% attendance. Shortfall means repeat of that posting.
           </p>
         </div>
-        <div className="card p-5 border-teal-100">
+        <div className="card p-5 border-xcel-200">
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-9 h-9 rounded-xl bg-teal-50 text-teal-700 grid place-items-center">
+            <div className="w-9 h-9 rounded-xl bg-xcel-100 text-xcel-800 grid place-items-center">
               <BookOpen size={18} />
             </div>
-            <div className="text-xs font-semibold uppercase tracking-wide text-teal-700">Logbook Submission</div>
+            <div className="text-xs font-semibold uppercase tracking-wide text-xcel-800">Logbook Submission</div>
           </div>
-          <div className="text-4xl font-extrabold text-teal-700">100%</div>
+          <div className="text-4xl font-extrabold text-xcel-800">100%</div>
           <p className="mt-2 text-xs text-slate-500 leading-relaxed">
             All weekly logbook entries must be submitted and countersigned before moving to the next posting.
           </p>
@@ -88,7 +88,7 @@ export default function LeavePage() {
               As per YMC CRMI circular (Ref: YMC/1269/2025) · Total ≈ {totalLeave} days across the year
             </p>
           </div>
-          <div className="hidden sm:flex items-center gap-1.5 rounded-full bg-teal-50 border border-teal-100 px-3 py-1 text-xs font-semibold text-teal-700">
+          <div className="hidden sm:flex items-center gap-1.5 rounded-full bg-xcel-100 border border-xcel-200 px-3 py-1 text-xs font-semibold text-xcel-800">
             <FileText size={12} /> {allDepts.length} Departments
           </div>
         </div>
@@ -110,7 +110,7 @@ export default function LeavePage() {
                     <span className="font-medium text-slate-800">{d.name}</span>
                   </td>
                   <td className="px-4 py-3">
-                    <span className="rounded-full bg-teal-50 border border-teal-100 px-2 py-0.5 text-xs font-semibold text-teal-700">
+                    <span className="rounded-full bg-xcel-100 border border-xcel-200 px-2 py-0.5 text-xs font-semibold text-xcel-800">
                       Block {d.block}
                     </span>
                   </td>
@@ -119,7 +119,7 @@ export default function LeavePage() {
                     {d.casualLeaveDays === "Nil" ? (
                       <span className="badge bg-slate-100 text-slate-500 ring-1 ring-slate-200">Nil</span>
                     ) : (
-                      <span className="badge bg-teal-50 text-teal-700 ring-1 ring-teal-100">
+                      <span className="badge bg-xcel-100 text-xcel-800 ring-1 ring-xcel-200">
                         {d.casualLeaveDays} day{d.casualLeaveDays === 1 ? "" : "s"}
                       </span>
                     )}

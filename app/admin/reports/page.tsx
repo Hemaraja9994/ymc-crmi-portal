@@ -104,7 +104,7 @@ export default function ReportsPage() {
             <h2 className="text-xl font-extrabold text-slate-950">Department-wise Allotment</h2>
             <p className="text-sm text-slate-500">Current schedule snapshot for W{weekIdx + 1}: {week.label}.</p>
           </div>
-          <span className="badge bg-teal-50 text-teal-700 ring-1 ring-teal-100">Week report</span>
+          <span className="badge bg-xcel-100 text-xcel-800 ring-1 ring-xcel-200">Week report</span>
         </div>
 
         <div className="mt-5 grid gap-4 lg:grid-cols-2">

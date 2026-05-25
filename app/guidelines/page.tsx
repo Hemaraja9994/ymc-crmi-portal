@@ -93,7 +93,7 @@ export default function GuidelinesPage() {
             <ul className="divide-y divide-slate-100 px-2">
               {b.depts.map((d) => (
                 <li key={d.code} className="py-2.5 px-2 flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-xl bg-teal-50 text-teal-700 grid place-items-center shrink-0">
+                  <div className="w-8 h-8 rounded-xl bg-xcel-100 text-xcel-800 grid place-items-center shrink-0">
                     {DEPT_ICONS[d.code] || <Stethoscope size={16} />}
                   </div>
                   <div className="min-w-0 flex-1 flex items-center gap-2 flex-wrap">

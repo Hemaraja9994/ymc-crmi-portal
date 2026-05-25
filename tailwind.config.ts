@@ -15,16 +15,16 @@ const config: Config = {
           900: "#0c2a4d",
         },
         xcel: {
-          50:  "#f0faf9",
-          100: "#d6ecea",
-          200: "#a8d4d0",
-          300: "#72b5af",
-          400: "#3e918a",
-          500: "#0d6e68",
-          600: "#0d5c55",
-          700: "#0d3b3a",
-          800: "#082e2d",
-          900: "#062825",
+          50:  "#F5FAF9",   // near-white mint tint
+          100: "#E6F4F1",   // brand-primary-100 · soft mint – badge bg, hover bg
+          200: "#C0DDD8",   // light border tint
+          300: "#8ABFB8",
+          400: "#4A9A8E",
+          500: "#007361",   // interactive-hover
+          600: "#008B75",   // interactive-default · primary buttons
+          700: "#0B5345",   // brand-primary-700 · active nav, strong accents
+          800: "#0A3C36",   // interactive-text · dark labels on light bg
+          900: "#062E25",   // brand-primary-900 · hero / panel deepest anchor
         },
         ink: {
           50: "#f8fafc",

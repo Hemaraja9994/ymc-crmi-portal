@@ -108,10 +108,10 @@ const departmentVisuals: Record<
     bar: "bg-stone-500",
   },
   COM: {
-    row: "border-teal-100 bg-teal-50/80",
-    badge: "border-teal-200 bg-white text-teal-700",
-    tracker: "bg-teal-600 text-white",
-    bar: "bg-teal-500",
+    row: "border-xcel-200 bg-xcel-100/80",
+    badge: "border-xcel-200 bg-white text-xcel-800",
+    tracker: "bg-xcel-600 text-white",
+    bar: "bg-xcel-600",
   },
   RES: {
     row: "border-sky-100 bg-sky-50/80",
@@ -184,7 +184,7 @@ export default function Landing() {
                 <div className="mt-7 flex flex-wrap gap-3">
                   <Link
                     href="/admin"
-                    className="btn bg-teal-500 text-white shadow-lg shadow-teal-950/20 hover:bg-teal-400"
+                    className="btn bg-xcel-600 text-white shadow-lg shadow-xcel-900/20 hover:bg-xcel-500"
                   >
                     <ShieldCheck size={17} /> Coordinator Login <ArrowRight size={15} />
                   </Link>
@@ -207,8 +207,8 @@ export default function Landing() {
 
           <div className="relative flex min-w-0 flex-col justify-center bg-white/85 p-7 md:p-10">
             <div className="absolute inset-y-10 left-0 hidden w-px bg-gradient-to-b from-transparent via-cyan-200 to-transparent lg:block" />
-            <span className="badge self-start border border-teal-100 bg-teal-50 text-teal-700">
-              <span className="h-1.5 w-1.5 rounded-full bg-teal-500 animate-pulse" /> Effective 01 June 2026
+            <span className="badge self-start border border-xcel-200 bg-xcel-100 text-xcel-800">
+              <span className="h-1.5 w-1.5 rounded-full bg-xcel-600 animate-pulse" /> Effective 01 June 2026
             </span>
             <h2 className="mt-4 max-w-xl text-3xl font-extrabold tracking-tight text-slate-950">
               One portal for the entire internship year

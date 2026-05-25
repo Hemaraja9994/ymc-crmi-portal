@@ -13,7 +13,7 @@ export const viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover" as const,
-  themeColor: "#0d3b3a",
+  themeColor: "#062E25",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -29,21 +29,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-screen bg-slate-50 font-sans antialiased">
         {/* ── Top accent line ── */}
-        <div className="h-0.5 w-full bg-gradient-to-r from-teal-700 via-teal-500 to-teal-700" />
+        <div className="h-0.5 w-full bg-gradient-to-r from-xcel-900 via-xcel-600 to-xcel-900" />
 
         <header className="no-print sticky top-0 z-30 bg-white/95 shadow-sm shadow-slate-200/60 backdrop-blur-xl">
-          <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
+          <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:py-4">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-3 group">
+            <Link href="/" className="flex shrink-0 items-center gap-2.5 group">
               <img
                 src="/images/ymch-logo.png"
                 alt="Yenepoya Medical College Logo"
-                className="h-14 w-auto object-contain md:h-16"
+                className="h-12 w-auto object-contain md:h-14 lg:h-16"
                 style={{ borderRadius: 0 }}
               />
               <div className="leading-tight">
-                <div className="text-base font-bold tracking-tight text-slate-900 md:text-lg">YMC CRMI Portal</div>
-                <div className="text-[12px] text-slate-400 font-medium">MBBS 2021 CBME · w.e.f. 01.06.2026</div>
+                <div className="text-sm font-bold tracking-tight text-slate-900 md:text-base lg:text-lg whitespace-nowrap">YMC CRMI Portal</div>
+                <div className="hidden text-[11px] text-slate-400 font-medium sm:block">MBBS 2021 CBME · w.e.f. 01.06.2026</div>
               </div>
             </Link>
 
