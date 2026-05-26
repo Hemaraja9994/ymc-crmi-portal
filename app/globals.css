@@ -111,9 +111,13 @@ body {
 }
 
 @media print {
+  /* Browser print dialogs let the user pick "None / Minimum / Default" margins,
+     which can override @page margin. To guarantee consistent margins regardless
+     of that setting, we use @page margin: 0 and apply margins as INTERNAL
+     content padding on .print-page (always honored, can't be overridden). */
   @page {
     size: A4 portrait;
-    margin: 20mm 22mm 20mm 22mm;
+    margin: 0;
   }
 
   header,
@@ -132,6 +136,12 @@ body {
   main {
     max-width: none !important;
     padding: 0 !important;
+  }
+
+  /* Internal margin enforced via padding — browser-proof. ~25mm each side. */
+  .print-page {
+    padding: 22mm 25mm 22mm 25mm !important;
+    box-sizing: border-box;
   }
 
   /* Cards in print: clean borders, no shadows, no rounding, no forced page-break-avoid
@@ -166,8 +176,9 @@ body {
     page-break-inside: avoid;
   }
 
-  /* Report sheet: fill the printable area (the @page margins above are the
-     visible PDF margins). Inner padding is removed so we don't get double margin. */
+  /* Report sheet (certificate/report pages): the sheet's OWN internal padding
+     becomes the PDF margin (since @page margin is now 0). Bump to match
+     .print-page margins so all institutional PDFs have consistent margins. */
   .ymc-report-sheet {
     width: auto !important;
     min-height: auto !important;
@@ -176,7 +187,7 @@ body {
     border-radius: 0 !important;
   }
   .ymc-report-sheet > div {
-    padding: 0 !important;
+    padding: 22mm 25mm !important;
     min-height: auto !important;
   }
 }
