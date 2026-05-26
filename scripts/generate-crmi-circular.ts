@@ -374,6 +374,151 @@ function buildInternDistribution(): (Paragraph | Table)[] {
   return out;
 }
 
+// ─── 6.5. 52-Week Posting Matrix (landscape — departments × weeks) ─────────
+// Returns the children for a LANDSCAPE section. Caller assembles it as a
+// separate section in the Document.
+function buildPostingMatrix(): (Paragraph | Table)[] {
+  const out: (Paragraph | Table)[] = [
+    H2("52-Week Posting Matrix"),
+    P("Columns: departments. Rows: weeks (with period). Each cell lists the sub-batches posted to that department in that week. Use this matrix to track intern movement across the academic year at a glance.", { italic: true }),
+    spacer(),
+  ];
+
+  const assignments = buildAssignments();
+  // Unique sub-batches and their rotation arrays
+  const subBatchRotation = new Map<string, Map<number, string>>(); // subBatch → (weekIdx → deptCode)
+  for (const a of assignments) {
+    if (!subBatchRotation.has(a.subBatch)) {
+      const m = new Map<number, string>();
+      for (const r of a.rotation) m.set(r.weekIdx, r.deptCode);
+      subBatchRotation.set(a.subBatch, m);
+    }
+  }
+  // Sort sub-batches: A1..A13, B1..B14, C1..C13, D1..D13
+  const subBatchSort = (s: string) => {
+    const letter = s.charCodeAt(0);
+    const num = parseInt(s.slice(1), 10);
+    return letter * 100 + num;
+  };
+
+  // All departments in canonical block order
+  const allDepts = BLOCKS.flatMap((b) => b.depts);
+
+  // For each week, for each dept, collect the sub-batches posted there
+  const matrix: Array<Map<string, string[]>> = []; // matrix[weekIdx] = Map<deptCode, subBatch[]>
+  for (let w = 0; w < 52; w++) {
+    const cellMap = new Map<string, string[]>();
+    for (const dept of allDepts) cellMap.set(dept.code, []);
+    for (const [subBatch, rotMap] of subBatchRotation) {
+      const dept = rotMap.get(w);
+      if (dept) cellMap.get(dept)?.push(subBatch);
+    }
+    // sort sub-batches alphabetically within each cell
+    for (const list of cellMap.values()) list.sort((a, b) => subBatchSort(a) - subBatchSort(b));
+    matrix.push(cellMap);
+  }
+
+  // Build the table — header rows (block band + dept short codes)
+  const colWidth = Math.floor(100 / (allDepts.length + 2)); // +2 for Week# and Period
+
+  // Row 1: block-band header (groups depts by their block)
+  const blockBandCells: TableCell[] = [];
+  blockBandCells.push(headerCell("", "FFFFFF", { color: INDIGO, span: 1 }));
+  blockBandCells.push(headerCell("", "FFFFFF", { color: INDIGO, span: 1 }));
+  for (const block of BLOCKS) {
+    const span = block.depts.length;
+    blockBandCells.push(
+      new TableCell({
+        columnSpan: span,
+        shading: { type: ShadingType.CLEAR, color: "auto", fill: INDIGO },
+        margins: { top: 60, bottom: 60, left: 60, right: 60 },
+        children: [new Paragraph({
+          alignment: AlignmentType.CENTER,
+          children: [new TextRun({ text: `Block ${["I", "II", "III", "IV"][block.id - 1]}`, bold: true, color: "FFFFFF", size: 14 })],
+        })],
+      })
+    );
+  }
+
+  // Row 2: column headers (Week#, Period, dept short codes)
+  const deptHeaderCells: TableCell[] = [
+    headerCell("Week", ORANGE, { width: 5 }),
+    headerCell("Period", ORANGE, { width: 14 }),
+    ...allDepts.map((d) => headerCell(d.short, SLATE_700, { width: colWidth })),
+  ];
+
+  const rows: TableRow[] = [
+    new TableRow({ tableHeader: true, children: blockBandCells }),
+    new TableRow({ tableHeader: true, children: deptHeaderCells }),
+  ];
+
+  // Data rows — one per week
+  for (let w = 0; w < 52; w++) {
+    const week = getWeekDates(w);
+    const period = `${format(week.start, "dd.MM")} – ${format(week.end, "dd.MM.yy")}`;
+    const bg = w % 2 === 0 ? "FFFFFF" : SLATE_100;
+
+    const cells: TableCell[] = [
+      // Week #
+      new TableCell({
+        shading: { type: ShadingType.CLEAR, color: "auto", fill: bg },
+        margins: { top: 40, bottom: 40, left: 40, right: 40 },
+        children: [new Paragraph({
+          alignment: AlignmentType.CENTER,
+          children: [new TextRun({ text: `W${w + 1}`, bold: true, size: 14, color: INDIGO })],
+        })],
+      }),
+      // Period
+      new TableCell({
+        shading: { type: ShadingType.CLEAR, color: "auto", fill: bg },
+        margins: { top: 40, bottom: 40, left: 40, right: 40 },
+        children: [new Paragraph({
+          children: [new TextRun({ text: period, size: 12, color: SLATE_700 })],
+        })],
+      }),
+      // Dept cells
+      ...allDepts.map((dept) => {
+        const subBatches = matrix[w].get(dept.code) || [];
+        const text = subBatches.length === 0 ? "—" : subBatches.join(", ");
+        return new TableCell({
+          shading: { type: ShadingType.CLEAR, color: "auto", fill: bg },
+          margins: { top: 40, bottom: 40, left: 40, right: 40 },
+          children: [new Paragraph({
+            alignment: AlignmentType.CENTER,
+            children: [new TextRun({
+              text,
+              size: 12,
+              color: subBatches.length === 0 ? "CBD5E1" : SLATE_700,
+            })],
+          })],
+        });
+      }),
+    ];
+
+    rows.push(new TableRow({ children: cells }));
+  }
+
+  out.push(new Table({ rows, width: { size: 100, type: WidthType.PERCENTAGE } }));
+  out.push(spacer());
+  out.push(P("Legend: A1–A13 sub-batches of Block I; B1–B14 of Block II (B14 = Insha Sanover); C1–C13 of Block III; D1–D13 of Block IV. Each block runs in parallel; the four-quarter rotation means every intern visits all 17 departments by year-end.", { italic: true, size: 18 }));
+
+  return out;
+}
+
+// Helper: header cell with custom background colour
+function headerCell(text: string, bg: string, opts: { width?: number; color?: string; span?: number } = {}): TableCell {
+  return new TableCell({
+    columnSpan: opts.span,
+    width: opts.width ? { size: opts.width, type: WidthType.PERCENTAGE } : undefined,
+    shading: { type: ShadingType.CLEAR, color: "auto", fill: bg },
+    margins: { top: 50, bottom: 50, left: 40, right: 40 },
+    children: [new Paragraph({
+      alignment: AlignmentType.CENTER,
+      children: [new TextRun({ text, bold: true, color: opts.color ?? "FFFFFF", size: 14 })],
+    })],
+  });
+}
+
 // ─── 7. Sign-off Block ─────────────────────────────────────────────────────
 function buildSignoff(): Paragraph[] {
   return [
@@ -420,23 +565,49 @@ async function main() {
         document: { run: { font: "Calibri", size: 22 } },
       },
     },
-    sections: [{
-      properties: {
-        page: {
-          margin: { top: 1100, right: 1000, bottom: 1100, left: 1000 }, // ~18mm/16mm
-          size: { orientation: PageOrientation.PORTRAIT },
+    sections: [
+      // Section 1 — main content (portrait)
+      {
+        properties: {
+          page: {
+            margin: { top: 1100, right: 1000, bottom: 1100, left: 1000 },
+            size: { orientation: PageOrientation.PORTRAIT },
+          },
         },
+        children: [
+          ...buildLetterhead(),
+          ...buildSalutation(),
+          ...buildInstructions(),
+          ...buildBlockScheduleTable(),
+          ...buildCalendarTable(),
+          ...buildInternDistribution(),
+        ],
       },
-      children: [
-        ...buildLetterhead(),
-        ...buildSalutation(),
-        ...buildInstructions(),
-        ...buildBlockScheduleTable(),
-        ...buildCalendarTable(),
-        ...buildInternDistribution(),
-        ...buildSignoff(),
-      ],
-    }],
+      // Section 2 — 52-week posting matrix (LANDSCAPE for 17 dept columns)
+      {
+        properties: {
+          page: {
+            margin: { top: 700, right: 700, bottom: 700, left: 700 },
+            size: { orientation: PageOrientation.LANDSCAPE },
+          },
+        },
+        children: [
+          ...buildPostingMatrix(),
+        ],
+      },
+      // Section 3 — sign-off (portrait again)
+      {
+        properties: {
+          page: {
+            margin: { top: 1100, right: 1000, bottom: 1100, left: 1000 },
+            size: { orientation: PageOrientation.PORTRAIT },
+          },
+        },
+        children: [
+          ...buildSignoff(),
+        ],
+      },
+    ],
   });
 
   const buffer = await Packer.toBuffer(doc);
