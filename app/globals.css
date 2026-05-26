@@ -35,6 +35,9 @@ body {
   @apply btn border border-slate-200 bg-white/90 text-slate-800 hover:border-xcel-200 hover:bg-xcel-100 hover:text-xcel-800;
 }
 
+/* Print-only blocks: completely hidden on screen */
+.print-only { display: none; }
+
 .badge {
   @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium;
 }
@@ -95,10 +98,7 @@ body {
 @media print {
   @page {
     size: A4 portrait;
-    margin: 18mm 14mm 22mm 14mm;
-  }
-  @page :first {
-    margin-top: 14mm;
+    margin: 16mm 12mm 16mm 12mm;
   }
 
   header,
@@ -110,7 +110,8 @@ body {
   html,
   body {
     background: #ffffff !important;
-    font-size: 11pt;
+    font-size: 10pt;
+    color: #0f172a;
   }
 
   main {
@@ -118,38 +119,35 @@ body {
     padding: 0 !important;
   }
 
+  /* Cards in print: clean borders, no shadows, no rounding, no forced page-break-avoid
+     (avoid pushed everything onto page 2 leaving page 1 blank). */
   .card,
   .print-card {
     border: 1px solid #cbd5e1 !important;
     box-shadow: none !important;
-    break-inside: avoid;
     border-radius: 0 !important;
+    break-inside: auto;
+    page-break-inside: auto;
   }
 
-  .print-page {
-    color: #0f172a;
-  }
-
-  /* Only show print letterhead when printing */
+  /* Print-only / screen-only visibility */
   .print-letterhead { display: block !important; }
+  .print-only       { display: block !important; }
   .screen-only      { display: none !important; }
 
   /* Force page breaks between major report sections */
-  .print-page-break { page-break-before: always; break-before: page; }
-
-  /* Running footer on every page */
-  .print-running-footer {
-    position: fixed;
-    bottom: 0;
-    left: 0; right: 0;
-    text-align: center;
-    font-size: 8pt;
-    color: #64748b;
-    border-top: 1px solid #e2e8f0;
-    padding-top: 4px;
+  .print-page-break {
+    page-break-before: always;
+    break-before: page;
   }
 
-  /* Tables should not break across rows */
-  tr { break-inside: avoid; }
+  /* Tables: repeat header on each page, don't split rows */
   thead { display: table-header-group; }
+  tr    { break-inside: avoid; page-break-inside: avoid; }
+
+  /* Keep block/dept/month cards together where they reasonably can */
+  .keep-together {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
 }

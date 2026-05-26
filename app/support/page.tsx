@@ -1,4 +1,4 @@
-import { ADMINS } from "@/lib/admins";
+import { ADMINS, COMMUNICATION_HUB } from "@/lib/admins";
 import {
   MessageCircle,
   Mail,
@@ -7,6 +7,8 @@ import {
   Sparkles,
   Clock,
   ShieldCheck,
+  AtSign,
+  ArrowRight,
 } from "lucide-react";
 
 export default function SupportPage() {
@@ -36,6 +38,22 @@ export default function SupportPage() {
           </div>
         </div>
       </header>
+
+      {/* ── Communication Hub — institutional mail router ─────────── */}
+      <section className="grid gap-4 md:grid-cols-2">
+        <CommHubCard
+          variant="principal"
+          label={COMMUNICATION_HUB.principal.label}
+          email={COMMUNICATION_HUB.principal.email}
+          purpose={COMMUNICATION_HUB.principal.purpose}
+        />
+        <CommHubCard
+          variant="general"
+          label={COMMUNICATION_HUB.general.label}
+          email={COMMUNICATION_HUB.general.email}
+          purpose={COMMUNICATION_HUB.general.purpose}
+        />
+      </section>
 
       {/* Coordinator cards */}
       <section className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -96,10 +114,14 @@ export default function SupportPage() {
 
               {/* Actions */}
               <div className="mt-4 grid grid-cols-3 gap-2 text-xs">
-                <a className="btn-outline justify-center" href="#" aria-label={`Email ${a.name}`}>
+                <a
+                  className="btn-outline justify-center"
+                  href={`mailto:${a.isPrincipal ? COMMUNICATION_HUB.principal.email : COMMUNICATION_HUB.general.email}?subject=${encodeURIComponent(`Attn: ${a.name}`)}`}
+                  aria-label={`Email ${a.name}`}
+                >
                   <Mail size={13} /> Email
                 </a>
-                <a className="btn-outline justify-center" href="#" aria-label={`Call ${a.name}`}>
+                <a className="btn-outline justify-center" href="tel:+918242204668" aria-label={`Call ${a.name}`}>
                   <Phone size={13} /> Call
                 </a>
                 <a className="btn-outline justify-center" href="#" aria-label={`Chat ${a.name}`}>
@@ -109,6 +131,39 @@ export default function SupportPage() {
             </div>
           );
         })}
+      </section>
+
+      {/* Coordination scope reference */}
+      <section className="card overflow-hidden">
+        <div className="border-b border-slate-100 bg-slate-50/60 px-5 py-3">
+          <h2 className="font-bold text-slate-900">CRMI Coordination Cell — Areas of Responsibility</h2>
+          <p className="text-xs text-slate-500">Direct your query to the right desk to get the fastest resolution.</p>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-white text-xs uppercase text-slate-500">
+              <tr>
+                <th className="px-4 py-2.5">Coordinator</th>
+                <th className="px-4 py-2.5">Role</th>
+                <th className="px-4 py-2.5">Area of Responsibility</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ADMINS.map((a) => (
+                <tr key={a.name} className="border-t border-slate-100 align-top">
+                  <td className="px-4 py-2.5 font-semibold text-slate-900 whitespace-nowrap">
+                    {a.name}
+                    {a.isPrincipal && (
+                      <span className="ml-1.5 align-middle inline-block rounded-full bg-amber-100 px-1.5 py-0.5 text-[9px] font-bold text-amber-800">PRINCIPAL</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-2.5 text-slate-700">{a.role}</td>
+                  <td className="px-4 py-2.5 text-slate-600 text-xs">{a.focus?.join(" · ")}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
 
       {/* Other resources */}
@@ -127,11 +182,53 @@ export default function SupportPage() {
             "IT Helpdesk — portal access issues",
           ].map((x) => (
             <li key={x} className="flex items-start gap-2">
-              <span className="mt-1 w-1.5 h-1.5 rounded-full bg-xcel-500 shrink-0" /> {x}
+              <span style={{ display: "inline-block", width: 6, height: 6, marginTop: 7, borderRadius: 999, background: "#008B75", flexShrink: 0 }} /> {x}
             </li>
           ))}
         </ul>
       </section>
     </div>
+  );
+}
+
+function CommHubCard({
+  variant, label, email, purpose,
+}: {
+  variant: "principal" | "general";
+  label: string;
+  email: string;
+  purpose: string;
+}) {
+  const isPrincipal = variant === "principal";
+  return (
+    <a
+      href={`mailto:${email}?subject=${encodeURIComponent(isPrincipal ? "Principal Administrative Query" : "Internship Postings / Portal Support")}`}
+      className={`card group relative overflow-hidden p-5 transition hover:-translate-y-0.5 hover:shadow-xl ${
+        isPrincipal ? "border-amber-200" : "border-xcel-200"
+      }`}
+    >
+      <div className="flex items-start gap-4">
+        <div
+          className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl text-white"
+          style={{
+            background: isPrincipal
+              ? "linear-gradient(135deg, #d97706 0%, #b45309 100%)"
+              : "linear-gradient(135deg, #008B75 0%, #0B5345 100%)",
+          }}
+        >
+          <AtSign size={20} />
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+            {isPrincipal ? "Administrative Desk" : "Postings & Portal Support"}
+          </div>
+          <div className="mt-0.5 font-bold text-slate-900">{label}</div>
+          <div className="mt-0.5 text-xs text-slate-500">{purpose}</div>
+          <div className="mt-2 inline-flex items-center gap-1 text-sm font-mono font-semibold text-xcel-700 group-hover:text-xcel-800">
+            {email} <ArrowRight size={13} className="transition group-hover:translate-x-0.5" />
+          </div>
+        </div>
+      </div>
+    </a>
   );
 }

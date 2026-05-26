@@ -56,3 +56,18 @@ export const ADMINS: Admin[] = [
 
 // In production replace with real auth (NextAuth + institutional SSO).
 export const ADMIN_PASSCODES = ADMINS.map((a) => a.name.toLowerCase().replace(/[^a-z]/g, ""));
+
+// ── Institutional communication endpoints ───────────────────────────────────
+// Routed via the portal's integrated mail router (mailto + tracking on send).
+export const COMMUNICATION_HUB = {
+  principal: {
+    label: "Principal Administrative Queries",
+    email: "principalymc@yenepoya.edu.in",
+    purpose: "Policy escalations, final sign-offs, certificate disputes.",
+  },
+  general: {
+    label: "General Intern Postings & Portal Support",
+    email: "hospital@yenepoya.org",
+    purpose: "Day-to-day postings questions, technical portal issues, login resets.",
+  },
+} as const;

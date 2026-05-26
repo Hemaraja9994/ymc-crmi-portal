@@ -112,8 +112,25 @@ export default function StudentProfile({
               <span className="text-xcel-100">Internship progress · {totalWeeksCompleted}/52 weeks</span>
               <span className="font-semibold">{progress}%</span>
             </div>
-            <div className="mt-1.5 h-2 rounded-full bg-white/10 overflow-hidden">
-              <div className="h-full bg-emerald-400 rounded-full transition-all" style={{ width: `${progress}%` }} />
+            <div
+              style={{
+                marginTop: 6,
+                height: 8,
+                borderRadius: 999,
+                background: "rgba(255,255,255,0.18)",
+                overflow: "hidden",
+                WebkitTransform: "translateZ(0)",
+              }}
+            >
+              <div
+                style={{
+                  height: "100%",
+                  width: `${progress}%`,
+                  background: "#34d399",
+                  borderRadius: 999,
+                  transition: "width 0.4s ease",
+                }}
+              />
             </div>
           </div>
         </div>

@@ -8,15 +8,16 @@ const INSTITUTION = {
   name:       "Yenepoya Medical College",
   address:    "Deralakatte, Mangalore – 575 018, Karnataka",
   phone:      "+91-824-2204668",
-  email:      "principal@yenepoya.edu.in",
+  email:      "principalymc@yenepoya.edu.in",
+  emailGeneral: "hospital@yenepoya.org",
   accredited: "NAAC A++ | KMC University",
 };
 
 const CRMI_COMMITTEE = [
-  { role: "Principal & Chairman",          name: "Prof. (Dr.) _______________" },
-  { role: "CRMI Coordinator",              name: "Prof. (Dr.) _______________" },
-  { role: "Member – Academic Affairs",     name: "Prof. (Dr.) _______________" },
-  { role: "Member – Student Welfare",      name: "Prof. (Dr.) _______________" },
+  { role: "Principal, YMC",            name: "Dr. Prakash Saldanha" },
+  { role: "Internship Coordinator",    name: "Dr. Jeevan" },
+  { role: "Internship Coordinator",    name: "Dr. Imaad" },
+  { role: "Internship Coordinator",    name: "Dr. Rashmi Jain" },
 ];
 
 const REF_NO = "YMC/CRMI/2025-26";
@@ -82,35 +83,34 @@ export default function ReportsPage() {
 
       {/* ── Official Letterhead (visible on print, hidden on screen) ── */}
       <div className="print-letterhead hidden">
-        <table style={{ width: "100%", borderBottom: "2.5px solid #0B5345", paddingBottom: "10px", marginBottom: "14px" }}>
-          <tbody>
-            <tr>
-              <td style={{ width: 80 }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/images/ymch-logo.png" alt="YMC Logo" style={{ height: 72, width: "auto" }} />
-              </td>
-              <td style={{ paddingLeft: 16 }}>
-                <div style={{ fontSize: "17pt", fontWeight: 800, color: "#062E25", lineHeight: 1.1 }}>
-                  Yenepoya Medical College
-                </div>
-                <div style={{ fontSize: "9pt", color: "#444", marginTop: 2 }}>{INSTITUTION.address}</div>
-                <div style={{ fontSize: "9pt", color: "#444" }}>
-                  {INSTITUTION.phone} &nbsp;·&nbsp; {INSTITUTION.email}
-                </div>
-                <div style={{ fontSize: "8pt", color: "#666", marginTop: 2 }}>{INSTITUTION.accredited}</div>
-              </td>
-              <td style={{ textAlign: "right", verticalAlign: "top", fontSize: "8.5pt", color: "#444" }}>
-                <div>Ref: <strong>{REF_NO}</strong></div>
-                <div>Date: {todayFormal}</div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <div style={{ textAlign: "center", marginBottom: 12 }}>
-          <div style={{ fontSize: "12pt", fontWeight: 700, color: "#0B5345", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 14, borderBottom: "2px solid #0B5345", paddingBottom: 8, marginBottom: 10 }}>
+          {/* Logo */}
+          <div style={{ flex: "0 0 auto" }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/images/ymch-logo.png" alt="YMC Logo" style={{ height: 56, width: "auto", display: "block" }} />
+          </div>
+          {/* Institution block */}
+          <div style={{ flex: "1 1 auto", minWidth: 0 }}>
+            <div style={{ fontSize: "15pt", fontWeight: 800, color: "#062E25", lineHeight: 1.05 }}>
+              Yenepoya Medical College
+            </div>
+            <div style={{ fontSize: "8.5pt", color: "#444", marginTop: 1 }}>{INSTITUTION.address}</div>
+            <div style={{ fontSize: "8.5pt", color: "#444" }}>
+              {INSTITUTION.phone} &nbsp;·&nbsp; {INSTITUTION.email} &nbsp;·&nbsp; {INSTITUTION.emailGeneral}
+            </div>
+            <div style={{ fontSize: "7.5pt", color: "#666", marginTop: 1 }}>{INSTITUTION.accredited}</div>
+          </div>
+          {/* Ref / date — stacked, compact */}
+          <div style={{ flex: "0 0 auto", textAlign: "right", fontSize: "8pt", color: "#444", lineHeight: 1.35 }}>
+            <div>Ref: <strong>{REF_NO}</strong></div>
+            <div>Date: {todayFormal}</div>
+          </div>
+        </div>
+        <div style={{ textAlign: "center", marginBottom: 8 }}>
+          <div style={{ fontSize: "11pt", fontWeight: 700, color: "#0B5345", letterSpacing: "0.04em", textTransform: "uppercase" }}>
             Compulsory Rotatory Medical Internship (CRMI)
           </div>
-          <div style={{ fontSize: "9pt", color: "#555" }}>
+          <div style={{ fontSize: "8.5pt", color: "#555" }}>
             MBBS 2021 CBME Batch · 01 June 2026 – 31 May 2027 · NMC Regulation 2021
           </div>
         </div>
@@ -191,36 +191,36 @@ export default function ReportsPage() {
         <CommitteeBlock title="Department-wise Posting Report" date={todayFormal} />
       </section>
 
-      {/* ── 3. Month-wise Summary ─────────────────────────── */}
+      {/* ── 3. Month-wise Summary (compact overview) ───────── */}
       <section className="card print-card print-page-break overflow-hidden">
         <SectionHeader
-          title="Month-wise Posting Summary"
-          subtitle="Compact monthly index for e-mails, letters and file notes to the Dean and Principal."
+          title="Month-wise Overview"
+          subtitle="Compact 12-month index for the Dean/Principal cover note."
           badge="12 months"
           badgeColor="bg-indigo-50 text-indigo-700 ring-indigo-100"
-          printLabel="Print Month Summary"
+          printLabel="Print Overview"
         />
 
-        <div className="mt-5 overflow-x-auto rounded-2xl border border-slate-200 bg-white p-5">
+        <div className="overflow-x-auto p-5">
           <table className="w-full text-left text-sm">
             <thead className="bg-slate-50 text-xs uppercase text-slate-500">
               <tr>
                 <th className="px-3 py-2">Month</th>
                 <th className="px-3 py-2">Weeks</th>
                 <th className="px-3 py-2">Date Range</th>
-                <th className="px-3 py-2">Department Allocations (top 6)</th>
+                <th className="px-3 py-2">Top Department Allocations</th>
               </tr>
             </thead>
             <tbody>
-              {monthReports.map((month) => (
-                <tr key={month.label} className="border-t border-slate-100 align-top">
-                  <td className="px-3 py-2 font-semibold text-slate-950">{month.label}</td>
-                  <td className="px-3 py-2 font-mono text-xs text-slate-500">{month.weeks}</td>
-                  <td className="px-3 py-2 text-slate-600">{month.range}</td>
+              {monthReports.map((m) => (
+                <tr key={m.label} className="keep-together border-t border-slate-100 align-top">
+                  <td className="px-3 py-2 font-semibold text-slate-950">{m.label}</td>
+                  <td className="px-3 py-2 font-mono text-xs text-slate-500">{m.weeks}</td>
+                  <td className="px-3 py-2 text-slate-600">{m.range}</td>
                   <td className="px-3 py-2">
                     <div className="flex flex-wrap gap-1">
-                      {month.topDepartments.map((d) => (
-                        <span key={`${month.label}-${d.code}`} className="badge bg-slate-100 text-slate-700">
+                      {m.topDepartments.map((d) => (
+                        <span key={`${m.label}-${d.code}`} className="badge bg-slate-100 text-slate-700">
                           {d.short}: {d.count}
                         </span>
                       ))}
@@ -232,8 +232,33 @@ export default function ReportsPage() {
           </table>
         </div>
 
-        <CommitteeBlock title="Month-wise Posting Summary" date={todayFormal} />
+        <CommitteeBlock title="Month-wise Overview" date={todayFormal} />
       </section>
+
+      {/* ── 4. Per-Month Detailed Report (1 month per printed page) ─── */}
+      <section className="card screen-only overflow-hidden">
+        <SectionHeader
+          title="Monthly Posting Reports — for Circulation"
+          subtitle="Each month renders on its own page in PDF — designed for monthly e-mail to the Principal/Dean and HOD copies."
+          badge="One per page"
+          badgeColor="bg-emerald-50 text-emerald-700 ring-emerald-100"
+          printLabel="Print Monthly Pack"
+        />
+        <div className="border-t border-slate-100 bg-slate-50/40 p-4 text-xs text-slate-500">
+          The detailed monthly cards below are <strong>hidden on screen for compactness</strong> but each appears on its own
+          printed page when you select <em>Print Monthly Pack</em> or the system-wide <em>Print Full Pack</em>.
+        </div>
+      </section>
+
+      {monthReports.map((m, idx) => (
+        <MonthDetailedPage
+          key={m.label}
+          month={m}
+          allDeptCounts={m.allDepartments}
+          isFirst={idx === 0}
+          institutionDate={todayFormal}
+        />
+      ))}
 
     </div>
   );
@@ -281,6 +306,74 @@ function CommitteeBlock({ title, date }: { title: string; date: string }) {
         Yenepoya Medical College, Deralakatte, Mangalore · For internal circulation only.
       </p>
     </div>
+  );
+}
+
+function MonthDetailedPage({
+  month, allDeptCounts, isFirst, institutionDate,
+}: {
+  month: ReturnType<typeof buildMonthReports>[number];
+  allDeptCounts: DeptCount[];
+  isFirst: boolean;
+  institutionDate: string;
+}) {
+  return (
+    <section className={`card print-card print-only overflow-hidden ${isFirst ? "" : "print-page-break"}`}>
+      {/* Month-specific letterhead repeated on print so each PDF page is self-contained */}
+      <div className="print-letterhead hidden border-b border-slate-200 px-5 pb-3 pt-4 text-center">
+        <div style={{ fontSize: "11pt", fontWeight: 800, color: "#0B5345", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+          Monthly Posting Report — {month.label}
+        </div>
+        <div style={{ fontSize: "9pt", color: "#555", marginTop: 2 }}>
+          {month.range} · Weeks {month.weeks}
+        </div>
+      </div>
+
+      {/* On-screen header (hidden on print, since the letterhead above replaces it) */}
+      <div className="no-print flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 p-5">
+        <div>
+          <h3 className="text-lg font-extrabold text-slate-950">{month.label}</h3>
+          <p className="text-xs text-slate-500">{month.range} · Weeks {month.weeks}</p>
+        </div>
+        <PrintReportButton label={`Print ${month.label}`} />
+      </div>
+
+      <div className="grid gap-4 p-5">
+        {/* Posting intensity per department */}
+        <div className="keep-together rounded-2xl border border-slate-200 bg-white p-4">
+          <div className="mb-3 text-sm font-bold text-slate-900">Department-wise Allocations — {month.label}</div>
+          <table className="w-full text-left text-xs">
+            <thead className="bg-slate-50 text-[10px] uppercase text-slate-500">
+              <tr>
+                <th className="px-3 py-2">Code</th>
+                <th className="px-3 py-2">Department</th>
+                <th className="px-3 py-2 text-right">Student-weeks</th>
+              </tr>
+            </thead>
+            <tbody>
+              {allDeptCounts.length === 0 ? (
+                <tr><td colSpan={3} className="px-3 py-4 text-center text-slate-500">No postings in this month.</td></tr>
+              ) : allDeptCounts.map((d) => (
+                <tr key={d.code} className="border-t border-slate-100">
+                  <td className="px-3 py-1.5 font-mono">{d.short}</td>
+                  <td className="px-3 py-1.5">{d.name}</td>
+                  <td className="px-3 py-1.5 text-right font-semibold">{d.count}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Month commentary slot — useful for circular notes */}
+        <div className="keep-together rounded-2xl border border-dashed border-slate-300 bg-slate-50/60 p-4 text-xs text-slate-600">
+          <strong className="text-slate-800">For Circulation:</strong> Please forward this monthly extract to respective
+          HODs for confirmation of intern attendance and logbook compliance for the postings listed above.
+          Any discrepancies must be reported within 7 working days to the CRMI Coordination Cell.
+        </div>
+      </div>
+
+      <CommitteeBlock title={`Monthly Report — ${month.label}`} date={institutionDate} />
+    </section>
   );
 }
 
@@ -347,11 +440,13 @@ function buildMonthReports(assignments: ReturnType<typeof buildAssignments>) {
     const first = getWeekDates(weekIdxs[0]);
     const last  = getWeekDates(weekIdxs[weekIdxs.length - 1]);
 
+    const sorted = Array.from(counts.values()).sort((a, b) => b.count - a.count);
     return {
       label: monthStart.toLocaleDateString("en-IN", { month: "long", year: "numeric" }),
       weeks: weekIdxs.map((i) => `W${i + 1}`).join(", "),
       range: `${fmt(first.start)} to ${fmt(last.end)}`,
-      topDepartments: Array.from(counts.values()).sort((a, b) => b.count - a.count).slice(0, 6),
+      topDepartments: sorted.slice(0, 6),
+      allDepartments: sorted,
     };
   });
 }

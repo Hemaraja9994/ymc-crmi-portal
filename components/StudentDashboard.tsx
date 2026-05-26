@@ -23,7 +23,8 @@ import { levelFromWeeks, badges } from "@/lib/gamification";
 import { stayDutyFor } from "@/lib/stay-duty";
 import { attendanceFor, ATTENDANCE_THRESHOLD, projectedDeficitForPlannedLeave } from "@/lib/attendance";
 import { loadLeaves, LeaveRecord, LeaveCategory } from "@/lib/leaves";
-import { Send, BedDouble, ShieldAlert } from "lucide-react";
+import { Send, BedDouble, ShieldAlert, Download, Pause, X } from "lucide-react";
+import { getStudentCertificateStatuses, type CertificateStatus, type PostingPeriod } from "@/lib/certificates";
 
 type WeekRow = {
   idx: number;
@@ -196,19 +197,40 @@ export default function StudentDashboard({
                 </span>
                 <span className="font-semibold">{overallPct}%</span>
               </div>
-              <div className="mt-2 h-2.5 rounded-full bg-white/15 overflow-hidden relative">
+              {/* Progress bar — refactored for older Android WebKit (Vivo V60 etc.):
+                  explicit pixel sizes, solid rgba, no Tailwind opacity utilities,
+                  flex-based tick layout instead of absolute-positioned 1px spans. */}
+              <div
+                style={{
+                  position: "relative",
+                  marginTop: 8,
+                  height: 10,
+                  borderRadius: 999,
+                  background: "rgba(255,255,255,0.18)",
+                  overflow: "hidden",
+                  WebkitTransform: "translateZ(0)",
+                }}
+              >
                 <div
-                  className="h-full bg-gradient-to-r from-emerald-300 via-emerald-400 to-emerald-500 transition-all"
-                  style={{ width: `${overallPct}%` }}
+                  style={{
+                    height: "100%",
+                    width: `${overallPct}%`,
+                    background: "#34d399",
+                    borderRadius: 999,
+                    transition: "width 0.4s ease",
+                  }}
                 />
-                {/* checkpoint markers */}
-                {[25, 50, 75, 100].map((p) => (
-                  <span
-                    key={p}
-                    className="absolute top-1/2 -translate-y-1/2 w-px h-3 bg-white/40"
-                    style={{ left: `${p}%` }}
-                  />
-                ))}
+                {/* Checkpoint ticks — 3px wide, drawn ABOVE the bar via SVG overlay
+                    so they render reliably on older WebKit. */}
+                <svg
+                  style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }}
+                  preserveAspectRatio="none"
+                  viewBox="0 0 100 10"
+                >
+                  {[25, 50, 75].map((p) => (
+                    <rect key={p} x={p - 0.3} y="1" width="0.6" height="8" fill="rgba(255,255,255,0.55)" />
+                  ))}
+                </svg>
               </div>
               <div className="mt-1.5 flex justify-between text-[10px] text-xcel-100/70 font-mono">
                 <span>Start</span><span>25%</span><span>50%</span><span>75%</span><span>Cert</span>
@@ -263,6 +285,11 @@ export default function StudentDashboard({
       {/* Attendance status — visible only after launch */}
       {!preLaunch && (
         <AttendanceCard attendance={attendance} />
+      )}
+
+      {/* Posting completion certificates — visible once any posting has started */}
+      {!preLaunch && (
+        <CertificatesCard assignment={assignment} />
       )}
 
       {/* Posting roadmap with stamps */}
@@ -1049,3 +1076,161 @@ function CertificatePreview({
     </section>
   );
 }
+
+// ── Posting Completion Certificates ──────────────────────────────────────────
+function CertificatesCard({ assignment }: { assignment: { student: { regNo: string; name: string }; blockId: number; subBatch: string; rotation: WeekRow["cell"][] } }) {
+  const [rows, setRows] = useState<Array<{ posting: PostingPeriod; status: CertificateStatus }>>([]);
+  const [dismissed, setDismissed] = useState<string[]>([]);
+
+  useEffect(() => {
+    setRows(getStudentCertificateStatuses(assignment as any));
+    try {
+      const raw = window.localStorage.getItem("ymc_cert_dismissed_v1");
+      setDismissed(raw ? JSON.parse(raw) : []);
+    } catch { /* ignore */ }
+  }, [assignment]);
+
+  function dismiss(key: string) {
+    const next = [...dismissed, key];
+    setDismissed(next);
+    try { window.localStorage.setItem("ymc_cert_dismissed_v1", JSON.stringify(next)); } catch {}
+  }
+
+  // "Newly available" = released but not yet dismissed (acts as notification)
+  const newlyReleased = rows.filter(
+    (r) => r.status.kind === "released" && !dismissed.includes(r.posting.key)
+  );
+
+  if (rows.length === 0) return null;
+
+  return (
+    <section className="card overflow-hidden">
+      {/* Notification banner for newly available certificates */}
+      {newlyReleased.length > 0 && (
+        <div className="border-b border-emerald-200 bg-gradient-to-r from-emerald-50 via-white to-emerald-50 px-5 py-3">
+          {newlyReleased.slice(0, 1).map((r) => (
+            <div key={r.posting.key} className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2 text-sm text-emerald-900">
+                <CheckCircle2 size={16} className="text-emerald-600" />
+                <span>
+                  Your completion certificate for <strong>{r.posting.deptName}</strong> is now available.
+                  {newlyReleased.length > 1 && <span className="ml-1 text-emerald-700">(+{newlyReleased.length - 1} more)</span>}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Link
+                  href={`/certificate/${encodeURIComponent(r.posting.regNo)}/${encodeURIComponent(r.posting.key)}`}
+                  className="btn-primary text-xs px-3 py-1.5"
+                >
+                  <Download size={12} /> Download PDF
+                </Link>
+                <button
+                  onClick={() => dismiss(r.posting.key)}
+                  className="rounded-md p-1 text-emerald-700 hover:bg-emerald-100"
+                  aria-label="Dismiss"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="p-5 md:p-6">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <div className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Completion Certificates</div>
+            <h2 className="font-bold text-slate-900">Department-wise Posting Certificates</h2>
+            <p className="mt-0.5 text-xs text-slate-500">
+              A PDF certificate is auto-released after each posting ends (allowing approved leave days).
+            </p>
+          </div>
+          <span className="badge bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200">
+            {rows.filter((r) => r.status.kind === "released").length} / {rows.length} ready
+          </span>
+        </div>
+
+        <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          {rows.map((r) => (
+            <CertificateTile key={r.posting.key} row={r} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CertificateTile({ row }: { row: { posting: PostingPeriod; status: CertificateStatus } }) {
+  const { posting, status } = row;
+  const released = status.kind === "released";
+
+  let stateColor = "border-slate-200 bg-white";
+  let badgeNode: React.ReactNode = null;
+  if (status.kind === "released") {
+    stateColor = "border-emerald-200 bg-emerald-50/40";
+    badgeNode = (
+      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800">
+        <CheckCircle2 size={10} /> Released{status.auto ? " (auto)" : ""}
+      </span>
+    );
+  } else if (status.kind === "ongoing") {
+    stateColor = "border-sky-200 bg-sky-50/40";
+    badgeNode = (
+      <span className="inline-flex items-center gap-1 rounded-full bg-sky-100 px-2 py-0.5 text-[10px] font-bold text-sky-800">
+        In progress
+      </span>
+    );
+  } else if (status.kind === "on-hold") {
+    stateColor = "border-rose-200 bg-rose-50/40";
+    badgeNode = (
+      <span className="inline-flex items-center gap-1 rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-bold text-rose-800">
+        <Pause size={10} /> On hold
+      </span>
+    );
+  } else {
+    stateColor = "border-amber-200 bg-amber-50/40";
+    badgeNode = (
+      <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800">
+        <Hourglass size={10} /> Awaiting release
+      </span>
+    );
+  }
+
+  const endLabel = posting.endDate.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+
+  return (
+    <div className={`rounded-2xl border p-3 transition ${stateColor}`}>
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <span className={`dept-chip ${posting.deptColor}`}>{posting.deptShort}</span>
+          <div className="mt-1.5 truncate text-sm font-bold text-slate-900">{posting.deptName}</div>
+          <div className="text-[11px] text-slate-500">
+            Block {posting.blockId} · {posting.weeks} wk{posting.weeks > 1 ? "s" : ""} · ends {endLabel}
+          </div>
+        </div>
+        {badgeNode}
+      </div>
+
+      <div className="mt-2.5">
+        {released ? (
+          <Link
+            href={`/certificate/${encodeURIComponent(posting.regNo)}/${encodeURIComponent(posting.key)}`}
+            className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700"
+          >
+            <Download size={12} /> Download Signed Certificate
+          </Link>
+        ) : status.kind === "ongoing" ? (
+          <div className="text-center text-[11px] text-slate-400">Available after posting ends</div>
+        ) : status.kind === "on-hold" ? (
+          <div className="text-center text-[11px] text-rose-700">
+            {status.reason ? `Hold reason: ${status.reason}` : "Contact CRMI office"}
+          </div>
+        ) : (
+          <div className="text-center text-[11px] text-amber-700">Awaiting Coordinator release</div>
+        )}
+      </div>
+    </div>
+  );
+}
+

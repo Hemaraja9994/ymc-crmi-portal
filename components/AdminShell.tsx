@@ -13,6 +13,7 @@ import {
   Bell,
   Settings,
   FileText,
+  Award,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { SESSION_KEY } from "@/lib/auth";
@@ -43,6 +44,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
     { href: "/admin/departments", icon: ClipboardList, label: "Departments" },
     { href: "/admin/roster", icon: Users, label: "Roster" },
     { href: "/admin/leaves", icon: CalendarRange, label: "Leaves" },
+    { href: "/admin/certificates", icon: Award, label: "Certificates" },
     { href: "/admin/reports", icon: FileText, label: "Reports" },
     { href: "/admin/announcements", icon: Megaphone, label: "Announcements" },
   ];

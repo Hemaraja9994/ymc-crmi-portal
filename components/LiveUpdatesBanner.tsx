@@ -4,12 +4,14 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { ChevronRight } from "lucide-react";
 import { ANNOUNCEMENTS, type Announcement } from "@/lib/announcements";
 
-const BADGE: Record<Announcement["category"], string> = {
-  Rule:       "bg-rose-500/10 text-rose-400 border-rose-500/20",
-  Attendance: "bg-amber-500/10 text-amber-400 border-amber-500/20",
-  Notice:     "bg-blue-500/10 text-blue-400 border-blue-500/20",
-  Schedule:   "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-  Alert:      "bg-rose-500/10 text-rose-400 border-rose-500/20",
+// Explicit rgba (comma syntax) for old-Android-WebKit safety (Vivo V60 etc.).
+// Tailwind 3 emits `rgb(R G B / A)` which can fail on older WebKit builds.
+const BADGE: Record<Announcement["category"], { bg: string; color: string; border: string }> = {
+  Rule:       { bg: "rgba(244, 63, 94, 0.12)",  color: "#fb7185", border: "rgba(244, 63, 94, 0.28)"  },
+  Attendance: { bg: "rgba(245, 158, 11, 0.12)", color: "#fbbf24", border: "rgba(245, 158, 11, 0.28)" },
+  Notice:     { bg: "rgba(59, 130, 246, 0.12)", color: "#60a5fa", border: "rgba(59, 130, 246, 0.28)" },
+  Schedule:   { bg: "rgba(16, 185, 129, 0.14)", color: "#34d399", border: "rgba(16, 185, 129, 0.30)" },
+  Alert:      { bg: "rgba(244, 63, 94, 0.12)",  color: "#fb7185", border: "rgba(244, 63, 94, 0.28)"  },
 };
 
 const INTERVAL_MS = 5000;
@@ -53,7 +55,14 @@ export default function LiveUpdatesBanner() {
 
       {/* ── Current item (re-keyed to replay animation) ── */}
       <div key={key} className="animate-ticker-in flex min-w-0 flex-1 items-center gap-3 px-5 text-sm text-slate-200">
-        <span className={`shrink-0 rounded-md border px-2 py-0.5 text-[11px] font-bold ${BADGE[item.category]}`}>
+        <span
+          className="shrink-0 rounded-md px-2 py-0.5 text-[11px] font-bold"
+          style={{
+            backgroundColor: BADGE[item.category].bg,
+            color: BADGE[item.category].color,
+            border: `1px solid ${BADGE[item.category].border}`,
+          }}
+        >
           {item.category.toUpperCase()}
         </span>
         <span className="min-w-0 truncate">
