@@ -96,7 +96,7 @@ export default function StudentProfile({
               <a
                 href={`https://wa.me/?text=${waText}`}
                 target="_blank"
-                className="btn bg-emerald-500 hover:bg-emerald-600 text-white"
+                className="btn bg-accent-600 hover:bg-accent-700 text-white"
               >
                 <MessageCircle size={14} /> WhatsApp schedule
               </a>

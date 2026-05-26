@@ -78,9 +78,9 @@ export default function GuidelinesPage() {
               <div className="geo-overlay absolute inset-0 opacity-40" />
               <div className="relative flex items-center justify-between">
                 <div>
-                  <div className="text-[10px] font-semibold uppercase tracking-widest text-teal-200">Block {b.id}</div>
+                  <div className="text-[10px] font-semibold uppercase tracking-widest text-xcel-200">Block {b.id}</div>
                   <h2 className="mt-0.5 text-lg font-extrabold tracking-tight">{b.title}</h2>
-                  <div className="mt-1 text-xs text-teal-100/80">
+                  <div className="mt-1 text-xs text-xcel-100/80">
                     {b.depts.reduce((s, d) => s + d.weeks, 0)} weeks · {b.depts.length} departments
                   </div>
                 </div>

@@ -149,7 +149,7 @@ export default function StudentDashboard({
       <section className="card overflow-hidden">
         <div className="bg-gradient-to-br from-xcel-600 via-xcel-700 to-xcel-900 text-white p-5 md:p-8 relative">
           <div className="absolute -right-16 -top-16 w-72 h-72 bg-white/10 rounded-full blur-3xl" />
-          <div className="absolute -left-10 -bottom-10 w-60 h-60 bg-emerald-400/20 rounded-full blur-3xl" />
+          <div className="absolute -left-10 -bottom-10 w-60 h-60 bg-accent-500/25 rounded-full blur-3xl" />
           <div className="relative flex flex-wrap items-start justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-white/15 ring-1 ring-white/20 grid place-items-center text-xl md:text-2xl font-bold backdrop-blur">
@@ -169,7 +169,7 @@ export default function StudentDashboard({
               <a
                 href={`https://wa.me/?text=${whatsappText}`}
                 target="_blank"
-                className="btn bg-emerald-500 hover:bg-emerald-600 text-white text-sm"
+                className="btn bg-accent-600 hover:bg-accent-700 text-white text-sm"
               >
                 <MessageCircle size={14} /> WhatsApp schedule
               </a>
@@ -511,7 +511,7 @@ function CurrentPostingCard({
               if (!document.hidden && fb) window.location.href = fb;
             }, 500);
           }}
-          className="mt-3 w-full inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg py-2.5 font-medium text-sm transition"
+          className="mt-3 w-full inline-flex items-center justify-center gap-2 bg-accent-600 hover:bg-accent-700 text-white rounded-lg py-2.5 font-medium text-sm transition"
         >
           <Send size={14} /> Send Posting to WhatsApp
         </a>
@@ -1216,7 +1216,7 @@ function CertificateTile({ row }: { row: { posting: PostingPeriod; status: Certi
         {released ? (
           <Link
             href={`/certificate/${encodeURIComponent(posting.regNo)}/${encodeURIComponent(posting.key)}`}
-            className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700"
+            className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-accent-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-accent-700"
           >
             <Download size={12} /> Download Completion Report
           </Link>

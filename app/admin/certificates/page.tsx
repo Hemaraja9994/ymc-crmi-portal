@@ -92,13 +92,13 @@ export default function AdminCertificatesPage() {
           <div className="geo-overlay absolute inset-0 opacity-50" />
           <div className="relative flex flex-wrap items-start justify-between gap-4">
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-teal-100">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-xcel-100">
                 <Award size={12} /> Completion Reports
               </div>
               <h1 className="mt-3 text-2xl font-extrabold tracking-tight md:text-3xl">
                 Department-wise Posting Completion Reports
               </h1>
-              <p className="mt-1 max-w-2xl text-sm text-teal-50/80">
+              <p className="mt-1 max-w-2xl text-sm text-xcel-50/80">
                 Auto-released the day after posting end + approved leave days.
                 Override individually using Hold or Force-Release.
               </p>

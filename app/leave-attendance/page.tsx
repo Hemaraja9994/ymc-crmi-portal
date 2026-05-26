@@ -12,27 +12,27 @@ export default function LeavePage() {
       <header className="brand-panel relative overflow-hidden rounded-2xl px-7 py-6 text-white">
         <div className="geo-overlay absolute inset-0 opacity-50" />
         <div className="relative">
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-teal-100">
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-xcel-100">
             <CalendarDays size={12} /> Leave & Attendance
           </div>
           <h1 className="mt-3 text-2xl font-extrabold tracking-tight md:text-3xl">
             Leave Provisions & Attendance Criteria
           </h1>
-          <p className="mt-1 max-w-2xl text-sm leading-6 text-teal-50/80">
+          <p className="mt-1 max-w-2xl text-sm leading-6 text-xcel-50/80">
             Casual leave entitlements per posting are governed by NMC and YMC internship norms.
             Interns must meet mandatory thresholds to be eligible for the completion certificate.
           </p>
           <div className="mt-4 flex flex-wrap gap-4 text-sm">
             <div className="rounded-xl bg-white/10 border border-white/15 px-4 py-2 backdrop-blur-sm">
-              <div className="text-[10px] uppercase tracking-widest text-teal-200">Total CL days / year</div>
+              <div className="text-[10px] uppercase tracking-widest text-xcel-200">Total CL days / year</div>
               <div className="text-xl font-extrabold">≈ {totalLeave}</div>
             </div>
             <div className="rounded-xl bg-white/10 border border-white/15 px-4 py-2 backdrop-blur-sm">
-              <div className="text-[10px] uppercase tracking-widest text-teal-200">Attendance threshold</div>
+              <div className="text-[10px] uppercase tracking-widest text-xcel-200">Attendance threshold</div>
               <div className="text-xl font-extrabold">80%</div>
             </div>
             <div className="rounded-xl bg-white/10 border border-white/15 px-4 py-2 backdrop-blur-sm">
-              <div className="text-[10px] uppercase tracking-widest text-teal-200">Logbook submission</div>
+              <div className="text-[10px] uppercase tracking-widest text-xcel-200">Logbook submission</div>
               <div className="text-xl font-extrabold">100%</div>
             </div>
           </div>

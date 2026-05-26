@@ -98,21 +98,21 @@ export default function AdminOverview({
         <div className="geo-overlay absolute inset-0 opacity-60" />
         <div className="relative flex flex-wrap items-center justify-between gap-4">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-teal-100">
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-xcel-100">
               <Sparkles size={12} /> Coordinator Console
             </div>
             <h1 className="mt-3 text-2xl font-extrabold tracking-tight md:text-3xl">
               CRMI Operations Dashboard
             </h1>
-            <p className="mt-1 text-sm leading-5 text-teal-50/80 max-w-2xl">
+            <p className="mt-1 text-sm leading-5 text-xcel-50/80 max-w-2xl">
               MBBS 2021 CBME · postings, leave approvals, attendance alerts and principal-ready reports.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <div className="rounded-2xl border border-white/15 bg-white/10 px-4 py-2 text-center backdrop-blur-md">
-              <div className="text-[11px] font-semibold uppercase tracking-widest text-teal-100">Week</div>
+              <div className="text-[11px] font-semibold uppercase tracking-widest text-xcel-100">Week</div>
               <div className="text-xl font-extrabold">W{currentWeek.idx + 1}</div>
-              <div className="text-[11px] text-teal-50/70">{currentWeek.label}</div>
+              <div className="text-[11px] text-xcel-50/70">{currentWeek.label}</div>
             </div>
             <div className="flex flex-col gap-1.5">
               <QuickAction href="/admin/reports" icon={<FileText size={14} />} label="PDF reports" />
@@ -133,7 +133,7 @@ export default function AdminOverview({
       </div>
 
       {preLaunch && (
-        <section className="card overflow-hidden border-amber-100 bg-gradient-to-r from-amber-50 via-white to-teal-50 p-5">
+        <section className="card overflow-hidden border-amber-100 bg-gradient-to-r from-amber-50 via-white to-xcel-50 p-5">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="grid h-11 w-11 place-items-center rounded-2xl bg-amber-100 text-amber-700">
@@ -230,7 +230,7 @@ export default function AdminOverview({
                   <div className="geo-overlay absolute inset-0 opacity-40" />
                   <div className="relative flex items-center justify-between">
                     <div>
-                      <div className="text-[10px] font-bold uppercase tracking-widest text-teal-200">Block {block.id}</div>
+                      <div className="text-[10px] font-bold uppercase tracking-widest text-xcel-200">Block {block.id}</div>
                       <div className="mt-0.5 font-extrabold leading-tight">{block.title}</div>
                     </div>
                     <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 grid place-items-center font-extrabold text-2xl backdrop-blur-sm">
@@ -313,9 +313,9 @@ function GlassKPI({
     accent === "rose"  ? "border-rose-200/25 bg-rose-300/10"  : "border-white/15 bg-white/10";
   return (
     <div className={`rounded-2xl border p-3 backdrop-blur-md ${tone}`}>
-      <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-teal-100">{icon} {label}</div>
+      <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-xcel-100">{icon} {label}</div>
       <div className="mt-2 text-2xl font-extrabold leading-none">{value}</div>
-      {sub && <div className="mt-1 truncate text-[11px] text-teal-50/70">{sub}</div>}
+      {sub && <div className="mt-1 truncate text-[11px] text-xcel-50/70">{sub}</div>}
     </div>
   );
 }
@@ -346,7 +346,7 @@ function Announcements() {
           View all
         </Link>
       </div>
-      <div className="ymc-ticker overflow-hidden whitespace-nowrap bg-gradient-to-r from-rose-50 via-amber-50 to-teal-50 px-4 py-2 text-sm">
+      <div className="ymc-ticker overflow-hidden whitespace-nowrap bg-gradient-to-r from-rose-50 via-amber-50 to-xcel-50 px-4 py-2 text-sm">
         <div className="ymc-marquee inline-flex gap-8 pr-8">
           {[...highlights, ...highlights].map((announcement, index) => (
             <span key={index} className="inline-flex items-center gap-2">
