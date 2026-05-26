@@ -1,11 +1,29 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { Search, Filter, Download, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Search, Filter, Download, AlertCircle, CheckCircle2, Printer } from "lucide-react";
 import { LeaveRecord, LEAVE_TYPE_COLORS, loadLeaves, isOnLeave } from "@/lib/leaves";
 import { isPreLaunch } from "@/lib/rotation";
 import { attendanceFor, ATTENDANCE_THRESHOLD } from "@/lib/attendance";
 import { ShieldAlert } from "lucide-react";
+
+const INSTITUTION = {
+  name:       "Yenepoya Medical College",
+  address:    "Deralakatte, Mangalore – 575 018, Karnataka",
+  phone:      "+91-824-2204668",
+  email:      "principalymc@yenepoya.edu.in",
+  emailGeneral: "hospital@yenepoya.org",
+  accredited: "NAAC A++ | KMC University",
+};
+
+const CRMI_COMMITTEE = [
+  { role: "Principal, YMC",          name: "Dr. Prakash Saldanha" },
+  { role: "Internship Coordinator",  name: "Dr. Jeevan" },
+  { role: "Internship Coordinator",  name: "Dr. Imaad" },
+  { role: "Internship Coordinator",  name: "Dr. Rashmi Jain" },
+];
+
+const REF_NO = "YMC/CRMI/ROSTER/2025-26";
 
 export default function Roster({
   assignments,
@@ -69,24 +87,71 @@ export default function Roster({
     URL.revokeObjectURL(url);
   }
 
+  const todayFormal = new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" });
+  const filterSummary = [
+    block !== "all" ? `Block ${block}` : "All blocks",
+    dept !== "all" ? `Dept ${dept}` : "All depts",
+    status !== "all" ? (status === "duty" ? "On duty" : "On leave") : "All status",
+    q ? `"${q}"` : null,
+  ].filter(Boolean).join(" · ");
+
   return (
-    <div className="space-y-5">
-      <header className="flex items-end justify-between flex-wrap gap-3">
+    <div className="space-y-5 print-page">
+
+      {/* ── Official Letterhead (print only) ───────────────────────── */}
+      <div className="print-letterhead hidden">
+        <div style={{ display: "flex", alignItems: "center", gap: 14, borderBottom: "2px solid #1E1B4B", paddingBottom: 8, marginBottom: 10 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/images/ymch-logo.png" alt="YMC Logo" style={{ height: 56, width: "auto", display: "block", flex: "0 0 auto" }} />
+          <div style={{ flex: "1 1 auto", minWidth: 0 }}>
+            <div style={{ fontSize: "15pt", fontWeight: 800, color: "#1E1B4B", lineHeight: 1.05 }}>
+              {INSTITUTION.name}
+            </div>
+            <div style={{ fontSize: "8.5pt", color: "#444", marginTop: 1 }}>{INSTITUTION.address}</div>
+            <div style={{ fontSize: "8.5pt", color: "#444" }}>
+              {INSTITUTION.phone} &nbsp;·&nbsp; {INSTITUTION.email} &nbsp;·&nbsp; {INSTITUTION.emailGeneral}
+            </div>
+            <div style={{ fontSize: "7.5pt", color: "#666", marginTop: 1 }}>{INSTITUTION.accredited}</div>
+          </div>
+          <div style={{ flex: "0 0 auto", textAlign: "right", fontSize: "8pt", color: "#444", lineHeight: 1.35 }}>
+            <div>Ref: <strong>{REF_NO}</strong></div>
+            <div>Date: {todayFormal}</div>
+          </div>
+        </div>
+        <div style={{ textAlign: "center", marginBottom: 12 }}>
+          <div style={{ fontSize: "11pt", fontWeight: 700, color: "#1E1B4B", letterSpacing: "0.04em", textTransform: "uppercase" }}>
+            Intern Duty Roster · CRMI Allotment
+          </div>
+          <div style={{ fontSize: "8.5pt", color: "#555", marginTop: 2 }}>
+            MBBS 2021 CBME Batch · w.e.f. 01.06.2026 · Week {currentWeek.idx + 1}: {currentWeek.label} · {filterSummary}
+          </div>
+        </div>
+      </div>
+
+      <header className="no-print flex items-end justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-bold">Intern Roster</h1>
           <p className="text-sm text-slate-500">
             {rows.length} of {assignments.length} interns · W{currentWeek.idx + 1} · {currentWeek.label}
           </p>
         </div>
-        <button
-          onClick={exportCsv}
-          className="btn bg-xcel-600 text-white hover:bg-xcel-700 shadow-card"
-        >
-          <Download size={14} /> Export CSV
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={exportCsv}
+            className="btn-outline"
+          >
+            <Download size={14} /> Export CSV
+          </button>
+          <button
+            onClick={() => window.print()}
+            className="btn-primary"
+          >
+            <Printer size={14} /> Download PDF
+          </button>
+        </div>
       </header>
 
-      <div className="card p-3 flex flex-wrap items-center gap-2">
+      <div className="no-print card p-3 flex flex-wrap items-center gap-2">
         <div className="relative flex-1 min-w-[200px]">
           <Search size={14} className="absolute left-3 top-2.5 text-slate-400" />
           <input
@@ -187,6 +252,31 @@ export default function Roster({
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* ── CRMI Committee sign-off (print only) ───────────────────── */}
+      <div className="print-letterhead hidden" style={{ borderTop: "1px solid #cbd5e1", paddingTop: 14, marginTop: 18 }}>
+        <div style={{ fontSize: "8.5pt", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#64748b", marginBottom: 12 }}>
+          CRMI Coordination Cell — Verified & Issued for HOD Circulation
+        </div>
+        <table style={{ width: "100%", fontSize: "9pt" }}>
+          <tbody>
+            <tr>
+              {CRMI_COMMITTEE.map((m) => (
+                <td key={m.name} style={{ width: "25%", textAlign: "center", paddingTop: 38 }}>
+                  <div style={{ borderTop: "1.5px solid #334155", paddingTop: 4 }}>
+                    <div style={{ fontWeight: 700, color: "#0F172A" }}>{m.name}</div>
+                    <div style={{ color: "#64748B", fontSize: "8pt" }}>{m.role}</div>
+                  </div>
+                </td>
+              ))}
+            </tr>
+          </tbody>
+        </table>
+        <p style={{ marginTop: 14, fontSize: "7.5pt", color: "#94a3b8", textAlign: "center" }}>
+          This roster is generated by the YMC CRMI Portal · Ref: {REF_NO} · Generated {todayFormal} ·
+          For internal circulation only.
+        </p>
       </div>
     </div>
   );
