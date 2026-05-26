@@ -287,7 +287,7 @@ export default function StudentDashboard({
         <AttendanceCard attendance={attendance} />
       )}
 
-      {/* Posting completion certificates — visible once any posting has started */}
+      {/* Posting completion reports — visible once any posting has started */}
       {!preLaunch && (
         <CertificatesCard assignment={assignment} />
       )}
@@ -1113,7 +1113,7 @@ function CertificatesCard({ assignment }: { assignment: { student: { regNo: stri
               <div className="flex items-center gap-2 text-sm text-emerald-900">
                 <CheckCircle2 size={16} className="text-emerald-600" />
                 <span>
-                  Your completion certificate for <strong>{r.posting.deptName}</strong> is now available.
+                  Your posting completion report for <strong>{r.posting.deptName}</strong> is now available.
                   {newlyReleased.length > 1 && <span className="ml-1 text-emerald-700">(+{newlyReleased.length - 1} more)</span>}
                 </span>
               </div>
@@ -1140,10 +1140,10 @@ function CertificatesCard({ assignment }: { assignment: { student: { regNo: stri
       <div className="p-5 md:p-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <div className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Completion Certificates</div>
-            <h2 className="font-bold text-slate-900">Department-wise Posting Certificates</h2>
+            <div className="text-[11px] font-bold uppercase tracking-widest text-slate-400">Posting Completion Reports</div>
+            <h2 className="font-bold text-slate-900">Department-wise Completion Reports</h2>
             <p className="mt-0.5 text-xs text-slate-500">
-              A PDF certificate is auto-released after each posting ends (allowing approved leave days).
+              A PDF report is auto-released after each posting ends (allowing approved leave days).
             </p>
           </div>
           <span className="badge bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200">
@@ -1218,7 +1218,7 @@ function CertificateTile({ row }: { row: { posting: PostingPeriod; status: Certi
             href={`/certificate/${encodeURIComponent(posting.regNo)}/${encodeURIComponent(posting.key)}`}
             className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700"
           >
-            <Download size={12} /> Download Signed Certificate
+            <Download size={12} /> Download Completion Report
           </Link>
         ) : status.kind === "ongoing" ? (
           <div className="text-center text-[11px] text-slate-400">Available after posting ends</div>

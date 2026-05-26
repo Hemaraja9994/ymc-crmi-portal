@@ -38,6 +38,11 @@ body {
 /* Print-only blocks: completely hidden on screen */
 .print-only { display: none; }
 
+/* On-screen preview of an A4 sheet — looks like a sheet of paper */
+.ymc-report-sheet {
+  border-radius: 4px;
+}
+
 .badge {
   @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium;
 }
@@ -98,7 +103,7 @@ body {
 @media print {
   @page {
     size: A4 portrait;
-    margin: 16mm 12mm 16mm 12mm;
+    margin: 20mm 22mm 20mm 22mm;
   }
 
   header,
@@ -149,5 +154,19 @@ body {
   .keep-together {
     break-inside: avoid;
     page-break-inside: avoid;
+  }
+
+  /* Report sheet: fill the printable area (the @page margins above are the
+     visible PDF margins). Inner padding is removed so we don't get double margin. */
+  .ymc-report-sheet {
+    width: auto !important;
+    min-height: auto !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+  .ymc-report-sheet > div {
+    padding: 0 !important;
+    min-height: auto !important;
   }
 }

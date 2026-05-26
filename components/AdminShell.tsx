@@ -44,7 +44,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
     { href: "/admin/departments", icon: ClipboardList, label: "Departments" },
     { href: "/admin/roster", icon: Users, label: "Roster" },
     { href: "/admin/leaves", icon: CalendarRange, label: "Leaves" },
-    { href: "/admin/certificates", icon: Award, label: "Certificates" },
+    { href: "/admin/certificates", icon: Award, label: "Completion Reports" },
     { href: "/admin/reports", icon: FileText, label: "Reports" },
     { href: "/admin/announcements", icon: Megaphone, label: "Announcements" },
   ];
