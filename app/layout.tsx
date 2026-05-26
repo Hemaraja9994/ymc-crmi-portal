@@ -13,7 +13,7 @@ export const viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover" as const,
-  themeColor: "#062E25",
+  themeColor: "#2E1065",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -29,7 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-screen bg-slate-50 font-sans antialiased">
         {/* ── Top accent line ── */}
-        <div className="h-0.5 w-full bg-gradient-to-r from-xcel-900 via-xcel-600 to-xcel-900" />
+        <div className="h-0.5 w-full bg-gradient-to-r from-xcel-950 via-accent-500 to-xcel-950" />
 
         <header className="no-print sticky top-0 z-30 bg-white/95 shadow-sm shadow-slate-200/60 backdrop-blur-xl">
           <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:py-4">

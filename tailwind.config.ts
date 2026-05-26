@@ -14,17 +14,33 @@ const config: Config = {
           700: "#1d4ed8",
           900: "#0c2a4d",
         },
+        // Plum/violet palette — kept under the `xcel-*` name so existing
+        // utility classes across the codebase auto-update (drop-in swap).
         xcel: {
-          50:  "#F5FAF9",   // near-white mint tint
-          100: "#E6F4F1",   // brand-primary-100 · soft mint – badge bg, hover bg
-          200: "#C0DDD8",   // light border tint
-          300: "#8ABFB8",
-          400: "#4A9A8E",
-          500: "#007361",   // interactive-hover
-          600: "#008B75",   // interactive-default · primary buttons
-          700: "#0B5345",   // brand-primary-700 · active nav, strong accents
-          800: "#0A3C36",   // interactive-text · dark labels on light bg
-          900: "#062E25",   // brand-primary-900 · hero / panel deepest anchor
+          50:  "#FAF5FF",   // purple-50 · very light wash
+          100: "#F3E8FF",   // purple-100 · badge bg (AAA 11:1 with xcel-900 text)
+          200: "#E9D5FF",   // purple-200 · light borders
+          300: "#D8B4FE",
+          400: "#C084FC",   // purple-400 · soft lavender on dark surfaces
+          500: "#A855F7",   // purple-500
+          600: "#9333EA",   // purple-600
+          700: "#6D28D9",   // violet-700 · active nav (white text: 7.4:1 AAA)
+          800: "#5B21B6",   // violet-800 · strong text on light bg
+          900: "#4C1D95",   // violet-900 · header/panel mid stop
+          950: "#2E1065",   // violet-950 · hero deepest anchor (white: 15.2:1 AAA)
+        },
+        // Lavender/violet accent — for primary CTAs and active highlights.
+        // accent-700 is the safe CTA shade (white text passes AAA-large).
+        accent: {
+          50:  "#FAF5FF",
+          100: "#F3E8FF",   // soft chip bg
+          200: "#E9D5FF",
+          300: "#D8B4FE",   // soft lavender highlight
+          400: "#C084FC",   // bright lavender on dark bg (decorative)
+          500: "#A855F7",   // vibrant lavender — decorative only
+          600: "#9333EA",
+          700: "#7E22CE",   // purple-700 · CTA bg (white text: 6.9:1 AAA-large)
+          800: "#6B21A8",   // CTA hover (white: 8.5:1 AAA)
         },
         ink: {
           50: "#f8fafc",

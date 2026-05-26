@@ -94,7 +94,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
               href={n.href}
               className={`flex items-center gap-1 whitespace-nowrap px-3 py-1.5 rounded-full border ${
                 active
-                  ? "bg-xcel-600 text-white border-xcel-600"
+                  ? "bg-accent-700 text-white border-accent-700"
                   : "bg-white border-slate-200"
               }`}
             >
@@ -142,7 +142,7 @@ function FloatingBar() {
             placeholder="Jump to roll no (e.g. 21M001) or name…"
             className="bg-transparent flex-1 outline-none placeholder:text-slate-400 text-sm"
           />
-          <button className="text-xs bg-xcel-600 hover:bg-xcel-500 px-3 py-1 rounded-md">Go</button>
+          <button className="text-xs bg-accent-700 hover:bg-accent-800 px-3 py-1 rounded-md">Go</button>
         </form>
         <span className="hidden sm:inline w-px h-5 bg-white/15" />
         <Link href="/admin/announcements" className="p-2 rounded-lg hover:bg-white/10 relative" title="Announcements">

@@ -20,11 +20,19 @@ body {
 }
 
 .btn {
-  @apply inline-flex items-center gap-2 rounded-xl px-4 py-2 font-semibold transition-all duration-200 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-xcel-600/40;
+  @apply inline-flex items-center gap-2 rounded-xl px-4 py-2 font-semibold transition-all duration-200 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-accent-500/40;
 }
 
+/* Primary CTA — vibrant violet action button (Download, Sign in, Release, etc.)
+   accent-700 (#7E22CE) gives white text 6.9:1 contrast — AAA-large compliant. */
 .btn-primary {
-  @apply btn bg-xcel-600 text-white shadow-lg shadow-xcel-900/15 hover:bg-xcel-500;
+  @apply btn bg-accent-700 text-white shadow-lg shadow-accent-800/25 hover:bg-accent-800;
+}
+
+/* Secondary structural button — indigo (use when an indigo action is needed
+   that's part of the brand chrome rather than a high-energy CTA). */
+.btn-secondary {
+  @apply btn bg-xcel-700 text-white shadow-md shadow-xcel-950/20 hover:bg-xcel-800;
 }
 
 .btn-ghost {
@@ -32,7 +40,7 @@ body {
 }
 
 .btn-outline {
-  @apply btn border border-slate-200 bg-white/90 text-slate-800 hover:border-xcel-200 hover:bg-xcel-100 hover:text-xcel-800;
+  @apply btn border border-slate-200 bg-white/90 text-slate-800 hover:border-xcel-300 hover:bg-xcel-50 hover:text-xcel-800;
 }
 
 /* Print-only blocks: completely hidden on screen */
@@ -51,11 +59,12 @@ body {
   @apply inline-block rounded-md px-2 py-1 text-xs font-semibold;
 }
 
-/* Shared brand surface used by hero and auth split-screens. */
+/* Shared brand surface used by hero and auth split-screens.
+   Violet-950 deep plum anchor with a soft lavender glow in the upper-left. */
 .brand-panel {
   background:
-    linear-gradient(125deg, rgba(217, 106, 74, 0.15) 0%, rgba(217, 106, 74, 0) 36%),
-    linear-gradient(135deg, #0B5345 0%, #062E25 52%, #041c17 100%);
+    linear-gradient(125deg, rgba(192, 132, 252, 0.22) 0%, rgba(192, 132, 252, 0) 38%),
+    linear-gradient(135deg, #4C1D95 0%, #2E1065 55%, #1A0840 100%);
 }
 
 .geo-overlay {

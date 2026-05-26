@@ -49,7 +49,7 @@ export default function LiveUpdatesBanner() {
       onMouseLeave={() => setPaused(false)}
     >
       {/* ── Left anchor chip ── */}
-      <div className="z-10 flex h-full shrink-0 items-center gap-1.5 bg-teal-600 px-4 text-xs font-bold uppercase tracking-wider text-white shadow-[4px_0_12px_rgba(0,0,0,0.4)]">
+      <div className="z-10 flex h-full shrink-0 items-center gap-1.5 bg-accent-700 px-4 text-xs font-bold uppercase tracking-wider text-white shadow-[4px_0_12px_rgba(0,0,0,0.4)]">
         ⚡ Live Updates
       </div>
 
@@ -82,7 +82,7 @@ export default function LiveUpdatesBanner() {
               onClick={() => advance(i)}
               className={`h-1.5 rounded-full transition-all duration-300 ${
                 i === idx
-                  ? "w-4 bg-teal-400"
+                  ? "w-4 bg-accent-300"
                   : "w-1.5 bg-slate-600 hover:bg-slate-400"
               }`}
               aria-label={`Go to notice ${i + 1}`}
