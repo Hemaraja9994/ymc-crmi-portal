@@ -14,9 +14,9 @@ const T = {
   ink3: "#7a8794",
   border: "#e6dfd0",
   borderStrong: "#d7cdb8",
-  primary: "#6D28D9",       // violet-700 — used for accents/links
-  primaryDeep: "#2E1065",   // violet-950 — deepest brand anchor
-  coral: "#C084FC",         // purple-400 — soft lavender accent for headings
+  primary: "#4338CA",       // indigo-700 — used for accents/links
+  primaryDeep: "#1E1B4B",   // indigo-950 — deepest brand anchor
+  coral: "#FB923C",         // orange-400 — vibrant accent for headings
 };
 
 function LoginInner() {
@@ -187,7 +187,7 @@ function LoginInner() {
               type="submit"
               disabled={loading}
               className={`mt-1 w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-full border-none font-semibold text-sm text-white transition-colors duration-150 ${
-                loading ? "bg-slate-400 cursor-not-allowed" : "bg-accent-700 hover:bg-accent-800 cursor-pointer"
+                loading ? "bg-slate-400 cursor-not-allowed" : "bg-accent-600 hover:bg-accent-700 cursor-pointer"
               }`}
             >
               {loading ? "Please wait…" : role === "student" ? "View my dashboard" : "Sign in"}

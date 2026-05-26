@@ -23,10 +23,11 @@ body {
   @apply inline-flex items-center gap-2 rounded-xl px-4 py-2 font-semibold transition-all duration-200 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-accent-500/40;
 }
 
-/* Primary CTA — vibrant violet action button (Download, Sign in, Release, etc.)
-   accent-700 (#7E22CE) gives white text 6.9:1 contrast — AAA-large compliant. */
+/* Primary CTA — vibrant orange action button (Download, Sign in, Release, etc.)
+   accent-600 (#EA580C) gives white text 4.6:1 (AA) and hover accent-700
+   bumps to 6.0:1 (AAA-large). */
 .btn-primary {
-  @apply btn bg-accent-700 text-white shadow-lg shadow-accent-800/25 hover:bg-accent-800;
+  @apply btn bg-accent-600 text-white shadow-lg shadow-accent-800/25 hover:bg-accent-700;
 }
 
 /* Secondary structural button — indigo (use when an indigo action is needed
@@ -60,11 +61,11 @@ body {
 }
 
 /* Shared brand surface used by hero and auth split-screens.
-   Violet-950 deep plum anchor with a soft lavender glow in the upper-left. */
+   Deep midnight indigo anchor with a warm vibrant-orange glow in the upper-left. */
 .brand-panel {
   background:
-    linear-gradient(125deg, rgba(192, 132, 252, 0.22) 0%, rgba(192, 132, 252, 0) 38%),
-    linear-gradient(135deg, #4C1D95 0%, #2E1065 55%, #1A0840 100%);
+    linear-gradient(125deg, rgba(249, 115, 22, 0.22) 0%, rgba(249, 115, 22, 0) 38%),
+    linear-gradient(135deg, #312E81 0%, #1E1B4B 55%, #0F0B33 100%);
 }
 
 .geo-overlay {

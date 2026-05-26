@@ -32,7 +32,7 @@ export default function HeaderNav() {
               href={n.href}
               className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-150 ${
                 active
-                  ? "bg-accent-700 text-white shadow-sm shadow-accent-800/30"
+                  ? "bg-accent-600 text-white shadow-sm shadow-accent-800/30"
                   : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
               }`}
             >
@@ -53,7 +53,7 @@ export default function HeaderNav() {
               href={n.href}
               className={`whitespace-nowrap rounded-full px-3 py-1.5 font-medium transition-all ${
                 active
-                  ? "bg-accent-700 text-white"
+                  ? "bg-accent-600 text-white"
                   : "bg-white border border-slate-200 text-slate-600"
               }`}
             >
