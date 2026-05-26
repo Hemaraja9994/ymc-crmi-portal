@@ -60,6 +60,7 @@ const raw: Array<[string, string]> = [
   ["Henna Sideeque", "21M052"],
   ["Hiba Thalangara", "21M053"],
   ["Hrishab Hegde", "21M054"],
+  ["Insha Sanover", "21M055"],
   ["Iresha Mariola Menezes", "21M056"],
   ["Ishwar V Bhargava", "21M057"],
   ["Jetty Venkata Naresh", "21M058"],

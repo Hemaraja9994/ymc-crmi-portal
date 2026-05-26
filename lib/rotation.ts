@@ -90,10 +90,33 @@ export type Assignment = {
 
 const BLOCK_LETTERS = ["A", "B", "C", "D"] as const;
 
+// Off-cycle / mid-batch joiners are pinned to dedicated sub-batches so they
+// do not shift the block/sub-batch assignment of any existing student.
+// Their rotation follows the "rotationAs" sub-batch number in the same block.
+// 21M055 (Insha Sanover) joined mid-batch → Block 2 / B14, riding B1's schedule.
+const SPECIAL_ASSIGNMENTS: Record<string, { blockId: 1 | 2 | 3 | 4; subBatch: string; rotationAs: number }> = {
+  "21M055": { blockId: 2, subBatch: "B14", rotationAs: 1 },
+};
+
 export function buildAssignments(): Assignment[] {
-  const n = STUDENTS.length;
-  const perBlock = Math.ceil(n / 4);
-  return STUDENTS.map((s, i) => {
+  // Only "regular" students participate in the index-based block math, so the
+  // 112 original interns keep their exact block + sub-batch + rotation forever.
+  const regulars = STUDENTS.filter((s) => !SPECIAL_ASSIGNMENTS[s.regNo]);
+  const perBlock = Math.ceil(regulars.length / 4);
+  const idxOf = new Map<string, number>();
+  regulars.forEach((s, i) => idxOf.set(s.regNo, i));
+
+  return STUDENTS.map((s) => {
+    const special = SPECIAL_ASSIGNMENTS[s.regNo];
+    if (special) {
+      return {
+        student: s,
+        blockId: special.blockId,
+        subBatch: special.subBatch,
+        rotation: buildRotation(special.blockId, weekOffsetFromSubBatch(special.rotationAs)),
+      };
+    }
+    const i = idxOf.get(s.regNo)!;
     const blockIdx = Math.min(3, Math.floor(i / perBlock));
     const blockId = (blockIdx + 1) as 1 | 2 | 3 | 4;
     const withinBlock = i - blockIdx * perBlock;
