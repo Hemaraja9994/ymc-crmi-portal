@@ -291,60 +291,12 @@ export default function StudentDashboard({
         <CertificatesCard assignment={assignment} />
       )}
 
-      {/* Posting roadmap with stamps */}
-      <section className="card p-5">
-        <div className="flex items-center justify-between flex-wrap gap-2">
-          <div>
-            <h2 className="font-semibold">Posting Roadmap</h2>
-            <p className="text-xs text-slate-500">
-              Completed postings carry the official seal · Current is highlighted · Upcoming postings unlock as you progress.
-            </p>
-          </div>
-          <Link href="/postings-overview" className="text-xs text-xcel-700 hover:underline inline-flex items-center gap-1">
-            See who else is in each dept →
-          </Link>
-        </div>
-
-        {/* Compact bar timeline */}
-        <div className="mt-4 flex h-8 md:h-9 rounded-xl overflow-hidden ring-1 ring-slate-200 select-none">
-          {segments.map((s) => {
-            const isDone = !preLaunch && s.endWeek < currentWeek.idx;
-            const isNow = !preLaunch && s.startWeek <= currentWeek.idx && s.endWeek >= currentWeek.idx;
-            return (
-              <div
-                key={`${s.deptCode}-${s.startWeek}`}
-                title={`${s.deptName} · ${s.startLabel} → ${s.endLabel}`}
-                className={`relative flex items-center justify-center text-[10px] font-semibold ${s.color} ${
-                  isDone ? "opacity-60" : ""
-                } ${isNow ? "ring-2 ring-xcel-600 ring-inset z-10" : ""}`}
-                style={{ flex: s.weeks }}
-              >
-                <span className="hidden sm:inline">{s.deptShort}</span>
-              </div>
-            );
-          })}
-        </div>
-        <div className="mt-2 flex items-center gap-3 text-[11px] text-slate-500 flex-wrap">
-          <span className="inline-flex items-center gap-1"><CheckCircle2 size={12} className="text-emerald-600" /> Completed</span>
-          <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-xcel-600" /> Current</span>
-          <span className="inline-flex items-center gap-1"><Lock size={11} /> Upcoming</span>
-        </div>
-
-        {/* Posting cards with stamps */}
-        <div className="mt-5 grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {segments.map((s) => {
-            const status =
-              preLaunch
-                ? "upcoming"
-                : s.endWeek < currentWeek.idx
-                ? "done"
-                : s.startWeek <= currentWeek.idx && s.endWeek >= currentWeek.idx
-                ? "current"
-                : "upcoming";
-            return <PostingStampCard key={`${s.deptCode}-${s.startWeek}`} seg={s} status={status} />;
-          })}
-        </div>
-      </section>
+      <MilestoneProgressMap
+        segments={segments}
+        currentWeekIdx={currentWeek.idx}
+        lifecycle={lifecycle}
+        preLaunch={preLaunch}
+      />
 
       {/* Timeline tabs */}
       <section className="card">
@@ -601,65 +553,276 @@ function PostingCard({
   );
 }
 
-function PostingStampCard({ seg, status }: { seg: Seg; status: "done" | "current" | "upcoming" }) {
-  const base =
-    status === "done"
-      ? "bg-emerald-50/40 border-emerald-200"
-      : status === "current"
-      ? "bg-xcel-50 border-xcel-300 ring-2 ring-xcel-500/30"
-      : "bg-white border-slate-200";
+type RoadmapStatus = "done" | "current" | "upcoming";
+type RoadmapPoint = { x: number; y: number };
+
+function MilestoneProgressMap({
+  segments,
+  currentWeekIdx,
+  lifecycle,
+  preLaunch,
+}: {
+  segments: Seg[];
+  currentWeekIdx: number;
+  lifecycle: "pre-launch" | "active" | "completed";
+  preLaunch: boolean;
+}) {
+  const desktopPoints = milestonePoints(segments.length);
+  const statuses = segments.map((seg) => segmentMilestoneStatus(seg, currentWeekIdx, lifecycle, preLaunch));
+
   return (
-    <div className={`relative rounded-2xl border p-4 overflow-hidden ${base}`}>
-      <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0">
-          <span className={`dept-chip ${seg.color}`}>{seg.deptShort}</span>
-          <div className="mt-2 font-semibold leading-tight">{seg.deptName}</div>
-          <div className="text-xs text-slate-500 mt-0.5">
-            W{seg.startWeek + 1}–W{seg.endWeek + 1} · {seg.weeks}w
+    <section className="card p-4 md:p-5">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-amber-700">
+            <Trophy size={12} /> Milestone Progress Map
           </div>
-          <div className="text-[11px] text-slate-400 mt-0.5">
-            {seg.startLabel} → {seg.endLabel}
-          </div>
+          <h2 className="mt-2 text-lg font-extrabold text-slate-900">Posting Roadmap</h2>
+          <p className="mt-1 max-w-2xl text-xs leading-5 text-slate-500">
+            Follow each posting as a quest node. Completed levels glow with an official seal, the current
+            posting pulses, and upcoming postings remain locked until their rotation window opens.
+          </p>
         </div>
-        <StatusGlyph status={status} />
+        <Link
+          href="/postings-overview"
+          className="inline-flex items-center gap-1 rounded-full border border-xcel-200 bg-xcel-50 px-3 py-1.5 text-xs font-semibold text-xcel-700 transition-all duration-300 hover:-translate-y-0.5 hover:bg-xcel-100"
+        >
+          Full posting list <ChevronRight size={13} />
+        </Link>
       </div>
-      {/* Stamp / state badge */}
-      <div className="mt-3 flex items-center justify-between">
-        {status === "done" && (
-          <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider font-bold text-emerald-700 bg-emerald-100 px-2 py-1 rounded-md ring-1 ring-emerald-200">
-            <CheckCircle2 size={11} /> Completed
+
+      <div className="mt-5 rounded-[1.75rem] border border-slate-200 bg-[radial-gradient(circle_at_top_left,#f0fdfa,transparent_34%),linear-gradient(135deg,#f8fafc,#ffffff_48%,#fff7ed)] p-3 shadow-inner md:p-5">
+        <div className="relative hidden h-[430px] md:block">
+          <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            {desktopPoints.slice(0, -1).map((point, index) => (
+              <path
+                key={`desktop-track-${index}`}
+                d={connectorPath(point, desktopPoints[index + 1], index)}
+                fill="none"
+                stroke={connectorColor(statuses[index], statuses[index + 1])}
+                strokeWidth={statuses[index] === "done" || statuses[index + 1] === "current" ? 1.25 : 0.9}
+                strokeLinecap="round"
+                strokeDasharray={statuses[index] === "done" || statuses[index + 1] === "current" ? undefined : "2.4 2.4"}
+                opacity={statuses[index] === "upcoming" ? 0.52 : 0.9}
+              />
+            ))}
+          </svg>
+
+          {segments.map((seg, index) => {
+            const point = desktopPoints[index];
+            return (
+              <div
+                key={`${seg.deptCode}-${seg.startWeek}-map`}
+                className="absolute z-10 -translate-x-1/2 -translate-y-1/2"
+                style={{ left: `${point.x}%`, top: `${point.y}%` }}
+              >
+                <MilestoneNode
+                  seg={seg}
+                  status={statuses[index]}
+                  index={index}
+                  tooltipPlacement={point.y > 55 ? "top" : "bottom"}
+                />
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="relative md:hidden">
+          {segments.map((seg, index) => {
+            const status = statuses[index];
+            const isRight = index % 2 === 1;
+            return (
+              <div
+                key={`${seg.deptCode}-${seg.startWeek}-mobile-map`}
+                className={`relative flex min-h-[132px] ${isRight ? "justify-end pr-2" : "justify-start pl-2"}`}
+              >
+                {index < segments.length - 1 && (
+                  <svg
+                    className="pointer-events-none absolute left-0 top-[66px] z-0 h-[124px] w-full"
+                    viewBox="0 0 100 120"
+                    preserveAspectRatio="none"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d={isRight ? "M 74 0 C 74 42 26 72 26 120" : "M 26 0 C 26 42 74 72 74 120"}
+                      fill="none"
+                      stroke={connectorColor(status, statuses[index + 1])}
+                      strokeWidth={3.5}
+                      strokeLinecap="round"
+                      strokeDasharray={status === "done" || statuses[index + 1] === "current" ? undefined : "7 8"}
+                      opacity={status === "upcoming" ? 0.5 : 0.9}
+                    />
+                  </svg>
+                )}
+                <div className="relative z-10">
+                  <MilestoneNode
+                    seg={seg}
+                    status={status}
+                    index={index}
+                    compact
+                    tooltipPlacement={index < segments.length - 2 ? "bottom" : "top"}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="mt-4 flex flex-wrap items-center gap-3 text-[11px] text-slate-500">
+        <span className="inline-flex items-center gap-1.5">
+          <CheckCircle2 size={13} className="text-emerald-600" /> Completed seal
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span className="relative flex h-3 w-3">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-400 opacity-75" />
+            <span className="relative inline-flex h-3 w-3 rounded-full bg-cyan-500" />
           </span>
-        )}
-        {status === "current" && (
-          <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider font-bold text-xcel-700 bg-xcel-100 px-2 py-1 rounded-md ring-1 ring-xcel-200 animate-pulse">
-            <Clock size={11} /> In Progress
+          Current level
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <Lock size={12} className="text-slate-400" /> Locked upcoming
+        </span>
+      </div>
+    </section>
+  );
+}
+
+function MilestoneNode({
+  seg,
+  status,
+  index,
+  compact = false,
+  tooltipPlacement,
+}: {
+  seg: Seg;
+  status: RoadmapStatus;
+  index: number;
+  compact?: boolean;
+  tooltipPlacement: "top" | "bottom";
+}) {
+  const nodeSize =
+    status === "current"
+      ? compact
+        ? "h-24 w-24"
+        : "h-28 w-28"
+      : compact
+      ? "h-20 w-20"
+      : "h-[5.5rem] w-[5.5rem]";
+  const statusClass =
+    status === "done"
+      ? "border-emerald-400 bg-gradient-to-br from-emerald-50 via-white to-amber-50 text-emerald-950 shadow-[0_0_26px_rgba(16,185,129,0.32)]"
+      : status === "current"
+      ? "border-cyan-400 bg-gradient-to-br from-white via-cyan-50 to-amber-50 text-slate-950 shadow-[0_0_38px_rgba(6,182,212,0.45)]"
+      : "border-slate-200 bg-gradient-to-br from-slate-100 to-white text-slate-500 opacity-75 shadow-sm";
+  const tooltipPosition =
+    tooltipPlacement === "top"
+      ? "bottom-[calc(100%+0.75rem)]"
+      : "top-[calc(100%+0.75rem)]";
+
+  return (
+    <div className="group relative flex flex-col items-center">
+      {status === "current" && (
+        <span className="absolute inset-1 z-0 animate-ping rounded-full border-2 border-cyan-400/55" />
+      )}
+      <button
+        type="button"
+        aria-label={`${seg.deptName}, ${seg.weeks} weeks, ${seg.startLabel} to ${seg.endLabel}`}
+        className={`${nodeSize} relative z-10 grid place-items-center rounded-full border-2 ${statusClass} transition-all duration-300 hover:-translate-y-1 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-cyan-200`}
+      >
+        <span className="absolute left-2 top-2 rounded-full bg-white/80 px-1.5 py-0.5 text-[9px] font-black text-slate-400 ring-1 ring-slate-200">
+          {String(index + 1).padStart(2, "0")}
+        </span>
+        {status === "done" && (
+          <span className="absolute -right-1 -top-1 grid h-7 w-7 place-items-center rounded-full bg-emerald-500 text-white shadow-lg ring-4 ring-white">
+            <CheckCircle2 size={16} />
           </span>
         )}
         {status === "upcoming" && (
-          <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded-md ring-1 ring-slate-200">
-            <Lock size={11} /> Locked
+          <span className="absolute -right-1 -top-1 grid h-7 w-7 place-items-center rounded-full bg-slate-700 text-white shadow-md ring-4 ring-white">
+            <Lock size={14} />
           </span>
         )}
+        <span className="flex flex-col items-center text-center leading-none">
+          <span className="max-w-[4.4rem] text-[11px] font-black leading-tight tracking-tight">{seg.deptShort}</span>
+          <span className="mt-1 rounded-full bg-white/80 px-2 py-0.5 text-[10px] font-bold text-slate-600 ring-1 ring-slate-200">
+            {seg.weeks}w
+          </span>
+        </span>
+      </button>
+      {status === "current" && (
+        <span className="relative z-20 -mt-2 rounded-full bg-cyan-500 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-white shadow-lg">
+          Current
+        </span>
+      )}
+      <div
+        className={`pointer-events-none absolute left-1/2 ${tooltipPosition} z-30 w-64 -translate-x-1/2 scale-95 rounded-2xl border border-slate-200 bg-white/95 p-3 text-left opacity-0 shadow-xl shadow-slate-200/70 backdrop-blur transition-all duration-300 group-hover:scale-100 group-hover:opacity-100 group-focus-within:scale-100 group-focus-within:opacity-100`}
+      >
+        <div className="flex items-start justify-between gap-2">
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Department</div>
+            <div className="mt-0.5 text-sm font-extrabold leading-tight text-slate-900">{seg.deptName}</div>
+          </div>
+          <span className={`dept-chip ${seg.color}`}>{seg.deptShort}</span>
+        </div>
+        <div className="mt-3 grid gap-2 text-xs text-slate-600">
+          <div className="flex items-center gap-2">
+            <CalendarDays size={13} className="text-xcel-600" />
+            <span>{seg.startLabel} to {seg.endLabel}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Sparkles size={13} className="text-amber-500" />
+            <span>{seg.weeks} Week{seg.weeks === 1 ? "" : "s"} target XP</span>
+          </div>
+          <div className="flex items-center gap-2">
+            {status === "done" ? (
+              <CheckCircle2 size={13} className="text-emerald-600" />
+            ) : status === "current" ? (
+              <Clock size={13} className="text-cyan-600" />
+            ) : (
+              <Lock size={13} className="text-slate-400" />
+            )}
+            <span className="capitalize">{status === "done" ? "completed" : status}</span>
+          </div>
+        </div>
       </div>
-      {status === "done" && <RubberStamp />}
     </div>
   );
 }
 
-function StatusGlyph({ status }: { status: "done" | "current" | "upcoming" }) {
-  if (status === "done") return <CheckCircle2 className="text-emerald-600 shrink-0" size={20} />;
-  if (status === "current") return <Sparkles className="text-xcel-600 shrink-0" size={20} />;
-  return <Lock className="text-slate-400 shrink-0" size={20} />;
+function milestonePoints(count: number): RoadmapPoint[] {
+  if (count <= 1) return [{ x: 50, y: 50 }];
+  const yPattern = [72, 42, 58, 30, 48, 68, 38, 54];
+  return Array.from({ length: count }, (_, index) => ({
+    x: 7 + (86 * index) / (count - 1),
+    y: yPattern[index % yPattern.length],
+  }));
 }
 
-function RubberStamp() {
-  return (
-    <div className="pointer-events-none absolute -right-3 -bottom-3 rotate-[-12deg] opacity-90">
-      <div className="border-[3px] border-emerald-500/70 rounded-xl px-3 py-1.5 text-emerald-700 font-extrabold tracking-widest text-[10px] bg-white/60 backdrop-blur-sm shadow-sm">
-        ★ CRMI ★<br />COMPLETED
-      </div>
-    </div>
-  );
+function segmentMilestoneStatus(
+  seg: Seg,
+  currentWeekIdx: number,
+  lifecycle: "pre-launch" | "active" | "completed",
+  preLaunch: boolean
+): RoadmapStatus {
+  if (lifecycle === "completed") return "done";
+  if (preLaunch) return "upcoming";
+  if (seg.endWeek < currentWeekIdx) return "done";
+  if (seg.startWeek <= currentWeekIdx && seg.endWeek >= currentWeekIdx) return "current";
+  return "upcoming";
+}
+
+function connectorPath(from: RoadmapPoint, to: RoadmapPoint, index: number) {
+  const controlX = (from.x + to.x) / 2;
+  const lift = index % 2 === 0 ? -9 : 9;
+  const controlY = (from.y + to.y) / 2 + lift;
+  return `M ${from.x} ${from.y} Q ${controlX} ${controlY} ${to.x} ${to.y}`;
+}
+
+function connectorColor(status: RoadmapStatus, nextStatus?: RoadmapStatus) {
+  if (status === "done") return "#10b981";
+  if (status === "current" || nextStatus === "current") return "#06b6d4";
+  return "#94a3b8";
 }
 
 function YearGrid({ weeks, currentIdx }: { weeks: WeekRow[]; currentIdx: number }) {
