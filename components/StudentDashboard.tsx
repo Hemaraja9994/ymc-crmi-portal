@@ -23,8 +23,9 @@ import { levelFromWeeks, badges } from "@/lib/gamification";
 import { stayDutyFor } from "@/lib/stay-duty";
 import { attendanceFor, ATTENDANCE_THRESHOLD } from "@/lib/attendance";
 import { loadLeaves, LeaveRecord } from "@/lib/leaves";
-import { Send, BedDouble, ShieldAlert, Download, Pause, X } from "lucide-react";
+import { Send, BedDouble, ShieldAlert, Download, Pause, X, BookOpen, ExternalLink, Library } from "lucide-react";
 import { getStudentCertificateStatuses, type CertificateStatus, type PostingPeriod } from "@/lib/certificates";
+import { LOGBOOKS, LEARNING_RESOURCES, type LogbookObjective } from "@/lib/logbook";
 
 type WeekRow = {
   idx: number;
@@ -373,6 +374,12 @@ export default function StudentDashboard({
       {/* Leave record — read-only. Students cannot apply themselves;
           leaves are recorded by the Coordination Cell per committee decision. */}
       <LeaveRecordView leaves={leaves} regNo={assignment.student.regNo} />
+
+      {/* Logbook objectives for the CURRENT posting + learning resources */}
+      {!preLaunch && currentWeek?.cell && (
+        <CurrentPostingLogbook deptCode={currentWeek.cell.deptCode} />
+      )}
+      <LearningResourcesCard />
 
       {/* Certificate preview (only when completed) */}
       {lifecycle === "completed" && (
@@ -1013,3 +1020,157 @@ function CertificateTile({ row }: { row: { posting: PostingPeriod; status: Certi
   );
 }
 
+
+// ─── Current Posting Logbook ──────────────────────────────────────────────
+function CurrentPostingLogbook({ deptCode }: { deptCode: string }) {
+  const lb = LOGBOOKS[deptCode];
+  if (!lb) return null;
+
+  const [completed, setCompleted] = useState<Set<string>>(new Set());
+  const STORAGE_KEY = `ymc_logbook_${deptCode}`;
+
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(STORAGE_KEY);
+      if (raw) setCompleted(new Set(JSON.parse(raw) as string[]));
+    } catch { /* ignore */ }
+  }, [STORAGE_KEY]);
+
+  function toggle(id: string) {
+    const next = new Set(completed);
+    if (next.has(id)) next.delete(id); else next.add(id);
+    setCompleted(next);
+    try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify([...next])); } catch {}
+  }
+
+  const total = lb.objectives.length;
+  const done = lb.objectives.filter((o) => completed.has(o.id)).length;
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+
+  const kindIcon: Record<LogbookObjective["kind"], string> = {
+    skill: "🎯",
+    procedure: "🩺",
+    case: "📋",
+    knowledge: "📚",
+    "log-entry": "📝",
+  };
+
+  return (
+    <section className="card overflow-hidden">
+      <div className="border-b border-slate-200 bg-gradient-to-r from-xcel-50 to-white p-4 md:p-5">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <div className="flex items-center gap-2">
+              <BookOpen size={16} className="text-xcel-700" />
+              <h2 className="font-bold text-slate-900">Current Posting Logbook</h2>
+            </div>
+            <p className="mt-0.5 text-xs text-slate-500">
+              <strong>{lb.deptName}</strong> · {lb.weeks} week{lb.weeks > 1 ? "s" : ""} ·
+              <span className="ml-1">{done} of {total} objectives ticked</span>
+            </p>
+            <p className="mt-1 text-[11px] text-slate-500 italic max-w-2xl">{lb.introduction}</p>
+          </div>
+          <div className="text-right">
+            <div className="text-2xl font-extrabold text-xcel-700">{pct}%</div>
+            <div className="text-[10px] text-slate-400 uppercase tracking-wider">Progress</div>
+          </div>
+        </div>
+        {/* progress bar */}
+        <div style={{ marginTop: 10, height: 6, borderRadius: 999, background: "#E5E7EB", overflow: "hidden" }}>
+          <div style={{ height: "100%", width: `${pct}%`, background: "#4338CA", transition: "width 0.4s ease" }} />
+        </div>
+      </div>
+
+      <ul className="divide-y divide-slate-100">
+        {lb.objectives.map((obj) => {
+          const isDone = completed.has(obj.id);
+          return (
+            <li key={obj.id} className="px-4 py-2.5 hover:bg-slate-50 flex items-start gap-3">
+              <input
+                type="checkbox"
+                checked={isDone}
+                onChange={() => toggle(obj.id)}
+                className="mt-1 h-4 w-4 accent-accent-600 shrink-0 cursor-pointer"
+                aria-label={obj.title}
+              />
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="text-sm">{kindIcon[obj.kind]}</span>
+                  <span className={`text-sm ${isDone ? "line-through text-slate-400" : "text-slate-800"}`}>
+                    {obj.title}
+                  </span>
+                  {obj.mandatory && (
+                    <span className="text-[9px] font-bold uppercase tracking-wider text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded ring-1 ring-rose-100">
+                      Mandatory
+                    </span>
+                  )}
+                </div>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+
+      {(lb.recommendedReading?.length || lb.externalLinks?.length) ? (
+        <div className="border-t border-slate-100 bg-slate-50/60 p-4 text-xs space-y-1">
+          {lb.recommendedReading && (
+            <div>
+              <strong className="text-slate-700">Recommended reading:</strong>{" "}
+              <span className="text-slate-600">{lb.recommendedReading.join(" · ")}</span>
+            </div>
+          )}
+        </div>
+      ) : null}
+
+      <div className="border-t border-slate-100 bg-amber-50/40 p-3 text-[11px] text-amber-900">
+        ⚠️ Objectives shown above are sourced from public NMC 2021 guidance and require HOD sign-off
+        in the official Yenepoya logbook before they count for completion.
+      </div>
+    </section>
+  );
+}
+
+// ─── Learning Resources ─────────────────────────────────────────────────────
+function LearningResourcesCard() {
+  return (
+    <section className="card overflow-hidden">
+      <div className="border-b border-slate-200 bg-slate-50/60 p-4 flex items-center gap-2">
+        <Library size={16} className="text-accent-600" />
+        <div>
+          <h2 className="font-bold text-slate-900">Learning Resources</h2>
+          <p className="text-xs text-slate-500">Curated regulatory + clinical references for the internship year.</p>
+        </div>
+      </div>
+      <ul className="divide-y divide-slate-100">
+        {LEARNING_RESOURCES.map((r) => {
+          const isExternal = r.url.startsWith("http");
+          return (
+            <li key={r.title} className="p-4 hover:bg-xcel-50/40">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="badge bg-xcel-100 text-xcel-800 ring-1 ring-xcel-200">{r.tag}</span>
+                    <span className="font-semibold text-sm text-slate-900">{r.title}</span>
+                  </div>
+                  <p className="mt-1 text-xs text-slate-500">{r.description}</p>
+                </div>
+                {isExternal ? (
+                  <a
+                    href={r.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-outline text-xs shrink-0"
+                  >
+                    <ExternalLink size={12} /> Open
+                  </a>
+                ) : (
+                  <span className="text-[11px] text-slate-400 shrink-0 italic">Available offline</span>
+                )}
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}
