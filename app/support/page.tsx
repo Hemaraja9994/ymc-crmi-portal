@@ -9,6 +9,7 @@ import {
   ShieldCheck,
   AtSign,
   ArrowRight,
+  MapPin,
 } from "lucide-react";
 
 export default function SupportPage() {
@@ -39,19 +40,12 @@ export default function SupportPage() {
         </div>
       </header>
 
-      {/* ── Communication Hub — institutional mail router ─────────── */}
-      <section className="grid gap-4 md:grid-cols-2">
+      {/* ── Communication Hub — principal desk only ─────────────────── */}
+      <section className="grid gap-4">
         <CommHubCard
-          variant="principal"
           label={COMMUNICATION_HUB.principal.label}
           email={COMMUNICATION_HUB.principal.email}
           purpose={COMMUNICATION_HUB.principal.purpose}
-        />
-        <CommHubCard
-          variant="general"
-          label={COMMUNICATION_HUB.general.label}
-          email={COMMUNICATION_HUB.general.email}
-          purpose={COMMUNICATION_HUB.general.purpose}
         />
       </section>
 
@@ -59,12 +53,17 @@ export default function SupportPage() {
       <section className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         {ADMINS.map((a) => {
           const initials = a.name
-            .replace(/^Dr\.\s*/i, "")
+            .replace(/^(Dr\.|Mrs\.|Mr\.)\s*/i, "")
             .split(" ")
             .map((n) => n[0])
+            .filter(Boolean)
             .slice(0, 2)
             .join("")
             .toUpperCase();
+
+          const emailAddr = a.email ?? COMMUNICATION_HUB.principal.email;
+          const phoneHref = a.phone ?? "tel:+918242204668";
+
           return (
             <div key={a.name} className="card p-5 hover:shadow-md transition flex flex-col">
               <div className="flex items-start gap-3">
@@ -77,10 +76,21 @@ export default function SupportPage() {
                     {a.isPrincipal && (
                       <span className="badge bg-amber-100 text-amber-800 ring-1 ring-amber-200">Principal</span>
                     )}
+                    {a.isWelfareOfficer && (
+                      <span className="badge bg-emerald-100 text-emerald-800 ring-1 ring-emerald-200">Welfare</span>
+                    )}
                   </div>
                   <div className="text-xs text-slate-500 mt-0.5">{a.role}</div>
                 </div>
               </div>
+
+              {/* Address (principal / key desks) */}
+              {a.address && (
+                <div className="mt-3 flex items-start gap-1.5 text-[11px] text-slate-500 leading-snug">
+                  <MapPin size={11} className="mt-0.5 shrink-0 text-xcel-500" />
+                  <span>{a.address}</span>
+                </div>
+              )}
 
               {/* Focus areas */}
               {a.focus && (
@@ -116,12 +126,16 @@ export default function SupportPage() {
               <div className="mt-4 grid grid-cols-3 gap-2 text-xs">
                 <a
                   className="btn-outline justify-center"
-                  href={`mailto:${a.isPrincipal ? COMMUNICATION_HUB.principal.email : COMMUNICATION_HUB.general.email}?subject=${encodeURIComponent(`Attn: ${a.name}`)}`}
+                  href={`mailto:${emailAddr}?subject=${encodeURIComponent(`Attn: ${a.name}`)}`}
                   aria-label={`Email ${a.name}`}
                 >
                   <Mail size={13} /> Email
                 </a>
-                <a className="btn-outline justify-center" href="tel:+918242204668" aria-label={`Call ${a.name}`}>
+                <a
+                  className="btn-outline justify-center"
+                  href={phoneHref}
+                  aria-label={`Call ${a.name}`}
+                >
                   <Phone size={13} /> Call
                 </a>
                 <a className="btn-outline justify-center" href="#" aria-label={`Chat ${a.name}`}>
@@ -155,6 +169,9 @@ export default function SupportPage() {
                     {a.name}
                     {a.isPrincipal && (
                       <span className="ml-1.5 align-middle inline-block rounded-full bg-amber-100 px-1.5 py-0.5 text-[9px] font-bold text-amber-800">PRINCIPAL</span>
+                    )}
+                    {a.isWelfareOfficer && (
+                      <span className="ml-1.5 align-middle inline-block rounded-full bg-emerald-100 px-1.5 py-0.5 text-[9px] font-bold text-emerald-800">WELFARE</span>
                     )}
                   </td>
                   <td className="px-4 py-2.5 text-slate-700">{a.role}</td>
@@ -192,35 +209,29 @@ export default function SupportPage() {
 }
 
 function CommHubCard({
-  variant, label, email, purpose,
+  label, email, purpose,
 }: {
-  variant: "principal" | "general";
   label: string;
   email: string;
   purpose: string;
 }) {
-  const isPrincipal = variant === "principal";
   return (
     <a
-      href={`mailto:${email}?subject=${encodeURIComponent(isPrincipal ? "Principal Administrative Query" : "Internship Postings / Portal Support")}`}
-      className={`card group relative overflow-hidden p-5 transition hover:-translate-y-0.5 hover:shadow-xl ${
-        isPrincipal ? "border-amber-200" : "border-xcel-200"
-      }`}
+      href={`mailto:${email}?subject=${encodeURIComponent("Principal Administrative Query")}`}
+      className="card group relative overflow-hidden p-5 transition hover:-translate-y-0.5 hover:shadow-xl border-amber-200"
     >
       <div className="flex items-start gap-4">
         <div
           className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl text-white"
           style={{
-            background: isPrincipal
-              ? "linear-gradient(135deg, #d97706 0%, #b45309 100%)"
-              : "linear-gradient(135deg, #008B75 0%, #0B5345 100%)",
+            background: "linear-gradient(135deg, #d97706 0%, #b45309 100%)",
           }}
         >
           <AtSign size={20} />
         </div>
         <div className="min-w-0 flex-1">
           <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-            {isPrincipal ? "Administrative Desk" : "Postings & Portal Support"}
+            Administrative Desk
           </div>
           <div className="mt-0.5 font-bold text-slate-900">{label}</div>
           <div className="mt-0.5 text-xs text-slate-500">{purpose}</div>
