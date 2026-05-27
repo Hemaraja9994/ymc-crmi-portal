@@ -5,7 +5,7 @@
 
 import { addDays } from "date-fns";
 import { Assignment, BLOCKS, getWeekDates } from "./rotation";
-import { LeaveRecord, loadLeaves } from "./leaves";
+import { LeaveRecord, loadLeaves, LEAVE_TYPE_META, computePostingExtensionDays } from "./leaves";
 
 export type PostingPeriod = {
   key: string;              // `${regNo}:${deptCode}` — stable across blocks for now
@@ -141,28 +141,20 @@ export function getStudentPostings(assignment: Assignment): PostingPeriod[] {
   return periods;
 }
 
-// Count approved leave days for a student that fall within [startDate, endDate].
-function countApprovedLeaveDays(
+// EXTENSION days within [startDate, endDate]: CL=0, Ad.L=1×, Absent=2×.
+// Delegates to computePostingExtensionDays so the rule lives in one place.
+function extensionDaysFor(
   regNo: string,
   startDate: Date,
   endDate: Date,
   leaves: LeaveRecord[],
 ): number {
-  const startISO = startDate.toISOString().slice(0, 10);
-  const endISO = endDate.toISOString().slice(0, 10);
-  let total = 0;
-  for (const l of leaves) {
-    if (l.regNo !== regNo || l.status !== "Approved") continue;
-    // overlap days
-    const from = l.from > startISO ? l.from : startISO;
-    const to = l.to < endISO ? l.to : endISO;
-    if (from > to) continue;
-    const fromDate = new Date(from);
-    const toDate = new Date(to);
-    const days = Math.floor((toDate.getTime() - fromDate.getTime()) / 86_400_000) + 1;
-    total += days > 0 ? days : 0;
-  }
-  return total;
+  return computePostingExtensionDays(
+    regNo,
+    startDate.toISOString().slice(0, 10),
+    endDate.toISOString().slice(0, 10),
+    leaves,
+  );
 }
 
 // ── Status computation ─────────────────────────────────────────────────────
@@ -172,7 +164,7 @@ export function computeCertificateStatus(
   leaves: LeaveRecord[] = [],
   records: CertificateRecord[] = [],
 ): CertificateStatus {
-  const approvedDays = countApprovedLeaveDays(posting.regNo, posting.startDate, posting.endDate, leaves);
+  const approvedDays = extensionDaysFor(posting.regNo, posting.startDate, posting.endDate, leaves);
   const effectiveEnd = addDays(posting.endDate, approvedDays);
 
   // Apply overrides first
@@ -204,7 +196,7 @@ export function enrichPosting(
   posting: PostingPeriod,
   leaves: LeaveRecord[] = [],
 ): PostingPeriod {
-  const approvedDays = countApprovedLeaveDays(posting.regNo, posting.startDate, posting.endDate, leaves);
+  const approvedDays = extensionDaysFor(posting.regNo, posting.startDate, posting.endDate, leaves);
   return {
     ...posting,
     approvedLeaveDays: approvedDays,

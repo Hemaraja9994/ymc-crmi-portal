@@ -41,7 +41,7 @@ export default function DeptDetail({
 
   // Quick "Mark on leave" form state
   const [qaReg, setQaReg] = useState("");
-  const [qaType, setQaType] = useState<LeaveType>("Casual");
+  const [qaType, setQaType] = useState<LeaveType>("CL");
   const [qaFrom, setQaFrom] = useState("");
   const [qaTo, setQaTo] = useState("");
   const [qaReason, setQaReason] = useState("");
@@ -64,7 +64,7 @@ export default function DeptDetail({
     setLeaves(next);
     saveLeaves(next);
     setQaOk(`Recorded ${qaType} leave for ${qaReg}.`);
-    setQaReg(""); setQaFrom(""); setQaTo(""); setQaReason(""); setQaType("Casual");
+    setQaReg(""); setQaFrom(""); setQaTo(""); setQaReason(""); setQaType("CL");
     setTimeout(() => setQaOk(""), 3000);
   }
 
@@ -150,7 +150,7 @@ export default function DeptDetail({
             onChange={(e) => setQaType(e.target.value as LeaveType)}
             className="px-3 py-2 border border-slate-300 rounded-lg"
           >
-            {(["Casual", "Medical", "Emergency", "Bereavement", "Academic"] as LeaveType[]).map((t) => (
+            {(["CL", "Ad.L", "Absent"] as LeaveType[]).map((t) => (
               <option key={t} value={t}>{t}</option>
             ))}
           </select>

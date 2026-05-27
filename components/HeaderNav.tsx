@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const NAV = [
+  { href: "/today", label: "Today" },
   { href: "/student", label: "Student" },
   { href: "/postings-overview", label: "Postings (Dept – Year)" },
   { href: "/guidelines", label: "Guidelines" },

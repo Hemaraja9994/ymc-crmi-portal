@@ -19,7 +19,7 @@ import {
   isOnLeave,
 } from "@/lib/leaves";
 
-const TYPES: LeaveType[] = ["Casual", "Medical", "Emergency", "Bereavement", "Academic"];
+const TYPES: LeaveType[] = ["CL", "Ad.L", "Absent"];
 
 export default function HodConsole({
   dept,
@@ -34,7 +34,7 @@ export default function HodConsole({
 }) {
   const [leaves, setLeaves] = useState<LeaveRecord[]>([]);
   const [regNo, setRegNo] = useState("");
-  const [type, setType] = useState<LeaveType>("Casual");
+  const [type, setType] = useState<LeaveType>("CL");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [reason, setReason] = useState("");
@@ -69,7 +69,7 @@ export default function HodConsole({
     setFrom("");
     setTo("");
     setReason("");
-    setType("Casual");
+    setType("CL");
     setTimeout(() => setSuccess(""), 3500);
   }
 

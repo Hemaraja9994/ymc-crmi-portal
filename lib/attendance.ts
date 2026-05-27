@@ -65,7 +65,7 @@ export function projectedDeficitForPlannedLeave(
   const synthetic: LeaveRecord = {
     id: "_projection",
     regNo,
-    type: "Casual",
+    type: "CL",
     from: newFrom,
     to: newTo,
     reason: "projection",

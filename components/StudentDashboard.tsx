@@ -21,8 +21,8 @@ import {
 import LiveUpdatesBanner from "./LiveUpdatesBanner";
 import { levelFromWeeks, badges } from "@/lib/gamification";
 import { stayDutyFor } from "@/lib/stay-duty";
-import { attendanceFor, ATTENDANCE_THRESHOLD, projectedDeficitForPlannedLeave } from "@/lib/attendance";
-import { loadLeaves, LeaveRecord, LeaveCategory } from "@/lib/leaves";
+import { attendanceFor, ATTENDANCE_THRESHOLD } from "@/lib/attendance";
+import { loadLeaves, LeaveRecord } from "@/lib/leaves";
 import { Send, BedDouble, ShieldAlert, Download, Pause, X } from "lucide-react";
 import { getStudentCertificateStatuses, type CertificateStatus, type PostingPeriod } from "@/lib/certificates";
 
@@ -73,9 +73,7 @@ export default function StudentDashboard({
   daysToStart: number;
 }) {
   const [view, setView] = useState<"year" | "month" | "week">("year");
-  const [leaves, setLeaves] = useState<
-    { id: string; from: string; to: string; reason: string; type: string; category: LeaveCategory; status: "Pending" | "Approved" | "Rejected"; doc?: string }[]
-  >([]);
+  const [leaves, setLeaves] = useState<LeaveRecord[]>([]);
   const [globalLeaves, setGlobalLeaves] = useState<LeaveRecord[]>([]);
 
   useEffect(() => {
@@ -372,14 +370,9 @@ export default function StudentDashboard({
         {view === "week" && <WeekDetail week={weeks[preLaunch ? 0 : currentWeek.idx]} preLaunch={preLaunch} />}
       </section>
 
-      {/* Leave section (two-category) */}
-      <LeaveSection
-        leaves={leaves}
-        setLeaves={setLeaves}
-        preLaunch={preLaunch}
-        regNo={assignment.student.regNo}
-        globalLeaves={globalLeaves}
-      />
+      {/* Leave record — read-only. Students cannot apply themselves;
+          leaves are recorded by the Coordination Cell per committee decision. */}
+      <LeaveRecordView leaves={leaves} regNo={assignment.student.regNo} />
 
       {/* Certificate preview (only when completed) */}
       {lifecycle === "completed" && (
@@ -734,281 +727,78 @@ function WeekDetail({ week, preLaunch }: { week: WeekRow; preLaunch: boolean }) 
   );
 }
 
-function LeaveSection({
-  leaves,
-  setLeaves,
-  preLaunch,
-  regNo,
-  globalLeaves,
-}: {
-  leaves: any[];
-  setLeaves: (l: any[]) => void;
-  preLaunch: boolean;
-  regNo: string;
-  globalLeaves: LeaveRecord[];
-}) {
-  const [tab, setTab] = useState<"advance" | "retro">("advance");
+// Read-only leave history. Per CRMI committee decision (Mar 2026), students
+// can no longer self-apply — leaves are recorded by the Coordination Cell.
+// Students still see their own record here.
+function LeaveRecordView({ leaves, regNo }: { leaves: LeaveRecord[]; regNo: string }) {
+  const mine = leaves
+    .filter((l) => l.regNo === regNo)
+    .sort((a, b) => (b.from || "").localeCompare(a.from || ""));
+
+  const counted = mine.filter((l) => l.status === "Approved");
+  const cl = counted.filter((l) => l.type === "CL").length;
+  const adl = counted.filter((l) => l.type === "Ad.L").length;
+  const absent = counted.filter((l) => l.type === "Absent").length;
 
   return (
     <section className="card overflow-hidden">
-      <div className="border-b border-slate-200 flex">
-        <TabBtn active={tab === "advance"} onClick={() => setTab("advance")}>
-          📅 Advance Leave Notification
-        </TabBtn>
-        <TabBtn active={tab === "retro"} onClick={() => setTab("retro")}>
-          🚑 Retroactive / Emergency Leave
-        </TabBtn>
+      <div className="border-b border-slate-200 bg-slate-50/60 p-4 md:p-5">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 className="font-bold text-slate-900">My Leave Record</h2>
+            <p className="text-xs text-slate-500">
+              Maintained by the CRMI Coordination Cell. Contact Dr. Imaad (attendance &amp; leaves)
+              for corrections or new entries.
+            </p>
+          </div>
+          <div className="flex gap-2 text-[11px]">
+            <span className="rounded-full bg-sky-100 px-2 py-1 font-semibold text-sky-800">CL · {cl}</span>
+            <span className="rounded-full bg-amber-100 px-2 py-1 font-semibold text-amber-800">Ad.L · {adl}</span>
+            <span className="rounded-full bg-rose-100 px-2 py-1 font-semibold text-rose-800">Absent · {absent}</span>
+          </div>
+        </div>
       </div>
-      <div className="p-5 grid md:grid-cols-2 gap-5">
-        {tab === "advance" ? (
-          <AdvanceLeaveForm leaves={leaves} setLeaves={setLeaves} regNo={regNo} globalLeaves={globalLeaves} preLaunch={preLaunch} />
+
+      <div className="p-4 md:p-5">
+        {mine.length === 0 ? (
+          <div className="text-sm text-slate-500 italic text-center py-6">
+            No leave records yet. Days you don't attend will appear here once entered by the
+            Coordination Cell.
+          </div>
         ) : (
-          <RetroLeaveForm leaves={leaves} setLeaves={setLeaves} regNo={regNo} />
+          <ul className="space-y-2 text-sm">
+            {mine.map((l) => (
+              <li key={l.id} className="border border-slate-200 rounded-lg p-3 flex justify-between items-start gap-2">
+                <div className="min-w-0">
+                  <div className="font-medium">
+                    {l.from} → {l.to}{" "}
+                    <span className={`ml-1 badge ring-1 ${
+                      l.type === "CL" ? "bg-sky-100 text-sky-800 ring-sky-200" :
+                      l.type === "Ad.L" ? "bg-amber-100 text-amber-800 ring-amber-200" :
+                      "bg-rose-100 text-rose-800 ring-rose-200"
+                    }`}>{l.type}</span>
+                  </div>
+                  {l.reason && <div className="text-xs text-slate-500 mt-1">{l.reason}</div>}
+                  {l.type === "Ad.L" && l.status === "Approved" && (
+                    <div className="text-[11px] text-amber-700 mt-1">Posting extended by 1× these days.</div>
+                  )}
+                  {l.type === "Absent" && l.status === "Approved" && (
+                    <div className="text-[11px] text-rose-700 mt-1">Posting extended by 2× these days (unauthorised absence).</div>
+                  )}
+                </div>
+                <StatusBadge status={l.status as any} />
+              </li>
+            ))}
+          </ul>
         )}
-        <MyLeaves leaves={leaves} />
       </div>
     </section>
   );
 }
 
-function TabBtn({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
-  return (
-    <button
-      onClick={onClick}
-      className={`flex-1 px-4 py-3 text-sm font-medium text-center border-b-2 transition ${
-        active
-          ? "border-xcel-600 text-xcel-700 bg-xcel-50/60"
-          : "border-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-50"
-      }`}
-    >
-      {children}
-    </button>
-  );
-}
-
-function AdvanceLeaveForm({
-  leaves,
-  setLeaves,
-  regNo,
-  globalLeaves,
-  preLaunch,
-}: {
-  leaves: any[];
-  setLeaves: (l: any[]) => void;
-  regNo: string;
-  globalLeaves: LeaveRecord[];
-  preLaunch: boolean;
-}) {
-  const [from, setFrom] = useState("");
-  const [to, setTo] = useState("");
-  const [type, setType] = useState("Casual");
-  const [reason, setReason] = useState("");
-  const [error, setError] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-
-  // Live projection: if this leave were approved, would the intern fall under 80%?
-  const projection = from && to
-    ? projectedDeficitForPlannedLeave(regNo, globalLeaves, from, to)
-    : null;
-
-  async function submit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!from || !to) return;
-    setError("");
-    setSubmitting(true);
-    try {
-      const response = await fetch("/api/leave", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ regNo, from, to, reason, type, category: "Advance" }),
-      });
-      const result = await response.json();
-      if (!response.ok) {
-        setError(result.error || "Could not submit leave request.");
-        return;
-      }
-      setLeaves([...leaves, result.leave]);
-      setFrom(""); setTo(""); setReason(""); setType("Casual");
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
-  return (
-    <form onSubmit={submit} className="space-y-3 text-sm">
-      <div>
-        <h3 className="font-semibold flex items-center gap-2">
-          <Clock size={16} className="text-xcel-600" /> Notify in advance
-        </h3>
-        <p className="text-xs text-slate-500 mt-0.5">
-          Log a planned leave (conference, family event, exam) <em>weeks in advance</em> so the
-          coordination cell can adjust the roster.
-        </p>
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <label className="block">
-          <span className="text-xs text-slate-500">From</span>
-          <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} required className="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg" />
-        </label>
-        <label className="block">
-          <span className="text-xs text-slate-500">To</span>
-          <input type="date" value={to} onChange={(e) => setTo(e.target.value)} required className="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg" />
-        </label>
-      </div>
-      <label className="block">
-        <span className="text-xs text-slate-500">Type</span>
-        <select value={type} onChange={(e) => setType(e.target.value)} className="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg">
-          <option>Casual</option><option>Academic</option><option>Bereavement</option>
-        </select>
-      </label>
-      <label className="block">
-        <span className="text-xs text-slate-500">Reason / context</span>
-        <textarea value={reason} onChange={(e) => setReason(e.target.value)} rows={2} className="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg" placeholder="e.g. National conference presentation in Chennai" />
-      </label>
-
-      {projection && !preLaunch && projection.deficient && (
-        <div className="rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-xs px-3 py-2 flex items-start gap-2">
-          <ShieldAlert size={14} className="mt-0.5" />
-          <div>
-            <strong>Heads up.</strong> If approved, your year-end attendance projection drops to{" "}
-            <strong>{projection.attendancePct}%</strong> — below the NMC 80% threshold. Coordinators
-            will see a deficiency flag.
-          </div>
-        </div>
-      )}
-
-      {error && <div className="text-xs text-rose-600">{error}</div>}
-      <button className="btn-primary w-full justify-center" disabled={submitting}>
-        {submitting ? "Submitting..." : "Submit advance notification"}
-      </button>
-    </form>
-  );
-}
-
-function RetroLeaveForm({
-  leaves,
-  setLeaves,
-  regNo,
-}: {
-  leaves: any[];
-  setLeaves: (l: any[]) => void;
-  regNo: string;
-}) {
-  const [from, setFrom] = useState("");
-  const [to, setTo] = useState("");
-  const [type, setType] = useState("Medical");
-  const [reason, setReason] = useState("");
-  const [docName, setDocName] = useState("");
-  const [error, setError] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-
-  async function submit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!from || !to || !docName) return;
-    setError("");
-    setSubmitting(true);
-    try {
-      const response = await fetch("/api/leave", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ regNo, from, to, reason, type, category: "Retroactive", doc: docName }),
-      });
-      const result = await response.json();
-      if (!response.ok) {
-        setError(result.error || "Could not submit leave request.");
-        return;
-      }
-      setLeaves([...leaves, result.leave]);
-      setFrom(""); setTo(""); setReason(""); setDocName(""); setType("Medical");
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
-  return (
-    <form onSubmit={submit} className="space-y-3 text-sm">
-      <div>
-        <h3 className="font-semibold flex items-center gap-2">
-          <ShieldAlert size={16} className="text-rose-500" /> After-the-fact / emergency
-        </h3>
-        <p className="text-xs text-slate-500 mt-0.5">
-          Upload your medical certificate or supporting document for absences that already
-          happened. Document upload is mandatory.
-        </p>
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <label className="block">
-          <span className="text-xs text-slate-500">From</span>
-          <input type="date" value={from} onChange={(e) => setFrom(e.target.value)} required className="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg" />
-        </label>
-        <label className="block">
-          <span className="text-xs text-slate-500">To</span>
-          <input type="date" value={to} onChange={(e) => setTo(e.target.value)} required className="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg" />
-        </label>
-      </div>
-      <label className="block">
-        <span className="text-xs text-slate-500">Type</span>
-        <select value={type} onChange={(e) => setType(e.target.value)} className="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg">
-          <option>Medical</option><option>Emergency</option><option>Bereavement</option>
-        </select>
-      </label>
-      <label className="block">
-        <span className="text-xs text-slate-500">Reason</span>
-        <textarea value={reason} onChange={(e) => setReason(e.target.value)} rows={2} className="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg" placeholder="Brief reason — incident, diagnosis, etc." />
-      </label>
-      <DropZone onFile={(f) => setDocName(f.name)} />
-      {docName ? (
-        <div className="text-xs text-emerald-700 flex items-center gap-1">
-          <CheckCircle2 size={14} /> Attached: {docName}
-        </div>
-      ) : (
-        <div className="text-xs text-rose-600 flex items-center gap-1">
-          <AlertCircle size={14} /> A document (MC/letter) is required for retroactive leave.
-        </div>
-      )}
-      {error && <div className="text-xs text-rose-600">{error}</div>}
-      <button disabled={!docName || submitting} className={`btn w-full justify-center ${docName ? "btn-primary" : "bg-slate-200 text-slate-500 cursor-not-allowed"}`}>
-        {submitting ? "Submitting..." : "Submit retroactive request"}
-      </button>
-    </form>
-  );
-}
-
-function MyLeaves({ leaves }: { leaves: any[] }) {
-  return (
-    <div>
-      <h3 className="font-semibold">My Leave Requests</h3>
-      <p className="text-xs text-slate-500 mt-0.5">Live status from the coordinators.</p>
-      <ul className="mt-3 space-y-2 text-sm">
-        {leaves.length === 0 && <li className="text-slate-500 italic">No requests yet.</li>}
-        {leaves.map((l) => (
-          <li key={l.id} className="border border-slate-200 rounded-lg p-3 flex justify-between items-start gap-2">
-            <div className="min-w-0">
-              <div className="font-medium">
-                {l.from} → {l.to}{" "}
-                <span className="text-xs text-slate-400">· {l.type}</span>
-              </div>
-              <div className="mt-0.5 flex items-center gap-1 text-[10px]">
-                {l.category === "Advance" ? (
-                  <span className="badge bg-indigo-100 text-indigo-800 ring-1 ring-indigo-200">📅 Advance</span>
-                ) : (
-                  <span className="badge bg-rose-100 text-rose-800 ring-1 ring-rose-200">🚑 Retroactive</span>
-                )}
-              </div>
-              {l.reason && <div className="text-xs text-slate-500 mt-1">{l.reason}</div>}
-              {l.doc && <div className="text-xs text-slate-400 mt-0.5">📎 {l.doc}</div>}
-            </div>
-            <StatusBadge status={l.status} />
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
 function StatusBadge({ status }: { status: "Pending" | "Approved" | "Rejected" }) {
   const map = {
-    Pending: "bg-amber-100 text-amber-800 ring-amber-200",
+    Pending:  "bg-amber-100 text-amber-800 ring-amber-200",
     Approved: "bg-emerald-100 text-emerald-800 ring-emerald-200",
     Rejected: "bg-rose-100 text-rose-800 ring-rose-200",
   } as const;
@@ -1016,19 +806,8 @@ function StatusBadge({ status }: { status: "Pending" | "Approved" | "Rejected" }
   return <span className={`badge ring-1 ${map[status]}`}><Icon size={12} /> {status}</span>;
 }
 
-function DropZone({ onFile }: { onFile: (f: File) => void }) {
-  return (
-    <label
-      onDragOver={(e) => e.preventDefault()}
-      onDrop={(e) => { e.preventDefault(); const f = e.dataTransfer.files?.[0]; if (f) onFile(f); }}
-      className="block border-2 border-dashed border-slate-300 rounded-xl p-4 text-center text-sm text-slate-500 cursor-pointer hover:bg-slate-50"
-    >
-      <Upload className="mx-auto mb-1 text-slate-400" />
-      Drag & drop leave letter / medical certificate (.pdf, .jpg)
-      <input type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={(e) => e.target.files?.[0] && onFile(e.target.files[0])} />
-    </label>
-  );
-}
+// ─── Removed (committee decision Mar 2026): AdvanceLeaveForm, RetroLeaveForm,
+// TabBtn, MyLeaves, DropZone. Students no longer self-apply for leave.
 
 function CertificatePreview({
   student,
