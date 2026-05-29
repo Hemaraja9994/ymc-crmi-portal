@@ -80,7 +80,10 @@ export default function SupportPage() {
                       <span className="badge bg-emerald-100 text-emerald-800 ring-1 ring-emerald-200">Welfare</span>
                     )}
                   </div>
-                  <div className="text-xs text-slate-500 mt-0.5">{a.role}</div>
+                  <div className="text-xs text-slate-500 mt-0.5">
+                    {a.role}
+                    {a.dept && <span className="text-slate-400"> · {a.dept}</span>}
+                  </div>
                   {a.extension && (
                     <div className="mt-1 inline-flex items-center gap-1 text-[11px] font-medium text-slate-600">
                       <Phone size={11} className="text-slate-400" /> {a.extension}
@@ -179,7 +182,10 @@ export default function SupportPage() {
                       <span className="ml-1.5 align-middle inline-block rounded-full bg-emerald-100 px-1.5 py-0.5 text-[9px] font-bold text-emerald-800">WELFARE</span>
                     )}
                   </td>
-                  <td className="px-4 py-2.5 text-slate-700">{a.role}</td>
+                  <td className="px-4 py-2.5 text-slate-700">
+                    {a.role}
+                    {a.dept && <span className="text-slate-400"> · {a.dept}</span>}
+                  </td>
                   <td className="px-4 py-2.5 text-slate-600 text-xs">{a.focus?.join(" · ")}</td>
                 </tr>
               ))}

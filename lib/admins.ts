@@ -4,6 +4,7 @@ export type Admin = {
   email?: string;
   phone?: string;         // primary tel: link for the Call button
   extension?: string;     // campus PBX extension (shown when no direct line)
+  dept?: string;          // home department (shown beside the role)
   isPrincipal?: boolean;
   isWelfareOfficer?: boolean;
   focus?: string[];      // areas they typically handle
@@ -35,8 +36,9 @@ export const ADMINS: Admin[] = [
     responseSla: "Same day",
   },
   {
-    name: "Dr. Rohith",
+    name: "Dr. Rohith George",
     role: "Internship Coordinator",
+    dept: "General Medicine",
     email: "hospital@yenepoya.org",
     phone: "tel:+918242204668",
     focus: ["Posting allocation", "Block I tracking", "Schedule changes"],
@@ -46,6 +48,7 @@ export const ADMINS: Admin[] = [
   {
     name: "Dr. Jeevan Pereira",
     role: "Internship Coordinator",
+    dept: "Orthopaedics",
     email: "hospital@yenepoya.org",
     phone: "tel:+918242204668",
     focus: ["Posting allocation", "Block II tracking", "Schedule changes"],
@@ -55,9 +58,19 @@ export const ADMINS: Admin[] = [
   {
     name: "Dr. Imaad M Ismail",
     role: "Internship Coordinator",
+    dept: "Community Medicine",
     email: "hospital@yenepoya.org",
     phone: "tel:+918242204668",
     focus: ["Posting allocation", "Block III & IV tracking", "Attendance", "Casual leave approvals", "Logbook compliance"],
+    officeHours: "Mon–Sat · 09:00–17:00",
+    responseSla: "Within 4h",
+  },
+  {
+    name: "Dr. T Mukhthar Abdulla",
+    role: "Assistant Medical Superintendent (AMS)",
+    email: "hospital@yenepoya.org",
+    phone: "tel:+918242204668",
+    focus: ["Biometric Attendance Report"],
     officeHours: "Mon–Sat · 09:00–17:00",
     responseSla: "Within 4h",
   },
