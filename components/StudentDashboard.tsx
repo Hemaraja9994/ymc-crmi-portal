@@ -613,7 +613,7 @@ function MilestoneProgressMap({
             return (
               <div
                 key={`${seg.deptCode}-${seg.startWeek}-map`}
-                className="absolute z-10 -translate-x-1/2 -translate-y-1/2"
+                className="absolute z-10 -translate-x-1/2 -translate-y-1/2 hover:z-30 focus-within:z-30"
                 style={{ left: `${point.x}%`, top: `${point.y}%` }}
               >
                 <MilestoneNode
@@ -654,7 +654,7 @@ function MilestoneProgressMap({
                     />
                   </svg>
                 )}
-                <div className="relative z-10">
+                <div className="relative z-10 hover:z-30 focus-within:z-30">
                   <MilestoneNode
                     seg={seg}
                     status={status}
@@ -723,12 +723,12 @@ function MilestoneNode({
   return (
     <div className="group relative flex flex-col items-center">
       {status === "current" && (
-        <span className="absolute inset-1 z-0 animate-ping rounded-full border-2 border-cyan-400/55" />
+        <span className="absolute inset-1 z-0 animate-ping rounded-full border-2 border-cyan-400/55 motion-reduce:hidden" />
       )}
       <button
         type="button"
         aria-label={`${seg.deptName}, ${seg.weeks} weeks, ${seg.startLabel} to ${seg.endLabel}`}
-        className={`${nodeSize} relative z-10 grid place-items-center rounded-full border-2 ${statusClass} transition-all duration-300 hover:-translate-y-1 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-cyan-200`}
+        className={`${nodeSize} relative z-10 grid place-items-center rounded-full border-2 ${statusClass} transition-[transform,box-shadow,border-color] duration-300 ease-out will-change-transform hover:-translate-y-1 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-cyan-200 motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:hover:scale-100`}
       >
         <span className="absolute left-2 top-2 rounded-full bg-white/80 px-1.5 py-0.5 text-[9px] font-black text-slate-400 ring-1 ring-slate-200">
           {String(index + 1).padStart(2, "0")}
@@ -756,7 +756,7 @@ function MilestoneNode({
         </span>
       )}
       <div
-        className={`pointer-events-none absolute left-1/2 ${tooltipPosition} z-30 w-64 -translate-x-1/2 scale-95 rounded-2xl border border-slate-200 bg-white/95 p-3 text-left opacity-0 shadow-xl shadow-slate-200/70 backdrop-blur transition-all duration-300 group-hover:scale-100 group-hover:opacity-100 group-focus-within:scale-100 group-focus-within:opacity-100`}
+        className={`pointer-events-none absolute left-1/2 ${tooltipPosition} z-30 w-64 -translate-x-1/2 scale-95 rounded-2xl border border-slate-200 bg-white/95 p-3 text-left opacity-0 shadow-xl shadow-slate-200/70 backdrop-blur transition-[transform,opacity] duration-300 ease-out group-hover:scale-100 group-hover:opacity-100 group-focus-within:scale-100 group-focus-within:opacity-100 motion-reduce:transition-none`}
       >
         <div className="flex items-start justify-between gap-2">
           <div>
