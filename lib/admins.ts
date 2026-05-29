@@ -26,16 +26,6 @@ export const ADMINS: Admin[] = [
     address: "Yenepoya Medical College, University Road, Deralakatte, Mangalore – 575018, Karnataka",
   },
   {
-    name: "Mrs. Obeida Shoukath",
-    role: "Student Welfare Officer (YMC) & Counsellor",
-    email: "counsellor@yenepoya.edu.in",
-    phone: "tel:+919945144399",
-    isWelfareOfficer: true,
-    focus: ["Wellbeing", "Student grievances", "Non-academic support", "Hostel coordination", "International student cell"],
-    officeHours: "Mon–Sat · 09:00–17:00",
-    responseSla: "Same day",
-  },
-  {
     name: "Dr. Rohith George",
     role: "Internship Coordinator",
     dept: "General Medicine",
