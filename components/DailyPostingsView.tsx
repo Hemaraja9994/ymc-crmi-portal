@@ -2,16 +2,10 @@
 
 import { useMemo, useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { CalendarDays, ChevronLeft, ChevronRight, Users, MapPin, Stethoscope, Search } from "lucide-react";
-
-// Per-CRMI-committee feedback (Mar 2026): department-wise drill-down with
-// daily/weekly/monthly granularity, mobile-first horizontal layout, accessible
-// to both Principal/HODs and students.
-//
-// Layout:
-//   Top   : date scrubber + granularity toggle (Day / Week / Month)
-//   Middle: horizontally-scrollable strip of department chips (count badge)
-//   Below : selected department's intern roster for the picked window
+import {
+  CalendarDays, ChevronLeft, ChevronRight,
+  Users, MapPin, Stethoscope, Search, LayoutGrid, CalendarRange,
+} from "lucide-react";
 
 type Assignment = {
   student: { regNo: string; name: string };
@@ -23,6 +17,12 @@ type Assignment = {
 type Dept = { code: string; name: string; short: string; color: string; weeks: number };
 type Block = { id: number; depts: Dept[] };
 
+// Week boundaries anchored entirely in UTC-millisecond arithmetic so timezone
+// doesn't skew comparisons between server-built assignments and client view.
+function msFloor(date: Date): number {
+  return Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
 export default function DailyPostingsView({
   assignments,
   blocks,
@@ -33,70 +33,81 @@ export default function DailyPostingsView({
 }: {
   assignments: Assignment[];
   blocks: Block[];
-  startDateISO: string;         // internship start date ISO (yyyy-mm-dd)
-  initialDate?: string;         // ISO date to focus on (defaults to today or start)
+  startDateISO: string;
+  initialDate?: string;
   initialDeptCode?: string;
-  readOnly?: boolean;            // when true (student view), hide jump-to-admin links
+  readOnly?: boolean;
 }) {
-  const startDate = new Date(startDateISO);
-  const today = new Date();
-  const defaultFocus = initialDate
-    ? new Date(initialDate)
-    : (today.getTime() < startDate.getTime() ? startDate : today);
+  // Use local-midnight dates throughout so IST/UTC offset never shifts "today".
+  const parseLocal = (iso: string) => {
+    const [y, m, d] = iso.split("-").map(Number);
+    return new Date(y, m - 1, d);
+  };
 
-  const [focus, setFocus] = useState<Date>(defaultFocus);
+  const startDate  = parseLocal(startDateISO);
+  const todayLocal = new Date();
+  todayLocal.setHours(0, 0, 0, 0);
+
+  const defaultFocus = initialDate
+    ? parseLocal(initialDate)
+    : todayLocal < startDate ? startDate : todayLocal;
+
+  const [focus, setFocus]           = useState<Date>(defaultFocus);
   const [granularity, setGranularity] = useState<"day" | "week" | "month">("day");
 
   const allDepts = useMemo(() => blocks.flatMap((b) => b.depts), [blocks]);
-  const [deptCode, setDeptCode] = useState<string>(initialDeptCode || allDepts[0]?.code || "");
-  const [search, setSearch] = useState("");
+  const [deptCode, setDeptCode]     = useState<string>(initialDeptCode || allDepts[0]?.code || "");
+  const [search, setSearch]         = useState("");
 
-  // Compute the week index that contains the focus date.
+  // Compute which CRMI week index the focus date falls in (0-based).
   const focusWeekIdx = useMemo(() => {
-    const ms = focus.getTime() - startDate.getTime();
-    return Math.max(0, Math.min(51, Math.floor(ms / (1000 * 60 * 60 * 24 * 7))));
+    const diffMs = msFloor(focus) - msFloor(startDate);
+    return Math.max(0, Math.min(51, Math.floor(diffMs / (7 * 86_400_000))));
   }, [focus, startDate]);
 
-  // Compute the inclusive [from, to] window for the chosen granularity.
-  const { fromDate, toDate, label } = useMemo(() => {
+  // Compute the [fromDate, toDate] window for the selected granularity.
+  const { fromDate, toDate, label, weekLabel } = useMemo(() => {
     if (granularity === "day") {
       return {
         fromDate: focus,
         toDate: focus,
         label: focus.toLocaleDateString("en-IN", { weekday: "long", day: "2-digit", month: "long", year: "numeric" }),
+        weekLabel: `CRMI Week ${focusWeekIdx + 1}`,
       };
     }
     if (granularity === "week") {
-      const start = new Date(startDate.getTime() + focusWeekIdx * 7 * 86_400_000);
-      const end = new Date(start.getTime() + 6 * 86_400_000);
+      const wStart = new Date(startDate.getTime() + focusWeekIdx * 7 * 86_400_000);
+      const wEnd   = new Date(wStart.getTime() + 6 * 86_400_000);
       return {
-        fromDate: start,
-        toDate: end,
-        label: `Week ${focusWeekIdx + 1} · ${start.toLocaleDateString("en-IN", { day: "2-digit", month: "short" })} – ${end.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}`,
+        fromDate: wStart,
+        toDate: wEnd,
+        label: `Week ${focusWeekIdx + 1}  ·  ${wStart.toLocaleDateString("en-IN", { day: "2-digit", month: "short" })} – ${wEnd.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}`,
+        weekLabel: `CRMI Week ${focusWeekIdx + 1}`,
       };
     }
     // Month
-    const start = new Date(focus.getFullYear(), focus.getMonth(), 1);
-    const end = new Date(focus.getFullYear(), focus.getMonth() + 1, 0);
+    const mStart = new Date(focus.getFullYear(), focus.getMonth(), 1);
+    const mEnd   = new Date(focus.getFullYear(), focus.getMonth() + 1, 0);
     return {
-      fromDate: start,
-      toDate: end,
+      fromDate: mStart,
+      toDate: mEnd,
       label: focus.toLocaleDateString("en-IN", { month: "long", year: "numeric" }),
+      weekLabel: "",
     };
   }, [granularity, focus, focusWeekIdx, startDate]);
 
-  // Compute the week indices that overlap the chosen window.
+  // All CRMI week indices overlapping [fromDate, toDate].
   const windowWeekIdxs = useMemo(() => {
     const idxs: number[] = [];
     for (let w = 0; w < 52; w++) {
       const wStart = new Date(startDate.getTime() + w * 7 * 86_400_000);
-      const wEnd = new Date(wStart.getTime() + 6 * 86_400_000);
+      const wEnd   = new Date(wStart.getTime() + 6 * 86_400_000);
       if (wEnd >= fromDate && wStart <= toDate) idxs.push(w);
     }
     return idxs;
   }, [fromDate, toDate, startDate]);
 
-  // For each dept, count unique interns posted across the window.
+  // Dept → unique-intern count across the window.
   const deptCounts = useMemo(() => {
     const m = new Map<string, Set<string>>();
     for (const d of allDepts) m.set(d.code, new Set<string>());
@@ -111,25 +122,19 @@ export default function DailyPostingsView({
     return out;
   }, [assignments, windowWeekIdxs, allDepts]);
 
-  // Interns posted in the selected dept across the window (with sub-batch + week).
   const selectedDept = allDepts.find((d) => d.code === deptCode);
-  const postedInSelected = useMemo(() => {
+
+  // For each intern in the selected dept, collect which window-weeks they appear.
+  type InternRow = { regNo: string; name: string; subBatch: string; blockId: number; weekIdxs: number[] };
+  const postedInSelected = useMemo((): InternRow[] => {
     if (!selectedDept) return [];
-    const rows: Array<{ regNo: string; name: string; subBatch: string; blockId: number; weeks: number[] }> = [];
+    const rows: InternRow[] = [];
     for (const a of assignments) {
-      const weeksPosted: number[] = [];
-      for (const w of windowWeekIdxs) {
-        const cell = a.rotation.find((r) => r.weekIdx === w);
-        if (cell && cell.deptCode === selectedDept.code) weeksPosted.push(w);
-      }
+      const weeksPosted = windowWeekIdxs.filter((w) =>
+        a.rotation.some((r) => r.weekIdx === w && r.deptCode === selectedDept.code)
+      );
       if (weeksPosted.length > 0) {
-        rows.push({
-          regNo: a.student.regNo,
-          name: a.student.name,
-          subBatch: a.subBatch,
-          blockId: a.blockId,
-          weeks: weeksPosted,
-        });
+        rows.push({ regNo: a.student.regNo, name: a.student.name, subBatch: a.subBatch, blockId: a.blockId, weekIdxs: weeksPosted });
       }
     }
     return rows.sort((a, b) => a.subBatch.localeCompare(b.subBatch) || a.regNo.localeCompare(b.regNo));
@@ -141,73 +146,148 @@ export default function DailyPostingsView({
     return r.name.toLowerCase().includes(s) || r.regNo.toLowerCase().includes(s) || r.subBatch.toLowerCase().includes(s);
   });
 
-  // Step helpers
+  // Group by sub-batch for Month view.
+  const grouped = useMemo(() => {
+    const g = new Map<string, InternRow[]>();
+    for (const r of filteredPosted) {
+      if (!g.has(r.subBatch)) g.set(r.subBatch, []);
+      g.get(r.subBatch)!.push(r);
+    }
+    return Array.from(g.entries()).sort(([a], [b]) => a.localeCompare(b));
+  }, [filteredPosted]);
+
   function shift(direction: -1 | 1) {
-    const newDate = new Date(focus);
-    if (granularity === "day") newDate.setDate(newDate.getDate() + direction);
-    else if (granularity === "week") newDate.setDate(newDate.getDate() + direction * 7);
-    else newDate.setMonth(newDate.getMonth() + direction);
-    setFocus(newDate);
+    const d = new Date(focus);
+    if (granularity === "day")   d.setDate(d.getDate() + direction);
+    else if (granularity === "week") d.setDate(d.getDate() + direction * 7);
+    else d.setMonth(d.getMonth() + direction);
+    setFocus(d);
   }
 
-  // Scroll selected dept chip into view when it changes
+  // Scroll selected chip into view.
   const stripRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = stripRef.current?.querySelector(`[data-dept="${deptCode}"]`) as HTMLElement;
     if (el) el.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
   }, [deptCode]);
 
+  // Week number label within the window (for multi-week month view).
+  const weekLabel2 = (w: number) => {
+    const d = new Date(startDate.getTime() + w * 7 * 86_400_000);
+    return `Wk ${w + 1} · ${d.toLocaleDateString("en-IN", { day: "2-digit", month: "short" })}`;
+  };
+
+  const totalInWindow = Object.values(deptCounts).reduce((a, b) => a + b, 0);
+
   return (
     <div className="space-y-4">
-      {/* ── Date scrubber + granularity toggle ── */}
+
+      {/* ── Date scrubber + granularity ── */}
       <section className="card p-4">
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2 flex-1 min-w-[220px]">
-            <CalendarDays size={16} className="text-accent-600 shrink-0" />
-            <button onClick={() => shift(-1)} className="p-1.5 rounded-md hover:bg-slate-100" aria-label="Previous">
-              <ChevronLeft size={16} />
-            </button>
-            <input
-              type="date"
-              value={focus.toISOString().slice(0, 10)}
-              onChange={(e) => setFocus(new Date(e.target.value))}
-              min={startDateISO}
-              className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm font-mono"
-            />
-            <button onClick={() => shift(1)} className="p-1.5 rounded-md hover:bg-slate-100" aria-label="Next">
-              <ChevronRight size={16} />
-            </button>
-          </div>
-          <div className="inline-flex rounded-lg border border-slate-200 overflow-hidden text-sm">
-            {(["day", "week", "month"] as const).map((g) => (
-              <button
-                key={g}
-                onClick={() => setGranularity(g)}
-                className={`px-3 py-2 capitalize transition ${granularity === g ? "bg-xcel-700 text-white" : "bg-white text-slate-700 hover:bg-slate-50"}`}
-              >
-                {g}
-              </button>
-            ))}
-          </div>
+        {/* Row 1: date navigation */}
+        <div className="flex items-center gap-2">
+          <CalendarDays size={16} className="text-accent-600 shrink-0" />
           <button
-            onClick={() => setFocus(today.getTime() < startDate.getTime() ? startDate : today)}
-            className="btn-outline text-xs"
+            onClick={() => shift(-1)}
+            style={{ touchAction: "manipulation" }}
+            className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-100 active:bg-slate-200"
+            aria-label="Previous"
+          >
+            <ChevronLeft size={18} />
+          </button>
+          <input
+            type="date"
+            value={focus.toISOString().slice(0, 10)}
+            onChange={(e) => { if (e.target.value) setFocus(parseLocal(e.target.value)); }}
+            min={startDateISO}
+            className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm font-mono"
+            style={{ touchAction: "manipulation" }}
+          />
+          <button
+            onClick={() => shift(1)}
+            style={{ touchAction: "manipulation" }}
+            className="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-100 active:bg-slate-200"
+            aria-label="Next"
+          >
+            <ChevronRight size={18} />
+          </button>
+          <button
+            onClick={() => { const d = todayLocal < startDate ? startDate : todayLocal; setFocus(new Date(d)); }}
+            style={{ touchAction: "manipulation" }}
+            className="hidden sm:flex h-10 items-center px-4 rounded-lg border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-100 active:bg-slate-200"
           >
             Today
           </button>
         </div>
-        <div className="mt-2 text-[13px] text-slate-600">{label}</div>
+
+        {/* Row 2: label + granularity tabs */}
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <div className="text-sm font-semibold text-slate-800">{label}</div>
+            {weekLabel && <div className="text-xs text-slate-500">{weekLabel}</div>}
+          </div>
+
+          {/* Granularity toggle — explicit height + touch-action so Android registers taps */}
+          <div
+            className="inline-flex rounded-xl overflow-hidden border border-slate-200 text-sm font-medium"
+            style={{ touchAction: "manipulation" }}
+          >
+            {([
+              { g: "day",   Icon: CalendarDays,  label: "Day"   },
+              { g: "week",  Icon: CalendarRange,  label: "Week"  },
+              { g: "month", Icon: LayoutGrid,     label: "Month" },
+            ] as const).map(({ g, Icon, label: lbl }) => (
+              <button
+                key={g}
+                onClick={() => setGranularity(g)}
+                style={{ touchAction: "manipulation" }}
+                className={`flex h-10 items-center gap-1.5 px-4 transition-colors ${
+                  granularity === g
+                    ? "bg-xcel-700 text-white"
+                    : "bg-white text-slate-600 hover:bg-slate-50 active:bg-slate-100"
+                }`}
+              >
+                <Icon size={13} />
+                {lbl}
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={() => { const d = todayLocal < startDate ? startDate : todayLocal; setFocus(new Date(d)); }}
+            style={{ touchAction: "manipulation" }}
+            className="flex sm:hidden h-10 items-center px-4 rounded-lg border border-slate-200 text-sm font-medium text-slate-700 active:bg-slate-100"
+          >
+            Today
+          </button>
+        </div>
+
+        {/* Week range bar for multi-week windows */}
+        {windowWeekIdxs.length > 1 && (
+          <div className="mt-3 flex flex-wrap gap-1">
+            {windowWeekIdxs.map((w) => (
+              <span key={w} className="rounded-full bg-xcel-50 px-2.5 py-0.5 text-[11px] font-medium text-xcel-700 ring-1 ring-xcel-100">
+                {weekLabel2(w)}
+              </span>
+            ))}
+          </div>
+        )}
       </section>
 
-      {/* ── Horizontal department strip ── */}
+      {/* ── Department strip ── */}
       <section>
-        <div className="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-2 px-1">
-          Departments · {Object.values(deptCounts).reduce((a, b) => a + b, 0)} student-postings in window
+        <div className="mb-2 flex items-center justify-between px-1">
+          <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400">
+            Departments
+          </p>
+          <p className="text-[11px] text-slate-500">
+            <span className="font-semibold text-slate-700">{totalInWindow}</span> intern-postings in window
+          </p>
         </div>
         <div
           ref={stripRef}
-          className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1 snap-x snap-mandatory"
-          style={{ scrollbarWidth: "thin" }}
+          className="flex gap-2.5 overflow-x-auto pb-2 -mx-1 px-1 snap-x snap-mandatory"
+          style={{ scrollbarWidth: "thin", WebkitOverflowScrolling: "touch" } as React.CSSProperties}
         >
           {allDepts.map((d) => {
             const count = deptCounts[d.code] || 0;
@@ -217,86 +297,100 @@ export default function DailyPostingsView({
                 key={d.code}
                 data-dept={d.code}
                 onClick={() => setDeptCode(d.code)}
-                className={`snap-start shrink-0 rounded-xl border px-3 py-2.5 text-left transition min-w-[140px] ${
+                style={{ touchAction: "manipulation" }}
+                className={`snap-start shrink-0 rounded-2xl border px-3.5 py-3 text-left transition min-w-[150px] ${
                   isSelected
-                    ? "border-accent-600 bg-accent-50 ring-2 ring-accent-200"
-                    : "border-slate-200 bg-white hover:border-xcel-300 hover:bg-xcel-50"
+                    ? "border-accent-500 bg-accent-50 ring-2 ring-accent-200 shadow-sm"
+                    : "border-slate-200 bg-white hover:border-xcel-300 hover:bg-xcel-50 active:bg-xcel-100"
                 }`}
               >
                 <div className="flex items-center justify-between gap-2">
-                  <span className={`dept-chip ${d.color}`}>{d.short}</span>
-                  <span className={`text-[11px] font-bold ${count > 0 ? "text-accent-700" : "text-slate-400"}`}>
+                  <span className={`dept-chip ${d.color} text-[11px] font-bold`}>{d.short}</span>
+                  <span className={`text-sm font-bold tabular-nums ${count > 0 ? "text-accent-600" : "text-slate-300"}`}>
                     {count}
                   </span>
                 </div>
-                <div className="mt-1 text-[12px] font-semibold text-slate-900 truncate">{d.name}</div>
-                <div className="text-[10px] text-slate-400">{d.weeks}w posting</div>
+                <div className="mt-1.5 text-[12.5px] font-semibold leading-snug text-slate-900 line-clamp-1">{d.name}</div>
+                <div className="mt-0.5 text-[10px] text-slate-400">{d.weeks}w posting</div>
+                {/* Mini count bar */}
+                <div className="mt-2 h-1 w-full rounded-full bg-slate-100">
+                  <div
+                    className="h-1 rounded-full bg-accent-400"
+                    style={{ width: `${count > 0 ? Math.min(100, Math.round((count / Math.max(...Object.values(deptCounts), 1)) * 100)) : 0}%` }}
+                  />
+                </div>
               </button>
             );
           })}
         </div>
       </section>
 
-      {/* ── Selected dept roster ── */}
+      {/* ── Roster ── */}
       <section className="card overflow-hidden">
-        <div className="border-b border-slate-200 bg-slate-50/60 p-4 flex flex-wrap items-center justify-between gap-2">
+        {/* Header */}
+        <div className="border-b border-slate-200 bg-slate-50/70 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0">
             <Stethoscope size={18} className="text-accent-600 shrink-0" />
             <div className="min-w-0">
               <h2 className="font-bold text-slate-900 truncate">{selectedDept?.name || "Select a department"}</h2>
               <p className="text-[11px] text-slate-500">
                 {filteredPosted.length} intern{filteredPosted.length !== 1 ? "s" : ""} posted in window
+                {granularity === "month" && windowWeekIdxs.length > 1 && (
+                  <span className="ml-1 text-xcel-600 font-medium">· across {windowWeekIdxs.length} weeks</span>
+                )}
                 {selectedDept?.code === "COM" && <span className="ml-1 text-amber-700">· may be at PHC / outreach</span>}
               </p>
             </div>
           </div>
           <div className="relative">
-            <Search size={12} className="absolute left-2.5 top-2.5 text-slate-400" />
+            <Search size={12} className="absolute left-2.5 top-3 text-slate-400" />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search name / roll"
-              className="pl-7 pr-3 py-1.5 text-xs border border-slate-200 rounded-md w-44"
+              className="pl-7 pr-3 py-2 text-sm border border-slate-200 rounded-lg w-44"
+              style={{ touchAction: "manipulation" }}
             />
           </div>
         </div>
 
         {filteredPosted.length === 0 ? (
-          <div className="p-10 text-center text-sm text-slate-400">
-            No interns posted in {selectedDept?.short || "this department"} during the selected {granularity}.
+          <div className="p-12 text-center text-sm text-slate-400">
+            No interns posted in <strong>{selectedDept?.short || "this department"}</strong> during the selected {granularity}.
           </div>
-        ) : (
-          <div className="divide-y divide-slate-100 max-h-[480px] overflow-y-auto">
-            {filteredPosted.map((r) => (
-              <div key={r.regNo} className="px-4 py-2.5 hover:bg-xcel-50/40 flex items-center justify-between gap-3">
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    {readOnly ? (
-                      <span className="font-mono text-xs text-slate-500">{r.regNo}</span>
-                    ) : (
-                      <Link href={`/admin/student/${r.regNo}`} className="font-mono text-xs text-xcel-700 hover:underline">
-                        {r.regNo}
-                      </Link>
-                    )}
-                    <span className="font-medium text-sm text-slate-900 truncate">{r.name}</span>
-                  </div>
-                  <div className="text-[11px] text-slate-500 mt-0.5">
-                    Block {r.blockId} · Sub-batch <strong>{r.subBatch}</strong>
-                    {granularity !== "day" && r.weeks.length > 1 && (
-                      <span className="ml-1">· {r.weeks.length} week{r.weeks.length > 1 ? "s" : ""} this window</span>
-                    )}
+        ) : granularity === "month" && grouped.length > 0 ? (
+          // Month view: grouped by sub-batch
+          <div className="max-h-[520px] overflow-y-auto divide-y divide-slate-100">
+            {grouped.map(([subBatch, rows]) => (
+              <div key={subBatch}>
+                <div className="sticky top-0 z-10 flex items-center gap-2 bg-xcel-50/90 px-4 py-2 backdrop-blur-sm">
+                  <span className="rounded-full bg-xcel-700 px-2.5 py-0.5 text-[11px] font-bold text-white">
+                    Sub-batch {subBatch}
+                  </span>
+                  <span className="text-[11px] text-slate-500">{rows.length} intern{rows.length !== 1 ? "s" : ""}</span>
+                  <div className="ml-auto flex flex-wrap gap-1">
+                    {rows[0].weekIdxs.map((w) => (
+                      <span key={w} className="text-[10px] text-xcel-600 font-medium">{weekLabel2(w)}</span>
+                    ))}
                   </div>
                 </div>
-                <span className="badge bg-emerald-100 text-emerald-800 ring-1 ring-emerald-200 shrink-0">
-                  <Users size={10} /> On posting
-                </span>
+                {rows.map((r) => (
+                  <InternRow key={r.regNo} r={r} readOnly={readOnly} showWeeks={false} />
+                ))}
               </div>
+            ))}
+          </div>
+        ) : (
+          // Day / Week view: flat list
+          <div className="divide-y divide-slate-100 max-h-[520px] overflow-y-auto">
+            {filteredPosted.map((r) => (
+              <InternRow key={r.regNo} r={r} readOnly={readOnly} showWeeks={granularity === "week"} />
             ))}
           </div>
         )}
       </section>
 
-      {/* PHC outreach note for Community Medicine */}
+      {/* Community Medicine note */}
       {selectedDept?.code === "COM" && (
         <section className="card border-amber-200 bg-amber-50/40 p-4 text-sm">
           <div className="flex items-start gap-2">
@@ -304,15 +398,45 @@ export default function DailyPostingsView({
             <div>
               <strong className="text-amber-900">Community Medicine — outreach deputation:</strong>
               <div className="text-amber-800 text-xs mt-1">
-                During Community Medicine postings, interns are deputed to Primary Health Centres (PHCs)
-                and outreach health centres on a rotational basis. The PHC roster is maintained by the
-                Community Medicine HOD's office — please confirm sub-batch deputation with the
-                department's posting coordinator.
+                During Community Medicine postings, interns are deputed to Primary Health Centres and outreach
+                health centres on a rotational basis. Confirm sub-batch deputation with the department's posting coordinator.
               </div>
             </div>
           </div>
         </section>
       )}
+    </div>
+  );
+}
+
+function InternRow({ r, readOnly, showWeeks }: {
+  r: { regNo: string; name: string; subBatch: string; blockId: number; weekIdxs: number[] };
+  readOnly: boolean;
+  showWeeks: boolean;
+}) {
+  return (
+    <div className="px-4 py-3 hover:bg-xcel-50/40 flex items-center justify-between gap-3">
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2 flex-wrap">
+          {readOnly ? (
+            <span className="font-mono text-xs text-slate-500 bg-slate-50 px-1.5 py-0.5 rounded">{r.regNo}</span>
+          ) : (
+            <Link href={`/admin/student/${r.regNo}`} className="font-mono text-xs text-xcel-700 hover:underline bg-xcel-50 px-1.5 py-0.5 rounded">
+              {r.regNo}
+            </Link>
+          )}
+          <span className="font-medium text-sm text-slate-900 truncate">{r.name}</span>
+        </div>
+        <div className="text-[11px] text-slate-500 mt-0.5">
+          Block {r.blockId} · Sub-batch <strong>{r.subBatch}</strong>
+          {showWeeks && r.weekIdxs.length > 0 && (
+            <span className="ml-1 text-xcel-600">· Week {r.weekIdxs[0] + 1}</span>
+          )}
+        </div>
+      </div>
+      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-semibold text-emerald-800 ring-1 ring-emerald-200 shrink-0">
+        <Users size={10} /> On posting
+      </span>
     </div>
   );
 }

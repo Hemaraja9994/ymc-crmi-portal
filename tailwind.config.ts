@@ -65,11 +65,20 @@ const config: Config = {
       },
       animation: {
         "ticker-in": "tickerIn 0.35s cubic-bezier(0.4, 0, 0.2, 1)",
+        // Continuous right-to-left marquee. Duration is set inline per-instance
+        // so longer announcement sets scroll at a readable, consistent speed.
+        marquee: "marquee 40s linear infinite",
       },
       keyframes: {
         tickerIn: {
           "0%":   { opacity: "0", transform: "translateY(8px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        // Track holds two identical copies of the content side by side.
+        // Shifting by exactly -50% lands copy #2 where copy #1 began → seamless.
+        marquee: {
+          "0%":   { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-50%)" },
         },
       },
     },
