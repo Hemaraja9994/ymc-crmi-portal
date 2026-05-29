@@ -146,14 +146,14 @@ export default function StudentProfile({
 
       {/* Attendance status */}
       {!attendance.preLaunch && (
-        <section className={`card p-5 ring-1 ${attendance.deficient ? "bg-rose-50 ring-rose-200" : attendance.attendancePct >= ATTENDANCE_THRESHOLD + 5 ? "bg-emerald-50 ring-emerald-200" : "bg-amber-50 ring-amber-200"}`}>
+        <section className={`card p-5 ring-1 ${attendance.deficient ? "bg-rose-50 ring-rose-200" : attendance.attendancePct >= ATTENDANCE_THRESHOLD ? "bg-emerald-50 ring-emerald-200" : "bg-amber-50 ring-amber-200"}`}>
           <div className="flex items-center justify-between flex-wrap gap-3">
             <div className="flex items-center gap-4">
               <div className="relative w-16 h-16 shrink-0">
                 <svg viewBox="0 0 36 36" className="w-16 h-16 -rotate-90">
                   <circle cx="18" cy="18" r="15.9155" className="fill-none stroke-white" strokeWidth="3" />
                   <circle cx="18" cy="18" r="15.9155"
-                    className={`fill-none ${attendance.deficient ? "stroke-rose-500" : attendance.attendancePct >= ATTENDANCE_THRESHOLD + 5 ? "stroke-emerald-500" : "stroke-amber-500"}`}
+                    className={`fill-none ${attendance.deficient ? "stroke-rose-500" : attendance.attendancePct >= ATTENDANCE_THRESHOLD ? "stroke-emerald-500" : "stroke-amber-500"}`}
                     strokeWidth="3"
                     strokeDasharray={`${Math.min(100, attendance.attendancePct)} 100`}
                     strokeLinecap="round"
@@ -164,7 +164,7 @@ export default function StudentProfile({
               <div>
                 <div className="text-xs uppercase tracking-wider text-slate-500">Attendance</div>
                 <div className="text-lg font-bold">
-                  {attendance.deficient ? "Below NMC threshold" : attendance.attendancePct >= ATTENDANCE_THRESHOLD + 5 ? "On track" : "Approaching threshold"}
+                  {attendance.deficient ? "Below NMC threshold" : attendance.attendancePct >= ATTENDANCE_THRESHOLD ? "On track" : "Approaching threshold"}
                 </div>
                 <div className="text-xs text-slate-500">
                   {attendance.daysAttended}/{attendance.daysElapsed} days · {attendance.daysOnLeave} on approved leave · minimum {ATTENDANCE_THRESHOLD}%

@@ -1,9 +1,9 @@
 // Attendance math driven by the leaves store.
-// NMC minimum: 80% per posting + 80% overall.
+// Institutional requirement: 100% per posting + 100% overall.
 import { LeaveRecord } from "./leaves";
 import { START_DATE, TOTAL_WEEKS, isPreLaunch } from "./rotation";
 
-export const ATTENDANCE_THRESHOLD = 80;
+export const ATTENDANCE_THRESHOLD = 100;
 
 export type AttendanceInfo = {
   daysElapsed: number;

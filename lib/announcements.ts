@@ -32,8 +32,8 @@ export const ANNOUNCEMENTS: Announcement[] = [
   },
   {
     id: "a4",
-    title: "80% Threshold — strictly enforced per clinical posting",
-    body: "Any intern falling below 80% attendance in a posting must repeat that posting before the Completion Certificate is issued.",
+    title: "100% Attendance — strictly enforced per clinical posting",
+    body: "Any intern falling below 100% attendance in a posting must repeat that posting before the Completion Certificate is issued.",
     category: "Attendance",
     highlight: true,
     date: "2026-05-20",

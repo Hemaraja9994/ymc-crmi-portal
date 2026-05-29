@@ -478,7 +478,7 @@ function CurrentPostingCard({
 function AttendanceCard({ attendance }: { attendance: ReturnType<typeof attendanceFor> }) {
   const pct = attendance.attendancePct;
   const deficient = attendance.deficient;
-  const safe = !deficient && pct >= ATTENDANCE_THRESHOLD + 5;
+  const safe = !deficient && pct >= ATTENDANCE_THRESHOLD;
   const ringColor = deficient ? "stroke-rose-500" : safe ? "stroke-emerald-500" : "stroke-amber-500";
   const bg = deficient ? "bg-rose-50 ring-rose-200" : safe ? "bg-emerald-50 ring-emerald-200" : "bg-amber-50 ring-amber-200";
 

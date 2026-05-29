@@ -29,7 +29,7 @@ export default function LeavePage() {
             </div>
             <div className="rounded-xl bg-white/10 border border-white/15 px-4 py-2 backdrop-blur-sm">
               <div className="text-[10px] uppercase tracking-widest text-xcel-200">Attendance threshold</div>
-              <div className="text-xl font-extrabold">80%</div>
+              <div className="text-xl font-extrabold">100%</div>
             </div>
             <div className="rounded-xl bg-white/10 border border-white/15 px-4 py-2 backdrop-blur-sm">
               <div className="text-[10px] uppercase tracking-widest text-xcel-200">Logbook submission</div>
@@ -48,7 +48,7 @@ export default function LeavePage() {
             </div>
             <div className="text-xs font-semibold uppercase tracking-wide text-rose-700">Min. Overall Attendance</div>
           </div>
-          <div className="text-4xl font-extrabold text-rose-600">80%</div>
+          <div className="text-4xl font-extrabold text-rose-600">100%</div>
           <p className="mt-2 text-xs text-slate-500 leading-relaxed">
             Minimum attendance across all postings to qualify for the completion certificate.
           </p>
@@ -60,9 +60,9 @@ export default function LeavePage() {
             </div>
             <div className="text-xs font-semibold uppercase tracking-wide text-amber-700">Per-Posting Clinical</div>
           </div>
-          <div className="text-4xl font-extrabold text-amber-600">≥ 80%</div>
+          <div className="text-4xl font-extrabold text-amber-600">100%</div>
           <p className="mt-2 text-xs text-slate-500 leading-relaxed">
-            Each individual posting requires ≥ 80% attendance. Shortfall means repeat of that posting.
+            Each individual posting requires 100% attendance. Shortfall means repeat of that posting.
           </p>
         </div>
         <div className="card p-5 border-xcel-200">
