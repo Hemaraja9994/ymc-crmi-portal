@@ -83,6 +83,16 @@ export const ADMINS: Admin[] = [
     officeHours: "Mon–Fri · 11:00–16:00",
     responseSla: "Same day",
   },
+  {
+    name: "Ms. Reshma",
+    role: "Senior Assistant",
+    dept: "Office of the Principal & Internship Coordination",
+    email: "hospital@yenepoya.org",
+    phone: "tel:+918242204668",
+    focus: ["Registration & joining documents", "Logbook acknowledgement", "Office coordination"],
+    officeHours: "Mon–Sat · 09:00–17:00",
+    responseSla: "Within 4h",
+  },
 ];
 
 // In production replace with real auth (NextAuth + institutional SSO).

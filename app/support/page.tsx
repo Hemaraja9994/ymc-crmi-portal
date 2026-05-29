@@ -53,7 +53,7 @@ export default function SupportPage() {
       <section className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         {ADMINS.map((a) => {
           const initials = a.name
-            .replace(/^(Dr\.|Mrs\.|Mr\.)\s*/i, "")
+            .replace(/^(Dr\.|Mrs\.|Mr\.|Ms\.)\s*/i, "")
             .split(" ")
             .map((n) => n[0])
             .filter(Boolean)
