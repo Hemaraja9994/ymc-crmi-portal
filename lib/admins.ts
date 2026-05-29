@@ -3,6 +3,7 @@ export type Admin = {
   role: string;
   email?: string;
   phone?: string;         // primary tel: link for the Call button
+  extension?: string;     // campus PBX extension (shown when no direct line)
   isPrincipal?: boolean;
   isWelfareOfficer?: boolean;
   focus?: string[];      // areas they typically handle
@@ -34,49 +35,50 @@ export const ADMINS: Admin[] = [
     responseSla: "Same day",
   },
   {
-    name: "Dr. Jeevan Crasta",
+    name: "Dr. Rohith",
     role: "Internship Coordinator",
     email: "hospital@yenepoya.org",
     phone: "tel:+918242204668",
-    focus: ["Posting allocation", "Block I & II issues", "Schedule changes"],
+    focus: ["Posting allocation", "Block I tracking", "Schedule changes"],
     officeHours: "Mon–Sat · 09:00–17:00",
     responseSla: "Within 4h",
   },
   {
-    name: "Dr. Imaad Mohammed Ismail",
+    name: "Dr. Jeevan Pereira",
     role: "Internship Coordinator",
     email: "hospital@yenepoya.org",
     phone: "tel:+918242204668",
-    focus: ["Logbook compliance", "Casual leave approvals", "Attendance"],
+    focus: ["Posting allocation", "Block II tracking", "Schedule changes"],
     officeHours: "Mon–Sat · 09:00–17:00",
     responseSla: "Within 4h",
   },
   {
-    name: "Dr. S. Abdul Nazir",
+    name: "Dr. Imaad M Ismail",
     role: "Internship Coordinator",
     email: "hospital@yenepoya.org",
     phone: "tel:+918242204668",
-    focus: ["Block III & IV postings", "Community Medicine field work"],
+    focus: ["Posting allocation", "Block III & IV tracking", "Attendance", "Casual leave approvals", "Logbook compliance"],
     officeHours: "Mon–Sat · 09:00–17:00",
     responseSla: "Within 4h",
+  },
+  {
+    name: "Mrs. Annie J D Lobo",
+    role: "Internship Coordinator",
+    email: "hospital@yenepoya.org",
+    phone: "tel:+918242204668",
+    extension: "Extension: 5019",
+    focus: ["Intern wellbeing", "Personal / medical leave", "Hostel concerns"],
+    officeHours: "Mon–Fri · 11:00–16:00",
+    responseSla: "Same day",
   },
   {
     name: "Dr. Rashmi Jain",
     role: "Internship Coordinator",
     email: "hospital@yenepoya.org",
     phone: "tel:+918242204668",
-    focus: ["Wellbeing", "Personal / medical leave", "Hostel concerns"],
+    focus: ["Coordination", "Monitoring"],
     officeHours: "Mon–Fri · 11:00–16:00",
     responseSla: "Same day",
-  },
-  {
-    name: "Dr. Rohith George",
-    role: "Coordinator — General Medicine",
-    email: "hospital@yenepoya.org",
-    phone: "tel:+918242204668",
-    focus: ["Gen Med posting queries", "Unit allocation", "Case load"],
-    officeHours: "Mon–Sat · 09:00–17:00",
-    responseSla: "Within 4h",
   },
 ];
 

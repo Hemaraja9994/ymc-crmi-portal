@@ -81,6 +81,11 @@ export default function SupportPage() {
                     )}
                   </div>
                   <div className="text-xs text-slate-500 mt-0.5">{a.role}</div>
+                  {a.extension && (
+                    <div className="mt-1 inline-flex items-center gap-1 text-[11px] font-medium text-slate-600">
+                      <Phone size={11} className="text-slate-400" /> {a.extension}
+                    </div>
+                  )}
                 </div>
               </div>
 
