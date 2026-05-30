@@ -27,16 +27,11 @@ import {
   UserCheck,
   Shirt,
   Home,
-  ClipboardCheck,
-  CalendarClock,
-  BedDouble,
-  Bus,
-  IdCard,
-  Wallet,
   Download,
-  GraduationCap,
   Fingerprint,
 } from "lucide-react";
+import KeyDates from "@/components/KeyDates";
+import MandatoryRequirements from "@/components/MandatoryRequirements";
 
 const DEPT_ICONS: Record<string, React.ReactNode> = {
   GMED: <HeartPulse size={18} />,
@@ -152,127 +147,6 @@ export default function GuidelinesPage() {
 
       {/* ─── Internship Training Rules & Code of Conduct ───────────────── */}
       <CodeOfConduct />
-    </div>
-  );
-}
-
-// ── Key Dates — sourced from the Internship Timeline circular (2021 batch).
-const MILESTONES = [
-  { label: "Internship commencement", date: "01 Jun 2026", tone: "emerald" as const },
-  { label: "Completion of internship", date: "31 May 2027", tone: "indigo" as const },
-  { label: "Clinical Skill Assessment exams", date: "11 & 12 Jun 2027", tone: "amber" as const },
-  { label: "Tentative graduation day", date: "19 Jun 2027", tone: "rose" as const },
-];
-
-function KeyDates() {
-  const toneMap = {
-    emerald: "border-emerald-200 bg-emerald-50 text-emerald-700",
-    indigo: "border-xcel-200 bg-xcel-50 text-xcel-700",
-    amber: "border-amber-200 bg-amber-50 text-amber-700",
-    rose: "border-rose-200 bg-rose-50 text-rose-700",
-  } as const;
-  return (
-    <section className="card overflow-hidden">
-      <div className="border-b border-slate-200 bg-slate-50/60 px-5 py-3 flex items-center gap-2">
-        <CalendarClock size={16} className="text-xcel-600" />
-        <div>
-          <h2 className="font-bold text-slate-900">Key Dates &amp; Timeline</h2>
-          <p className="text-xs text-slate-500">Milestones for the 2021 batch — Office of the Principal / Dean.</p>
-        </div>
-        <a href="/regulations/timeline-2021-batch.pdf" target="_blank" rel="noopener noreferrer"
-           className="btn-outline text-xs ml-auto shrink-0">
-          <Download size={12} /> Timeline PDF
-        </a>
-      </div>
-
-      {/* Milestone tiles */}
-      <div className="grid gap-3 p-5 sm:grid-cols-2 lg:grid-cols-4">
-        {MILESTONES.map((m, i) => (
-          <div key={m.label} className={`relative rounded-xl border p-4 ${toneMap[m.tone]}`}>
-            <div className="text-[10px] font-bold uppercase tracking-wider opacity-70">Milestone {i + 1}</div>
-            <div className="mt-1 text-lg font-extrabold leading-tight">{m.date}</div>
-            <div className="mt-1 text-xs font-medium text-slate-600">{m.label}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* Duty timings + hostel + bus */}
-      <div className="grid gap-3 px-5 pb-5 md:grid-cols-3">
-        <div className="rounded-xl border border-slate-200 bg-white p-4">
-          <div className="flex items-center gap-2 text-sm font-bold text-slate-900">
-            <Clock size={15} className="text-xcel-600" /> Duty Timings
-          </div>
-          <ul className="mt-2 space-y-1 text-xs text-slate-600">
-            <li><strong>08:00 – 16:00</strong> · daily hospital work hours</li>
-            <li><strong>16:00 – 19:00</strong> · as needed by unit / department</li>
-            <li><strong>19:00 – 08:00</strong> · stay-duty (Medicine, Surgery, OBG, Paediatrics)</li>
-          </ul>
-        </div>
-        <div className="rounded-xl border border-slate-200 bg-white p-4">
-          <div className="flex items-center gap-2 text-sm font-bold text-slate-900">
-            <BedDouble size={15} className="text-xcel-600" /> Hostel Accommodation
-          </div>
-          <ul className="mt-2 space-y-1 text-xs text-slate-600">
-            <li><strong>01 Jun 2026 – 31 May 2027</strong> · during internship</li>
-            <li><strong>01 – 20 Jun 2027</strong> · grace period</li>
-            <li><strong>21 Jun – 15 Jul 2027</strong> · on payment (YDU rules); none after 16 Jul 2027</li>
-          </ul>
-        </div>
-        <div className="rounded-xl border border-slate-200 bg-white p-4">
-          <div className="flex items-center gap-2 text-sm font-bold text-slate-900">
-            <Bus size={15} className="text-xcel-600" /> Bus Facility
-          </div>
-          <p className="mt-2 text-xs text-slate-600">
-            Hospital → hostel at <strong>7:00 PM and 8:00 PM</strong>. No additional transport is provided
-            (per Notice dated 14.07.2025).
-          </p>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ── Mandatory requirements — sourced from the Internship Notice (30.05.2026).
-function MandatoryRequirements() {
-  return (
-    <section className="card overflow-hidden">
-      <div className="border-b border-slate-200 bg-slate-50/60 px-5 py-3 flex items-center gap-2">
-        <ClipboardCheck size={16} className="text-xcel-600" />
-        <div>
-          <h2 className="font-bold text-slate-900">Before You Begin — Mandatory Requirements</h2>
-          <p className="text-xs text-slate-500">Complete these around the start of internship (Notice, 30.05.2026).</p>
-        </div>
-        <a href="/regulations/notice.pdf" target="_blank" rel="noopener noreferrer"
-           className="btn-outline text-xs ml-auto shrink-0">
-          <Download size={12} /> Notice PDF
-        </a>
-      </div>
-      <div className="grid gap-3 p-5 sm:grid-cols-2 lg:grid-cols-3">
-        <ReqCard icon={<IdCard size={18} className="text-xcel-600" />} title="Provisional KMC Registration"
-          body="Register provisionally with Karnataka Medical Council within a week of the final MBBS result. Fee ₹3,800 (10th marks card, Aadhaar/Voter ID, photo). Contact the Academic Cell — Ext. 2005." />
-        <ReqCard icon={<HeartPulse size={18} className="text-rose-600" />} title="BLS & ACLS (AHA Certified)"
-          body="Mandatory for all interns within 2 months of starting. Interns who do not complete it are NOT eligible for internship completion." />
-        <ReqCard icon={<BookOpen size={18} className="text-amber-600" />} title="Manual & Log Book"
-          body="Purchase the Resident-cum-Nurses / Resident Manual and the Log Book from the Campus General Store before starting." />
-        <ReqCard icon={<FileText size={18} className="text-emerald-600" />} title="Joining Report — Day 1"
-          body="Submit the Joining Report to the Principal, YMC on the first day; a copy to the Medical Superintendent and then to the concerned HOD." />
-        <ReqCard icon={<Wallet size={18} className="text-indigo-600" />} title="Clear Pending Fees"
-          body="Clear any pending fee dues on or before 01.06.2026, failing which you will not be permitted to attend the CRMI programme." />
-        <ReqCard icon={<Award size={18} className="text-amber-600" />} title="Clinical Skill Assessment"
-          body="Undergo the Clinical Skill Assessment (11 & 12 June 2027) before the internship completion certificate is issued." />
-      </div>
-    </section>
-  );
-}
-
-function ReqCard({ icon, title, body }: { icon: React.ReactNode; title: string; body: string }) {
-  return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4">
-      <div className="flex items-center gap-2">
-        <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-slate-50 ring-1 ring-slate-100">{icon}</div>
-        <h3 className="font-bold text-sm text-slate-900 leading-tight">{title}</h3>
-      </div>
-      <p className="mt-2 text-xs leading-relaxed text-slate-600">{body}</p>
     </div>
   );
 }

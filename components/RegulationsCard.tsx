@@ -9,16 +9,19 @@ import { REGULATIONS, REGULATION_FACTS } from "@/lib/regulations";
 export default function RegulationsCard() {
   return (
     <section className="card overflow-hidden">
-      {/* Card header — matches the portal's section-header pattern */}
-      <div className="border-b border-slate-200 bg-slate-50/60 p-4 flex items-center gap-2.5">
-        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-xcel-100 text-xcel-700 ring-1 ring-xcel-200">
-          <ScrollText size={18} />
-        </span>
-        <div>
-          <h2 className="font-bold text-lg text-xcel-700">Regulations &amp; Circulars</h2>
-          <p className="text-xs text-slate-500">
-            Official notices and conduct rules for MBBS interns — view online or download.
-          </p>
+      {/* Brand-panel banner header (matches Block III / IV headings) */}
+      <div className="brand-panel relative px-5 py-4 text-white overflow-hidden">
+        <div className="geo-overlay absolute inset-0 opacity-50" />
+        <div className="relative flex items-center gap-2.5">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-white/10 ring-1 ring-white/20">
+            <ScrollText size={18} />
+          </span>
+          <div>
+            <h2 className="text-lg font-extrabold tracking-tight">Regulations &amp; Circulars</h2>
+            <p className="text-xs text-xcel-100/80">
+              Official notices and conduct rules for MBBS interns — view online or download.
+            </p>
+          </div>
         </div>
       </div>
 

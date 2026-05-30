@@ -19,6 +19,8 @@ import { STUDENTS } from "@/lib/students";
 import { BLOCKS } from "@/lib/rotation";
 import LiveUpdatesBanner from "@/components/LiveUpdatesBanner";
 import RegulationsCard from "@/components/RegulationsCard";
+import KeyDates from "@/components/KeyDates";
+import MandatoryRequirements from "@/components/MandatoryRequirements";
 
 const featureHighlights = [
   {
@@ -254,6 +256,10 @@ export default function Landing() {
 
       {/* Regulations & Circulars — public, no login required */}
       <RegulationsCard />
+
+      {/* Key dates / timeline + mandatory requirements (from the circulars) */}
+      <KeyDates />
+      <MandatoryRequirements />
 
       <section>
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">

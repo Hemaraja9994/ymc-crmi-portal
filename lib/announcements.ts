@@ -18,15 +18,15 @@ export const ANNOUNCEMENTS: Announcement[] = [
   },
   {
     id: "a2",
-    title: "Stay-duty rooms allocated — Casualty / OBG / Paeds",
-    body: "Refer to YMC notice (Stay-duty rooms for Medical Interns) for room numbers. Allocation is per sub-batch.",
+    title: "Stay-duty (7 PM – 8 AM) — Medicine / Surgery / OBG / Paediatrics",
+    body: "Stay-duty applies only in the major departments. Refer to the YMC stay-duty notice for room allocation per sub-batch.",
     category: "Notice",
     date: "2026-05-28",
   },
   {
     id: "a3",
-    title: "Campus transport — extended 21:00 to 06:00",
-    body: "Night-duty interns may avail the extended campus transport facility as per the YMC notice dated May 2026.",
+    title: "Bus facility — hospital to hostel at 7 & 8 PM",
+    body: "As per the YMC notice, transport runs hospital → hostel at 7:00 and 8:00 PM. No additional transport will be provided.",
     category: "Notice",
     date: "2026-05-26",
   },
@@ -44,6 +44,21 @@ export const ANNOUNCEMENTS: Announcement[] = [
     body: "Mark your calendars. Required before the internship completion certificate is issued.",
     category: "Schedule",
     date: "2026-05-15",
+  },
+  {
+    id: "a6",
+    title: "BLS & ACLS (AHA certified) — mandatory within 2 months",
+    body: "All interns must complete AHA-certified BLS & ACLS within two months of starting. Non-completion means ineligibility for internship completion.",
+    category: "Alert",
+    highlight: true,
+    date: "2026-05-30",
+  },
+  {
+    id: "a7",
+    title: "Biometric attendance — punch without fail",
+    body: "Mark attendance on the biometric machine without fail; failure leads to stipend deduction. Attendance is also recorded twice daily at 8 AM and 4 PM.",
+    category: "Rule",
+    date: "2026-05-30",
   },
 ];
 
