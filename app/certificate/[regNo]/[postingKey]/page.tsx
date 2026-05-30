@@ -16,7 +16,7 @@ const INSTITUTION = {
   emailGeneral: "hospital@yenepoya.org",
 };
 
-const PRINCIPAL_NAME = "Dr. Prakash Saldanha";
+const PRINCIPAL_NAME = "Dr. Prakash Robert M. Saldanha";
 
 const REF_PREFIX = "YMC/CRMI/RPT";
 

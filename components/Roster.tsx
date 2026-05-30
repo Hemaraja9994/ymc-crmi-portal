@@ -17,13 +17,13 @@ const INSTITUTION = {
 };
 
 const CRMI_COMMITTEE = [
-  { role: "Principal, YMC",          name: "Dr. Prakash Saldanha" },
-  { role: "Internship Coordinator",  name: "Dr. Jeevan" },
-  { role: "Internship Coordinator",  name: "Dr. Imaad" },
-  { role: "Internship Coordinator",  name: "Dr. Rashmi Jain" },
+  { role: "Principal / Dean, YMC",   name: "Dr. Prakash Robert M. Saldanha" },
+  { role: "Coordinator (Comm. Med.)",name: "Dr. Imaad M Ismail" },
+  { role: "Internship Coordinator",  name: "Dr. Jeevan Pereira" },
+  { role: "Internship Coordinator",  name: "Dr. Rohith George" },
 ];
 
-const REF_NO = "YMC/CRMI/ROSTER/2025-26";
+const REF_NO = "YMC/CRMI/ROSTER/2026-27";
 
 export default function Roster({
   assignments,
