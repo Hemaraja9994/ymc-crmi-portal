@@ -14,7 +14,7 @@ export default function AdminLogin() {
   function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!loginValid(u, p)) {
-      setErr("Invalid credentials. Hint: admin / ChangeMe@123");
+      setErr("Invalid credentials. Please contact the CRMI Coordination Cell for access.");
       return;
     }
     window.localStorage.setItem(
@@ -45,7 +45,7 @@ export default function AdminLogin() {
                   autoFocus
                   value={u}
                   onChange={(e) => setU(e.target.value)}
-                  placeholder="admin"
+                  placeholder="Username"
                   className="w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>
