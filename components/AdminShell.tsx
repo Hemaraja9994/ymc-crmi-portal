@@ -14,6 +14,7 @@ import {
   Settings,
   FileText,
   Award,
+  GitMerge,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { SESSION_KEY } from "@/lib/auth";
@@ -43,6 +44,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
     { href: "/admin/blocks", icon: Building2, label: "Blocks" },
     { href: "/admin/departments", icon: ClipboardList, label: "Departments" },
     { href: "/admin/roster", icon: Users, label: "Roster" },
+    { href: "/admin/continuity", icon: GitMerge, label: "Continuity Check" },
     { href: "/admin/leaves", icon: CalendarRange, label: "Leaves" },
     { href: "/admin/certificates", icon: Award, label: "Completion Reports" },
     { href: "/admin/reports", icon: FileText, label: "Reports" },
