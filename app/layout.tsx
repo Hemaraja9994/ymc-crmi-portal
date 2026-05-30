@@ -61,9 +61,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <span>&copy; {new Date().getFullYear()} Yenepoya Medical College, Mangalore · CRMI Coordination Cell</span>
             <span className="font-mono text-slate-300">MBBS 2021 CBME · NMC Regulation</span>
           </div>
-          <div className="mt-2 text-center sm:text-left">
-            Developed &amp; maintained by <span className="font-medium text-slate-500">Mr. Hemaraja Nayaka S</span>, Associate Professor — YMC
-          </div>
         </footer>
       </body>
     </html>

@@ -56,6 +56,16 @@ export const ADMINS: Admin[] = [
     responseSla: "Within 4h",
   },
   {
+    name: "Dr. Meera Jacob",
+    role: "MEU Coordinator",
+    dept: "Professor & HOD, Anatomy",
+    email: "hospital@yenepoya.org",
+    phone: "tel:+918242204668",
+    focus: ["Assessments & CBME", "Logbook review", "Training quality"],
+    officeHours: "Mon–Sat · 09:00–17:00",
+    responseSla: "Within 4h",
+  },
+  {
     name: "Dr. T Mukhthar Abdulla",
     role: "Assistant Medical Superintendent (AMS)",
     email: "hospital@yenepoya.org",

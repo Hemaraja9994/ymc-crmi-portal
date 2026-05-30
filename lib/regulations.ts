@@ -48,6 +48,14 @@ export const REGULATIONS: Regulation[] = [
     dateAdded: "May 2026",
     fileSize: "221 KB",
   },
+  {
+    title: "CRMI Coordination Cell — Notification",
+    description: "Official notification constituting the CRMI Programme Coordination Cell of YMC, with committee members.",
+    file: "/regulations/crmi-coordination-cell-notification.pdf",
+    category: "Notification",
+    dateAdded: "30 May 2026",
+    fileSize: "1.5 MB",
+  },
 
   // ── Coming soon — drop the PDFs into public/regulations/ and uncomment ───────
   // {
