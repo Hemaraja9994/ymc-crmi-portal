@@ -40,8 +40,8 @@ export const ANNOUNCEMENTS: Announcement[] = [
   },
   {
     id: "a5",
-    title: "Final clinical-skills assessment — March/April 2027",
-    body: "Mark your calendars. The exam panel will be notified two weeks in advance.",
+    title: "Clinical Skill Assessment — 11 & 12 June 2027",
+    body: "Mark your calendars. Required before the internship completion certificate is issued.",
     category: "Schedule",
     date: "2026-05-15",
   },

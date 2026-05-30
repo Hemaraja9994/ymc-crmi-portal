@@ -1,5 +1,5 @@
-import { ScrollText, FileText, CalendarDays, Eye, Download } from "lucide-react";
-import { REGULATIONS } from "@/lib/regulations";
+import { ScrollText, FileText, CalendarDays, Eye, Download, BarChart3 } from "lucide-react";
+import { REGULATIONS, REGULATION_FACTS } from "@/lib/regulations";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Regulations & Circulars — official PDF documents for interns to view/download.
@@ -10,18 +10,38 @@ export default function RegulationsCard() {
   return (
     <section className="card overflow-hidden">
       {/* Card header — matches the portal's section-header pattern */}
-      <div className="border-b border-slate-200 bg-slate-50/60 p-4 flex items-center gap-2">
-        <ScrollText size={16} className="text-xcel-600" />
+      <div className="border-b border-slate-200 bg-slate-50/60 p-4 flex items-center gap-2.5">
+        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-xcel-100 text-xcel-700 ring-1 ring-xcel-200">
+          <ScrollText size={18} />
+        </span>
         <div>
-          <h2 className="font-bold text-xcel-700">Regulations &amp; Circulars</h2>
+          <h2 className="font-bold text-lg text-xcel-700">Regulations &amp; Circulars</h2>
           <p className="text-xs text-slate-500">
             Official notices and conduct rules for MBBS interns — view online or download.
           </p>
         </div>
       </div>
 
+      {/* "At a glance" regulations chart — quick visual summary of key rules */}
+      <div className="border-b border-slate-100 bg-gradient-to-br from-xcel-50/70 via-white to-white p-4">
+        <div className="mb-2.5 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-xcel-700">
+          <BarChart3 size={13} /> Regulations at a glance
+        </div>
+        <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-6">
+          {REGULATION_FACTS.map((f) => (
+            <div
+              key={f.label}
+              className="rounded-xl border border-xcel-100 bg-white px-2 py-3 text-center shadow-sm"
+            >
+              <div className="text-xl font-extrabold leading-none text-xcel-700">{f.value}</div>
+              <div className="mt-1 text-[10px] font-medium leading-tight text-slate-500">{f.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Responsive card grid — one document per card */}
-      <div className="grid gap-3 p-4 sm:grid-cols-2">
+      <div className="grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-3">
         {REGULATIONS.map((doc) => (
           <article
             key={doc.file}
@@ -29,9 +49,9 @@ export default function RegulationsCard() {
           >
             {/* Icon + title + description */}
             <div className="flex items-start gap-3">
-              {/* PDF document icon tile */}
-              <div className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-rose-50 text-rose-600 ring-1 ring-rose-100">
-                <FileText size={20} />
+              {/* PDF document icon tile — enlarged for prominence */}
+              <div className="grid h-14 w-14 shrink-0 place-items-center rounded-xl bg-rose-50 text-rose-600 ring-1 ring-rose-100">
+                <FileText size={28} />
               </div>
               <div className="min-w-0 flex-1">
                 <span className="badge bg-xcel-100 text-xcel-800 ring-1 ring-xcel-200">{doc.category}</span>
@@ -42,7 +62,7 @@ export default function RegulationsCard() {
               </div>
             </div>
 
-            {/* Metadata row — date added · file size (placeholders) */}
+            {/* Metadata row — date added · file size */}
             <div className="mt-3 flex items-center gap-2 text-[11px] text-slate-400">
               {doc.dateAdded && (
                 <span className="inline-flex items-center gap-1">

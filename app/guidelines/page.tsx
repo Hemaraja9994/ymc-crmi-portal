@@ -28,6 +28,14 @@ import {
   Shirt,
   Home,
   ClipboardCheck,
+  CalendarClock,
+  BedDouble,
+  Bus,
+  IdCard,
+  Wallet,
+  Download,
+  GraduationCap,
+  Fingerprint,
 } from "lucide-react";
 
 const DEPT_ICONS: Record<string, React.ReactNode> = {
@@ -132,12 +140,139 @@ export default function GuidelinesPage() {
         <InfoCard
           icon={<Award className="text-amber-600" />}
           title="Final Assessment"
-          body="A clinical-skills assessment by a panel of senior faculty in March/April 2027 is required for the Completion Certificate."
+          body="A Clinical Skill Assessment is required before the Completion Certificate is issued — scheduled for 11 & 12 June 2027."
         />
       </section>
 
+      {/* ─── Key dates / internship timeline (per circular) ─────────────── */}
+      <KeyDates />
+
+      {/* ─── Mandatory requirements before starting (per Notice) ────────── */}
+      <MandatoryRequirements />
+
       {/* ─── Internship Training Rules & Code of Conduct ───────────────── */}
       <CodeOfConduct />
+    </div>
+  );
+}
+
+// ── Key Dates — sourced from the Internship Timeline circular (2021 batch).
+const MILESTONES = [
+  { label: "Internship commencement", date: "01 Jun 2026", tone: "emerald" as const },
+  { label: "Completion of internship", date: "31 May 2027", tone: "indigo" as const },
+  { label: "Clinical Skill Assessment exams", date: "11 & 12 Jun 2027", tone: "amber" as const },
+  { label: "Tentative graduation day", date: "19 Jun 2027", tone: "rose" as const },
+];
+
+function KeyDates() {
+  const toneMap = {
+    emerald: "border-emerald-200 bg-emerald-50 text-emerald-700",
+    indigo: "border-xcel-200 bg-xcel-50 text-xcel-700",
+    amber: "border-amber-200 bg-amber-50 text-amber-700",
+    rose: "border-rose-200 bg-rose-50 text-rose-700",
+  } as const;
+  return (
+    <section className="card overflow-hidden">
+      <div className="border-b border-slate-200 bg-slate-50/60 px-5 py-3 flex items-center gap-2">
+        <CalendarClock size={16} className="text-xcel-600" />
+        <div>
+          <h2 className="font-bold text-slate-900">Key Dates &amp; Timeline</h2>
+          <p className="text-xs text-slate-500">Milestones for the 2021 batch — Office of the Principal / Dean.</p>
+        </div>
+        <a href="/regulations/timeline-2021-batch.pdf" target="_blank" rel="noopener noreferrer"
+           className="btn-outline text-xs ml-auto shrink-0">
+          <Download size={12} /> Timeline PDF
+        </a>
+      </div>
+
+      {/* Milestone tiles */}
+      <div className="grid gap-3 p-5 sm:grid-cols-2 lg:grid-cols-4">
+        {MILESTONES.map((m, i) => (
+          <div key={m.label} className={`relative rounded-xl border p-4 ${toneMap[m.tone]}`}>
+            <div className="text-[10px] font-bold uppercase tracking-wider opacity-70">Milestone {i + 1}</div>
+            <div className="mt-1 text-lg font-extrabold leading-tight">{m.date}</div>
+            <div className="mt-1 text-xs font-medium text-slate-600">{m.label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Duty timings + hostel + bus */}
+      <div className="grid gap-3 px-5 pb-5 md:grid-cols-3">
+        <div className="rounded-xl border border-slate-200 bg-white p-4">
+          <div className="flex items-center gap-2 text-sm font-bold text-slate-900">
+            <Clock size={15} className="text-xcel-600" /> Duty Timings
+          </div>
+          <ul className="mt-2 space-y-1 text-xs text-slate-600">
+            <li><strong>08:00 – 16:00</strong> · daily hospital work hours</li>
+            <li><strong>16:00 – 19:00</strong> · as needed by unit / department</li>
+            <li><strong>19:00 – 08:00</strong> · stay-duty (Medicine, Surgery, OBG, Paediatrics)</li>
+          </ul>
+        </div>
+        <div className="rounded-xl border border-slate-200 bg-white p-4">
+          <div className="flex items-center gap-2 text-sm font-bold text-slate-900">
+            <BedDouble size={15} className="text-xcel-600" /> Hostel Accommodation
+          </div>
+          <ul className="mt-2 space-y-1 text-xs text-slate-600">
+            <li><strong>01 Jun 2026 – 31 May 2027</strong> · during internship</li>
+            <li><strong>01 – 20 Jun 2027</strong> · grace period</li>
+            <li><strong>21 Jun – 15 Jul 2027</strong> · on payment (YDU rules); none after 16 Jul 2027</li>
+          </ul>
+        </div>
+        <div className="rounded-xl border border-slate-200 bg-white p-4">
+          <div className="flex items-center gap-2 text-sm font-bold text-slate-900">
+            <Bus size={15} className="text-xcel-600" /> Bus Facility
+          </div>
+          <p className="mt-2 text-xs text-slate-600">
+            Hospital → hostel at <strong>7:00 PM and 8:00 PM</strong>. No additional transport is provided
+            (per Notice dated 14.07.2025).
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── Mandatory requirements — sourced from the Internship Notice (30.05.2026).
+function MandatoryRequirements() {
+  return (
+    <section className="card overflow-hidden">
+      <div className="border-b border-slate-200 bg-slate-50/60 px-5 py-3 flex items-center gap-2">
+        <ClipboardCheck size={16} className="text-xcel-600" />
+        <div>
+          <h2 className="font-bold text-slate-900">Before You Begin — Mandatory Requirements</h2>
+          <p className="text-xs text-slate-500">Complete these around the start of internship (Notice, 30.05.2026).</p>
+        </div>
+        <a href="/regulations/notice.pdf" target="_blank" rel="noopener noreferrer"
+           className="btn-outline text-xs ml-auto shrink-0">
+          <Download size={12} /> Notice PDF
+        </a>
+      </div>
+      <div className="grid gap-3 p-5 sm:grid-cols-2 lg:grid-cols-3">
+        <ReqCard icon={<IdCard size={18} className="text-xcel-600" />} title="Provisional KMC Registration"
+          body="Register provisionally with Karnataka Medical Council within a week of the final MBBS result. Fee ₹3,800 (10th marks card, Aadhaar/Voter ID, photo). Contact the Academic Cell — Ext. 2005." />
+        <ReqCard icon={<HeartPulse size={18} className="text-rose-600" />} title="BLS & ACLS (AHA Certified)"
+          body="Mandatory for all interns within 2 months of starting. Interns who do not complete it are NOT eligible for internship completion." />
+        <ReqCard icon={<BookOpen size={18} className="text-amber-600" />} title="Manual & Log Book"
+          body="Purchase the Resident-cum-Nurses / Resident Manual and the Log Book from the Campus General Store before starting." />
+        <ReqCard icon={<FileText size={18} className="text-emerald-600" />} title="Joining Report — Day 1"
+          body="Submit the Joining Report to the Principal, YMC on the first day; a copy to the Medical Superintendent and then to the concerned HOD." />
+        <ReqCard icon={<Wallet size={18} className="text-indigo-600" />} title="Clear Pending Fees"
+          body="Clear any pending fee dues on or before 01.06.2026, failing which you will not be permitted to attend the CRMI programme." />
+        <ReqCard icon={<Award size={18} className="text-amber-600" />} title="Clinical Skill Assessment"
+          body="Undergo the Clinical Skill Assessment (11 & 12 June 2027) before the internship completion certificate is issued." />
+      </div>
+    </section>
+  );
+}
+
+function ReqCard({ icon, title, body }: { icon: React.ReactNode; title: string; body: string }) {
+  return (
+    <div className="rounded-xl border border-slate-200 bg-white p-4">
+      <div className="flex items-center gap-2">
+        <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-slate-50 ring-1 ring-slate-100">{icon}</div>
+        <h3 className="font-bold text-sm text-slate-900 leading-tight">{title}</h3>
+      </div>
+      <p className="mt-2 text-xs leading-relaxed text-slate-600">{body}</p>
     </div>
   );
 }
@@ -153,7 +288,7 @@ function CodeOfConduct() {
         <div className="relative flex items-center justify-between flex-wrap gap-3">
           <div className="min-w-0">
             <div className="inline-flex items-center gap-2 text-[10px] uppercase tracking-widest text-xcel-100">
-              <Gavel size={12} /> Office of the Principal, YMC · 19.03.2022
+              <Gavel size={12} /> Office of the Principal, YMC · 30.05.2026
             </div>
             <h2 className="mt-1 text-xl md:text-2xl font-extrabold tracking-tight">
               Internship Training Rules &amp; Code of Conduct
@@ -163,9 +298,15 @@ function CodeOfConduct() {
               Signed by the Principal, Yenepoya Medical College, Mangaluru – 575 018.
             </p>
           </div>
-          <div className="hidden md:block text-right text-[11px] text-xcel-100/80 leading-snug">
-            <div>To: All Interns</div>
-            <div>Copy: All HODs &amp; MS YMCH</div>
+          <div className="flex flex-col items-end gap-2">
+            <a href="/regulations/code-of-conduct.pdf" target="_blank" rel="noopener noreferrer"
+               className="inline-flex items-center gap-1.5 rounded-lg bg-white/15 hover:bg-white/25 border border-white/25 px-3 py-1.5 text-xs font-semibold text-white transition">
+              <Download size={13} /> Official PDF
+            </a>
+            <div className="hidden md:block text-right text-[11px] text-xcel-100/80 leading-snug">
+              <div>To: All Interns</div>
+              <div>Copy: All HODs &amp; MS YMCH</div>
+            </div>
           </div>
         </div>
       </div>
@@ -207,15 +348,21 @@ function CodeOfConduct() {
           <div className="mt-2 rounded-lg bg-amber-50 border border-amber-200 px-3 py-2 text-xs text-amber-900">
             <strong>Excess leave:</strong> If leave exceeds the sanctioned limit, the internship is liable to be
             extended at the discretion of the authority. In emergencies, any additional leave will be at the
-            authorities' discretion <strong>and will be doubled</strong>. This corresponds to the portal's
-            <em> Absent (2×)</em> extension rule.
+            authorities' discretion <strong>and will be doubled if not authorised</strong>. This corresponds to
+            the portal's <em>Absent (2×)</em> extension rule. Refer to the Principal's notification on NMC
+            guidelines (Duration / Leave / Extension) dated <strong>26.03.2024 &amp; 27.03.2024</strong>.
           </div>
         </Rule>
 
-        <Rule n={3} icon={<ClipboardCheck size={16} />} title="Attendance — Twice Daily">
-          Attendance is marked / monitored by the HOD and the Medical Superintendent, YMCH, who maintain
-          the intern attendance register. Interns shall mark attendance with their full initials (specimen
-          signature filed with HODs &amp; MS) a <strong>minimum of two times a day — 8:00 AM and 4:00 PM</strong>.
+        <Rule n={3} icon={<Fingerprint size={16} />} title="Attendance — Biometric &amp; Twice Daily">
+          All interns must mark attendance on the <strong>biometric punching machine without fail</strong>.
+          Attendance is also marked / monitored by the HOD and the Medical Superintendent, YMCH, who maintain
+          the intern attendance register — interns shall mark it with their full initials (specimen signature
+          filed with HODs &amp; MS) a <strong>minimum of two times a day, at 8:00 AM and 4:00 PM</strong>.
+          <div className="mt-2 rounded-lg bg-rose-50 border border-rose-200 px-3 py-2 text-xs text-rose-900">
+            <strong>Stipend:</strong> Failure to punch the biometric machine will lead to deduction of stipend
+            for the corresponding period.
+          </div>
           <div className="mt-2 text-xs text-slate-500">
             Routine and evening / night duties shall additionally be recorded in the department register
             maintained by the MS, YMCH.
@@ -285,7 +432,7 @@ function CodeOfConduct() {
       {/* Footer */}
       <div className="border-t border-slate-200 bg-slate-50/70 px-6 py-4 text-xs text-slate-600 flex flex-wrap justify-between gap-2">
         <div>
-          <strong>Issued:</strong> 19.03.2022 · <strong>Authority:</strong> Principal, Yenepoya Medical College, Mangaluru – 575 018
+          <strong>Issued:</strong> 30.05.2026 · <strong>Authority:</strong> Principal, Yenepoya Medical College, Mangaluru – 575 018
         </div>
         <div className="text-slate-500 italic">
           Effective from MBBS 2021 CBME batch (w.e.f. 01.06.2026) onwards.
