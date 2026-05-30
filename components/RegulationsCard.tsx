@@ -13,7 +13,7 @@ export default function RegulationsCard() {
       <div className="border-b border-slate-200 bg-slate-50/60 p-4 flex items-center gap-2">
         <ScrollText size={16} className="text-xcel-600" />
         <div>
-          <h2 className="font-bold text-slate-900">Regulations &amp; Circulars</h2>
+          <h2 className="font-bold text-xcel-700">Regulations &amp; Circulars</h2>
           <p className="text-xs text-slate-500">
             Official notices and conduct rules for MBBS interns — view online or download.
           </p>
