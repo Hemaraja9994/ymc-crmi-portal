@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { DEMO_LOGIN } from "@/lib/students";
-import { Search, Sparkles, Smartphone, Mail } from "lucide-react";
+import { Search, Sparkles, Smartphone, Mail, CalendarClock } from "lucide-react";
 import StudentMatrixPreview from "@/components/StudentMatrixPreview";
 
 type WeekCell = {
@@ -125,6 +125,32 @@ export default function StudentLogin() {
           preLaunch={preLaunch}
           onContinue={openDashboard}
         />
+      )}
+
+      {/* Phase 2 placeholder — shown when not actively viewing a result */}
+      {!resolved && (
+        <section className="card overflow-hidden">
+          <div className="flex items-start gap-3 p-5">
+            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-amber-100 text-amber-700 ring-1 ring-amber-200">
+              <CalendarClock size={20} />
+            </span>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h2 className="font-bold text-slate-900">Phase 2 Interns — joining later</h2>
+                <span className="badge bg-amber-100 text-amber-800 ring-1 ring-amber-200">Coming soon</span>
+              </div>
+              <p className="mt-1 text-sm text-slate-600 leading-relaxed">
+                A second group of interns (≈ 45 students) is expected to commence the internship in
+                <strong> Phase 2, tentatively from August 2026</strong>, after their examinations.
+                Their posting schedules will be published here once finalised. Phase 2 interns will be
+                able to log in with their Roll Number / Campus ID in the same way, once their batch is added.
+              </p>
+              <p className="mt-2 text-xs text-slate-400">
+                Current login above is for the MBBS 2021 CBME (Phase 1) batch commencing 01 June 2026.
+              </p>
+            </div>
+          </div>
+        </section>
       )}
 
     </div>
