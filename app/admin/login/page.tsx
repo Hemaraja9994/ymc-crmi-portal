@@ -77,8 +77,7 @@ export default function AdminLogin() {
             )}
             <button className="btn-primary w-full justify-center py-2.5">Sign in</button>
             <p className="text-[11px] text-slate-400 text-center">
-              Demo credentials shown for prototype only. Replace with NextAuth + SSO before
-              production rollout.
+              Restricted access — authorised Internship Coordinators only.
             </p>
           </form>
         </div>
