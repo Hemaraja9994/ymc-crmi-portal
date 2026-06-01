@@ -30,9 +30,13 @@ export default function DeptYearView({
 }) {
   const [q, setQ] = useState("");
   const [showCompact, setShowCompact] = useState(true);
+  const [hideEmpty, setHideEmpty] = useState(true);
+
+  const activeWeeks = useMemo(() => weeks.filter((w) => w.students.length > 0).length, [weeks]);
 
   const filtered = useMemo(() => {
-    if (!q) return weeks;
+    const base = hideEmpty && !q ? weeks.filter((w) => w.students.length > 0) : weeks;
+    if (!q) return base;
     const s = q.toLowerCase();
     return weeks.filter((w) =>
       w.students.some(
@@ -42,7 +46,7 @@ export default function DeptYearView({
           st.subBatch.toLowerCase().includes(s)
       )
     );
-  }, [weeks, q]);
+  }, [weeks, q, hideEmpty]);
 
   const totalUnique = useMemo(() => {
     const set = new Set<string>();
@@ -108,6 +112,19 @@ export default function DeptYearView({
         </div>
       </header>
 
+      {/* Explanatory summary — prevents misreading blank weeks as "no postings" */}
+      <div className="card border-emerald-200 bg-emerald-50/50 p-4">
+        <p className="text-sm text-emerald-900">
+          <strong>All {totalUnique} interns</strong> rotate through {dept.name} across the year
+          (each for the full {dept.weeks}-week posting). The department has an active cohort in{" "}
+          <strong>{activeWeeks} of 52 weeks</strong>.
+        </p>
+        <p className="mt-1 text-xs text-emerald-800/80">
+          Blank weeks are normal: in those weeks the interns are posted in their other departments
+          (e.g. their longer General Medicine block). No posting is missing or discontinuous.
+        </p>
+      </div>
+
       {/* Controls */}
       <div className="card p-3 flex flex-wrap items-center gap-2">
         <div className="relative flex-1 min-w-[200px]">
@@ -119,6 +136,13 @@ export default function DeptYearView({
             className="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-xcel-500 focus:outline-none"
           />
         </div>
+        <button
+          onClick={() => setHideEmpty(!hideEmpty)}
+          className="btn-outline text-sm"
+          title="Show or hide weeks where no cohort is in this department"
+        >
+          {hideEmpty ? "Show all 52 weeks" : "Active weeks only"}
+        </button>
         <button
           onClick={() => setShowCompact(!showCompact)}
           className="btn-outline text-sm"
@@ -173,7 +197,7 @@ export default function DeptYearView({
                     </div>
                     {empty ? (
                       <div className="text-sm text-slate-400 italic mt-0.5">
-                        No interns assigned this week.
+                        No cohort in {dept.short} this week — interns are in their other postings.
                       </div>
                     ) : showCompact ? (
                       <div className="mt-1 flex flex-wrap gap-1">
