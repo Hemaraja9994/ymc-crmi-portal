@@ -1,5 +1,6 @@
 import { BLOCKS } from "@/lib/rotation";
 import { CalendarDays, ShieldCheck, BookOpen, AlertTriangle, Clock, FileText } from "lucide-react";
+import LeaveFlow from "@/components/LeaveFlow";
 
 export default function LeavePage() {
   const allDepts = BLOCKS.flatMap((b) => b.depts.map((d) => ({ ...d, block: b.id })));
@@ -130,6 +131,9 @@ export default function LeavePage() {
           </table>
         </div>
       </section>
+
+      {/* Leave application & approval flow */}
+      <LeaveFlow />
 
       {/* Important notes */}
       <section className="card p-5 border-amber-100 bg-amber-50/30">
