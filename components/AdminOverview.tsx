@@ -144,7 +144,7 @@ export default function AdminOverview({
                 <div className="text-xl font-extrabold text-slate-950">
                   Internship begins in {days} day{days === 1 ? "" : "s"}
                 </div>
-                <div className="text-xs text-slate-500">
+                <div className="text-xs text-slate-500" suppressHydrationWarning>
                   Start date: {START_DATE.toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" })}.
                   Live counters activate once postings begin.
                 </div>
