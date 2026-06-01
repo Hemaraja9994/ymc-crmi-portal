@@ -4,7 +4,6 @@
 // and YMC's Block I-IV structure used for the MBBS 2020 batch.
 
 import { STUDENTS, Student } from "./students";
-import { POSTING_ORDERS } from "./posting-orders";
 import { addDays, format } from "date-fns";
 
 export type Dept = {
@@ -100,80 +99,82 @@ const SPECIAL_ASSIGNMENTS: Record<string, { blockId: 1 | 2 | 3 | 4; subBatch: st
 };
 
 export function buildAssignments(): Assignment[] {
-  // Full-coverage rotation: each intern follows a fixed per-student department
-  // sequence (POSTING_ORDERS) so that EVERY department is staffed EVERY week while
-  // EVERY posting stays one continuous block. The sub-batch/block labels are kept
-  // for grouping/display only — the actual schedule comes from the order.
+  // Only "regular" students participate in the index-based block math, so the
+  // 112 original interns keep their exact block + sub-batch + rotation forever.
+  const regulars = STUDENTS.filter((s) => !SPECIAL_ASSIGNMENTS[s.regNo]);
+  const perBlock = Math.ceil(regulars.length / 4);
   const idxOf = new Map<string, number>();
-  let n = 0;
-  for (const s of STUDENTS) idxOf.set(s.regNo, n++);
+  regulars.forEach((s, i) => idxOf.set(s.regNo, i));
 
   return STUDENTS.map((s) => {
+    const special = SPECIAL_ASSIGNMENTS[s.regNo];
+    if (special) {
+      return {
+        student: s,
+        blockId: special.blockId,
+        subBatch: special.subBatch,
+        rotation: buildRotation(special.blockId, weekOffsetFromSubBatch(special.rotationAs)),
+      };
+    }
     const i = idxOf.get(s.regNo)!;
-    const order = POSTING_ORDERS[i] ?? POSTING_ORDERS[i % POSTING_ORDERS.length];
-    // group label: keep the familiar A/B/C/D + number scheme for readability
-    const blockIdx = Math.min(3, Math.floor(i / Math.ceil(STUDENTS.length / 4)));
+    const blockIdx = Math.min(3, Math.floor(i / perBlock));
     const blockId = (blockIdx + 1) as 1 | 2 | 3 | 4;
-    const subBatch = `${BLOCK_LETTERS[blockIdx]}${(i % 13) + 1}`;
+    const withinBlock = i - blockIdx * perBlock;
+    const subBatchNum = (withinBlock % 13) + 1;
+    const subBatch = `${BLOCK_LETTERS[blockIdx]}${subBatchNum}`;
     return {
       student: s,
       blockId,
       subBatch,
-      rotation: buildRotationFromOrder(order),
+      rotation: buildRotation(blockId, weekOffsetFromSubBatch(subBatchNum)),
     };
   });
 }
 
-// Build a 52-week rotation from a department ORDER (each dept once, full duration,
-// laid out back-to-back). Guarantees continuity by construction.
-function buildRotationFromOrder(order: string[]) {
-  const out: { weekIdx: number; deptCode: string; deptName: string; deptShort: string; color: string }[] = [];
-  let w = 0;
-  for (const code of order) {
-    const d = deptByCode(code);
-    if (!d) continue;
-    for (let k = 0; k < d.weeks; k++) {
-      out.push({ weekIdx: w, deptCode: d.code, deptName: d.name, deptShort: d.short, color: d.color });
-      w++;
-    }
-  }
-  return out;
+// Each block runs its dept rotation across its own 13-week chunk of the calendar.
+// To stagger sub-batches inside a block, we cyclically shift the dept sequence
+// based on the sub-batch number.
+function weekOffsetFromSubBatch(subBatchNum: number): number {
+  return (subBatchNum - 1) % 13;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Rotation builder — CONTINUITY-PRESERVING.
-//
-// Each intern visits all 4 blocks across the year (one block per 13-week quarter,
-// starting at their own block). Within a quarter the intern rotates through that
-// block's departments.
-//
-// To stagger sub-batches (so they are not all in the same department at once) we
-// rotate the ORDER OF DEPARTMENTS — never the underlying weeks. Each department is
-// then expanded to its full week-count as one unbroken run. This GUARANTEES every
-// posting (e.g. the 6-week General Medicine block) is continuous — fixing the
-// earlier cyclic week-shift that split long postings across the 13-week boundary.
-// ─────────────────────────────────────────────────────────────────────────────
-function buildRotation(blockId: 1 | 2 | 3 | 4, subBatchNum: number) {
+function buildRotation(blockId: 1 | 2 | 3 | 4, weekShift: number) {
+  const block = BLOCKS.find((b) => b.id === blockId)!;
+  // Expand: build the linear dept-week sequence within the block (length 13).
+  const seq: { code: string; name: string; short: string; color: string }[] = [];
+  for (const d of block.depts) {
+    for (let w = 0; w < d.weeks; w++) {
+      seq.push({ code: d.code, name: d.name, short: d.short, color: d.color });
+    }
+  }
+  // Sub-batch rotates the sequence so each sub-batch starts at a different dept.
+  const rotated = seq.map((_, i) => seq[(i + weekShift) % seq.length]);
+
+  // Map onto the calendar: block 1 occupies weeks 0-12, block 2 → 13-25, etc.
+  // BUT all four blocks run in parallel — each block's interns spend their full year
+  // inside their block's dept set. So we tile each block across all 52 weeks by repeating
+  // (this matches the previous batch where Blocks I-IV ran concurrently, not sequentially).
+  // To occupy 52 weeks, we repeat the 13-week sequence 4 times (one repetition per quarter)
+  // so an intern in Block I cycles Gen Med→ENT→Ophth→…→Geriat → and then continues with
+  // the NEXT block's sequence (Blocks rotate quarterly across all interns).
   const fullYear: { weekIdx: number; deptCode: string; deptName: string; deptShort: string; color: string }[] = [];
+  // Quarter sequence — each intern visits all 4 blocks, starting at their own block.
   const startBlockIdx = blockId - 1;
   for (let q = 0; q < 4; q++) {
     const b = BLOCKS[(startBlockIdx + q) % 4];
-    // Stagger at the DEPARTMENT level: rotate the department order by sub-batch.
-    const deptShift = (subBatchNum - 1) % b.depts.length;
-    const depts = b.depts.map((_, i) => b.depts[(i + deptShift) % b.depts.length]);
-    // Expand each department to its full contiguous week-run within the quarter.
-    let w = 0;
-    for (const d of depts) {
-      for (let k = 0; k < d.weeks; k++) {
-        fullYear.push({
-          weekIdx: q * 13 + w,
-          deptCode: d.code,
-          deptName: d.name,
-          deptShort: d.short,
-          color: d.color,
-        });
-        w++;
-      }
+    const blockSeq: typeof rotated = [];
+    for (const d of b.depts) for (let w = 0; w < d.weeks; w++)
+      blockSeq.push({ code: d.code, name: d.name, short: d.short, color: d.color });
+    const shifted = blockSeq.map((_, i) => blockSeq[(i + weekShift) % blockSeq.length]);
+    for (let w = 0; w < 13; w++) {
+      const item = shifted[w];
+      fullYear.push({
+        weekIdx: q * 13 + w,
+        deptCode: item.code,
+        deptName: item.name,
+        deptShort: item.short,
+        color: item.color,
+      });
     }
   }
   return fullYear;
