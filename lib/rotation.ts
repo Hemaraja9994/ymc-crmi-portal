@@ -4,6 +4,7 @@
 // and YMC's Block I-IV structure used for the MBBS 2020 batch.
 
 import { STUDENTS, Student } from "./students";
+import { POSTING_ORDERS } from "./posting-orders";
 import { addDays, format } from "date-fns";
 
 export type Dept = {
@@ -99,36 +100,44 @@ const SPECIAL_ASSIGNMENTS: Record<string, { blockId: 1 | 2 | 3 | 4; subBatch: st
 };
 
 export function buildAssignments(): Assignment[] {
-  // Only "regular" students participate in the index-based block math, so the
-  // 112 original interns keep their exact block + sub-batch + rotation forever.
-  const regulars = STUDENTS.filter((s) => !SPECIAL_ASSIGNMENTS[s.regNo]);
-  const perBlock = Math.ceil(regulars.length / 4);
+  // Full-coverage rotation: each intern follows a fixed per-student department
+  // sequence (POSTING_ORDERS) so that EVERY department is staffed EVERY week while
+  // EVERY posting stays one continuous block. The sub-batch/block labels are kept
+  // for grouping/display only — the actual schedule comes from the order.
   const idxOf = new Map<string, number>();
-  regulars.forEach((s, i) => idxOf.set(s.regNo, i));
+  let n = 0;
+  for (const s of STUDENTS) idxOf.set(s.regNo, n++);
 
   return STUDENTS.map((s) => {
-    const special = SPECIAL_ASSIGNMENTS[s.regNo];
-    if (special) {
-      return {
-        student: s,
-        blockId: special.blockId,
-        subBatch: special.subBatch,
-        rotation: buildRotation(special.blockId, special.rotationAs),
-      };
-    }
     const i = idxOf.get(s.regNo)!;
-    const blockIdx = Math.min(3, Math.floor(i / perBlock));
+    const order = POSTING_ORDERS[i] ?? POSTING_ORDERS[i % POSTING_ORDERS.length];
+    // group label: keep the familiar A/B/C/D + number scheme for readability
+    const blockIdx = Math.min(3, Math.floor(i / Math.ceil(STUDENTS.length / 4)));
     const blockId = (blockIdx + 1) as 1 | 2 | 3 | 4;
-    const withinBlock = i - blockIdx * perBlock;
-    const subBatchNum = (withinBlock % 13) + 1;
-    const subBatch = `${BLOCK_LETTERS[blockIdx]}${subBatchNum}`;
+    const subBatch = `${BLOCK_LETTERS[blockIdx]}${(i % 13) + 1}`;
     return {
       student: s,
       blockId,
       subBatch,
-      rotation: buildRotation(blockId, subBatchNum),
+      rotation: buildRotationFromOrder(order),
     };
   });
+}
+
+// Build a 52-week rotation from a department ORDER (each dept once, full duration,
+// laid out back-to-back). Guarantees continuity by construction.
+function buildRotationFromOrder(order: string[]) {
+  const out: { weekIdx: number; deptCode: string; deptName: string; deptShort: string; color: string }[] = [];
+  let w = 0;
+  for (const code of order) {
+    const d = deptByCode(code);
+    if (!d) continue;
+    for (let k = 0; k < d.weeks; k++) {
+      out.push({ weekIdx: w, deptCode: d.code, deptName: d.name, deptShort: d.short, color: d.color });
+      w++;
+    }
+  }
+  return out;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
