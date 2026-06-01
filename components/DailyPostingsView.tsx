@@ -43,6 +43,10 @@ export default function DailyPostingsView({
     const [y, m, d] = iso.split("-").map(Number);
     return new Date(y, m - 1, d);
   };
+  // Format a Date to YYYY-MM-DD using LOCAL parts (not UTC). Using toISOString()
+  // here would shift the displayed day backwards in IST (e.g. 01 Jun -> 31 May).
+  const fmtLocal = (date: Date) =>
+    `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 
   const startDate  = parseLocal(startDateISO);
   const todayLocal = new Date();
@@ -197,7 +201,7 @@ export default function DailyPostingsView({
           </button>
           <input
             type="date"
-            value={focus.toISOString().slice(0, 10)}
+            value={fmtLocal(focus)}
             onChange={(e) => { if (e.target.value) setFocus(parseLocal(e.target.value)); }}
             min={startDateISO}
             className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm font-mono"
