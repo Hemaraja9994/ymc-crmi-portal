@@ -79,8 +79,11 @@ export function getWeekDates(weekIdx: number): { start: Date; end: Date; label: 
   };
 }
 
-// Distribute 113 students across 4 blocks. Sub-batches: A1..A13, B1..B13, C1..C13, D1..D13.
-// Each block has 13 sub-batches; students are assigned to sub-batches round-robin within their block.
+// Each intern belongs to exactly one sub-batch (A1..A13, B1..B13, C1..C13,
+// D1..D13). Sub-batch membership is taken VERBATIM from the signed master file
+// (see SUBBATCH_ROSTER below — "LIST OF INTERNS & Batch", Ref: YMC/1368/2026);
+// the weekly department rotation is then derived from the sub-batch by
+// buildRotation(), which reproduces the master schedule cell-for-cell.
 export type Assignment = {
   student: Student;
   blockId: 1 | 2 | 3 | 4;
@@ -90,43 +93,95 @@ export type Assignment = {
 
 const BLOCK_LETTERS = ["A", "B", "C", "D"] as const;
 
-// Off-cycle / mid-batch joiners are pinned to dedicated sub-batches so they
-// do not shift the block/sub-batch assignment of any existing student.
-// Their rotation follows the "rotationAs" sub-batch number in the same block.
-// 21M055 (Insha Sanover) joined mid-batch → Block 2 / B14, riding B1's schedule.
-const SPECIAL_ASSIGNMENTS: Record<string, { blockId: 1 | 2 | 3 | 4; subBatch: string; rotationAs: number }> = {
-  "21M055": { blockId: 2, subBatch: "B14", rotationAs: 1 },
+// ─────────────────────────────────────────────────────────────────────────
+// Official sub-batch composition — transcribed VERBATIM from the signed
+// "Compulsory Rotatory Medical Internship Programme for MBBS 2021 CBME Batch"
+// master file ("LIST OF INTERNS & Batch", Ref: YMC/1368/2026 dated 01.06.2026,
+// Principal/Dean YMC). THIS IS THE SINGLE SOURCE OF TRUTH for which intern
+// belongs to which sub-batch. Groups A/B/C/D begin the year in Block I/II/III/IV
+// respectively; sub-batch numbers 1–13 stagger the dept sequence within a block.
+// (Reg-number gaps — e.g. 21M005/06/08 — are interns not in the 2021 CBME list.)
+export const SUBBATCH_ROSTER: Record<string, string[]> = {
+  A1: ["21M001", "21M002"],
+  A2: ["21M003", "21M004"],
+  A3: ["21M007", "21M009"],
+  A4: ["21M011", "21M012"],
+  A5: ["21M013", "21M014"],
+  A6: ["21M015", "21M016"],
+  A7: ["21M017", "21M019"],
+  A8: ["21M020", "21M021"],
+  A9: ["21M022", "21M023"],
+  A10: ["21M024", "21M025"],
+  A11: ["21M026", "21M027"],
+  A12: ["21M028", "21M029", "21M030"],
+  A13: ["21M031", "21M032", "21M033"],
+  B1: ["21M034", "21M035"],
+  B2: ["21M036", "21M038"],
+  B3: ["21M039", "21M040"],
+  B4: ["21M041", "21M042"],
+  B5: ["21M043", "21M045"],
+  B6: ["21M049", "21M051"],
+  B7: ["21M052", "21M053"],
+  B8: ["21M054", "21M055"],
+  B9: ["21M056", "21M057"],
+  B10: ["21M058", "21M059"],
+  B11: ["21M060", "21M062"],
+  B12: ["21M063", "21M064", "21M065"],
+  B13: ["21M066", "21M067", "21M068"],
+  C1: ["21M069", "21M070"],
+  C2: ["21M071", "21M072"],
+  C3: ["21M073", "21M074"],
+  C4: ["21M075", "21M076"],
+  C5: ["21M077", "21M078"],
+  C6: ["21M079", "21M080"],
+  C7: ["21M081", "21M082"],
+  C8: ["21M083", "21M084"],
+  C9: ["21M085", "21M087"],
+  C10: ["21M089", "21M090"],
+  C11: ["21M093", "21M094"],
+  C12: ["21M096", "21M097", "21M098"],
+  C13: ["21M099", "21M100", "21M101"],
+  D1: ["21M102", "21M103"],
+  D2: ["21M106", "21M108"],
+  D3: ["21M109", "21M111"],
+  D4: ["21M112", "21M114"],
+  D5: ["21M116", "21M117"],
+  D6: ["21M119", "21M128"],
+  D7: ["21M129", "21M130"],
+  D8: ["21M132", "21M134"],
+  D9: ["21M135", "21M137"],
+  D10: ["21M138", "21M139"],
+  D11: ["21M140", "21M141", "21M142"],
+  D12: ["21M143", "21M144", "21M145"],
+  D13: ["21M146", "21M147", "21M148"],
 };
 
-export function buildAssignments(): Assignment[] {
-  // Only "regular" students participate in the index-based block math, so the
-  // 112 original interns keep their exact block + sub-batch + rotation forever.
-  const regulars = STUDENTS.filter((s) => !SPECIAL_ASSIGNMENTS[s.regNo]);
-  const perBlock = Math.ceil(regulars.length / 4);
-  const idxOf = new Map<string, number>();
-  regulars.forEach((s, i) => idxOf.set(s.regNo, i));
+// Reverse lookup: regNo → sub-batch (e.g. "21M055" → "B8").
+const REGNO_TO_SUBBATCH: Record<string, string> = (() => {
+  const m: Record<string, string> = {};
+  for (const [sb, regs] of Object.entries(SUBBATCH_ROSTER)) {
+    for (const r of regs) m[r] = sb;
+  }
+  return m;
+})();
 
+export function buildAssignments(): Assignment[] {
   return STUDENTS.map((s) => {
-    const special = SPECIAL_ASSIGNMENTS[s.regNo];
-    if (special) {
-      return {
-        student: s,
-        blockId: special.blockId,
-        subBatch: special.subBatch,
-        rotation: buildRotation(special.blockId, weekOffsetFromSubBatch(special.rotationAs)),
-      };
+    const subBatch = REGNO_TO_SUBBATCH[s.regNo];
+    if (!subBatch) {
+      // Fail loud: every intern in the official list must have a sub-batch.
+      throw new Error(
+        `No sub-batch for ${s.regNo} (${s.name}). Reconcile SUBBATCH_ROSTER with the signed master file.`
+      );
     }
-    const i = idxOf.get(s.regNo)!;
-    const blockIdx = Math.min(3, Math.floor(i / perBlock));
-    const blockId = (blockIdx + 1) as 1 | 2 | 3 | 4;
-    const withinBlock = i - blockIdx * perBlock;
-    const subBatchNum = (withinBlock % 13) + 1;
-    const subBatch = `${BLOCK_LETTERS[blockIdx]}${subBatchNum}`;
+    const letter = subBatch[0];
+    const num = parseInt(subBatch.slice(1), 10);
+    const blockId = ((BLOCK_LETTERS as readonly string[]).indexOf(letter) + 1) as 1 | 2 | 3 | 4;
     return {
       student: s,
       blockId,
       subBatch,
-      rotation: buildRotation(blockId, weekOffsetFromSubBatch(subBatchNum)),
+      rotation: buildRotation(blockId, weekOffsetFromSubBatch(num)),
     };
   });
 }
