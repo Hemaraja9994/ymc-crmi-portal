@@ -22,6 +22,7 @@ import { ANNOUNCEMENTS, CATEGORY_STYLES } from "@/lib/announcements";
 import { attendanceFor, ATTENDANCE_THRESHOLD } from "@/lib/attendance";
 import { LeaveRecord, LEAVE_TYPE_COLORS, isOnLeave, loadLeaves } from "@/lib/leaves";
 import { START_DATE, daysUntilStart, isPreLaunch } from "@/lib/rotation";
+import { BATCH_JUL2026, STUDENTS_JUL2026 } from "@/lib/batch-jul2026";
 
 export default function AdminOverview({
   assignments,
@@ -158,6 +159,35 @@ export default function AdminOverview({
       )}
 
       <Announcements />
+
+      {/* ── 2nd Batch of Internship — July 2026 (highlighted section) ──── */}
+      <Link
+        href="/admin/batch-jul2026"
+        className="group relative block overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500 via-orange-500 to-rose-500 p-5 text-white shadow-xl shadow-orange-900/10 transition-all hover:-translate-y-0.5 hover:shadow-2xl"
+      >
+        <div className="relative flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-white">
+              <Sparkles size={12} /> New section
+            </div>
+            <h2 className="mt-3 text-xl font-extrabold tracking-tight md:text-2xl">
+              {BATCH_JUL2026.label}
+            </h2>
+            <p className="mt-1 max-w-2xl text-sm leading-5 text-white/85">
+              {STUDENTS_JUL2026.length} interns · Rotation 27.07.2026 → 26.07.2027 · Batch-wise
+              distribution, timeline, hostel rules & 52-week rotation grid.
+            </p>
+            <div className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-white group-hover:gap-2 transition-all">
+              Highlights · Click here for more options <ArrowUpRight size={14} />
+            </div>
+          </div>
+          <div className="rounded-2xl border border-white/25 bg-white/15 px-4 py-2 text-center backdrop-blur-md">
+            <div className="text-[11px] font-semibold uppercase tracking-widest text-white/85">Orientation</div>
+            <div className="text-xl font-extrabold">27 Jul 2026</div>
+            <div className="text-[11px] text-white/75">09:00 · LH-5, Academic Block</div>
+          </div>
+        </div>
+      </Link>
 
       {/* ── Department Distribution ──────────────────────────── */}
       <section className="card overflow-hidden">

@@ -15,6 +15,7 @@ import {
   FileText,
   Award,
   GitMerge,
+  Sparkles,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { SESSION_KEY } from "@/lib/auth";
@@ -49,6 +50,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
     { href: "/admin/certificates", icon: Award, label: "Completion Reports" },
     { href: "/admin/reports", icon: FileText, label: "Reports" },
     { href: "/admin/announcements", icon: Megaphone, label: "Announcements" },
+    { href: "/admin/batch-jul2026", icon: Sparkles, label: "Jul 2026 Batch" },
   ];
 
   return (
@@ -88,7 +90,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
       {/* Mobile top tabs */}
       <div className="no-print md:hidden px-4 pb-2 overflow-x-auto flex gap-1 text-xs">
         {nav.map((n) => {
-          const active = path === n.href;
+          const active = path === n.href || (n.href !== "/admin" && path?.startsWith(n.href));
           const Icon = n.icon;
           return (
             <Link
