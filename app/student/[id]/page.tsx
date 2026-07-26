@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import {
-  findAssignmentByCampusId,
   getWeekDates,
   currentWeekIndex,
   TOTAL_WEEKS,
@@ -9,21 +8,23 @@ import {
   daysUntilStart,
   lifecycleStatus,
 } from "@/lib/rotation";
+import { findAssignmentUnified } from "@/lib/find-assignment";
 import { postingSegments, categorizeSegments } from "@/lib/analytics";
 import StudentDashboard from "@/components/StudentDashboard";
 
 export default function StudentPage({ params }: { params: { id: string } }) {
-  const a = findAssignmentByCampusId(decodeURIComponent(params.id));
+  const a = findAssignmentUnified(decodeURIComponent(params.id));
   if (!a) notFound();
   const today = new Date();
-  const week = currentWeekIndex(today);
+  const start = a.batchStart;
+  const week = currentWeekIndex(today, start);
   const weeks = Array.from({ length: TOTAL_WEEKS }, (_, i) => ({
     idx: i,
-    ...getWeekDates(i),
+    ...getWeekDates(i, start),
     cell: a.rotation.find((r) => r.weekIdx === i)!,
   }));
   const segments = postingSegments(a);
-  const cats = categorizeSegments(segments, today);
+  const cats = categorizeSegments(segments, today, start);
   return (
     <StudentDashboard
       assignment={JSON.parse(JSON.stringify(a))}
@@ -35,9 +36,9 @@ export default function StudentPage({ params }: { params: { id: string } }) {
       completed={JSON.parse(JSON.stringify(cats.completed))}
       currentSeg={JSON.parse(JSON.stringify(cats.current))}
       upcoming={JSON.parse(JSON.stringify(cats.upcoming))}
-      lifecycle={lifecycleStatus(today)}
-      preLaunch={isPreLaunch(today)}
-      daysToStart={daysUntilStart(today)}
+      lifecycle={lifecycleStatus(today, start)}
+      preLaunch={isPreLaunch(today, start)}
+      daysToStart={daysUntilStart(today, start)}
     />
   );
 }

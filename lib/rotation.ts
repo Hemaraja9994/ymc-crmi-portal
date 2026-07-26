@@ -69,8 +69,8 @@ export const BLOCKS: Block[] = [
 export const START_DATE = new Date(2026, 5, 1); // June 1 2026 (month is 0-indexed)
 export const TOTAL_WEEKS = 52;
 
-export function getWeekDates(weekIdx: number): { start: Date; end: Date; label: string } {
-  const start = addDays(START_DATE, weekIdx * 7);
+export function getWeekDates(weekIdx: number, batchStart: Date = START_DATE): { start: Date; end: Date; label: string } {
+  const start = addDays(batchStart, weekIdx * 7);
   const end = addDays(start, 6);
   return {
     start,
@@ -89,6 +89,10 @@ export type Assignment = {
   blockId: 1 | 2 | 3 | 4;
   subBatch: string; // e.g. "A1"
   rotation: { weekIdx: number; deptCode: string; deptName: string; deptShort: string; color: string }[];
+  // Batch context — defaults to the main 2021 CBME batch when absent.
+  batchStart?: Date;
+  batchId?: string;
+  batchLabel?: string;
 };
 
 const BLOCK_LETTERS = ["A", "B", "C", "D"] as const;
@@ -182,6 +186,9 @@ export function buildAssignments(): Assignment[] {
       blockId,
       subBatch,
       rotation: buildRotation(blockId, weekOffsetFromSubBatch(num)),
+      batchStart: START_DATE,
+      batchId: "2021-cbme-main",
+      batchLabel: "MBBS 2021 CBME",
     };
   });
 }
@@ -240,29 +247,29 @@ export function findAssignmentByCampusId(campusId: string): Assignment | undefin
   return all.find((a) => a.student.campusId.toLowerCase() === campusId.toLowerCase());
 }
 
-export function currentWeekIndex(today = new Date()): number {
-  const ms = today.getTime() - START_DATE.getTime();
+export function currentWeekIndex(today: Date = new Date(), batchStart: Date = START_DATE): number {
+  const ms = today.getTime() - batchStart.getTime();
   const wk = Math.floor(ms / (1000 * 60 * 60 * 24 * 7));
   return Math.max(0, Math.min(TOTAL_WEEKS - 1, wk));
 }
 
-export function isPreLaunch(today = new Date()): boolean {
-  return today.getTime() < START_DATE.getTime();
+export function isPreLaunch(today: Date = new Date(), batchStart: Date = START_DATE): boolean {
+  return today.getTime() < batchStart.getTime();
 }
 
-export function isCompleted(today = new Date()): boolean {
-  const end = new Date(START_DATE);
+export function isCompleted(today: Date = new Date(), batchStart: Date = START_DATE): boolean {
+  const end = new Date(batchStart);
   end.setDate(end.getDate() + TOTAL_WEEKS * 7);
   return today.getTime() >= end.getTime();
 }
 
-export function daysUntilStart(today = new Date()): number {
-  return Math.max(0, Math.ceil((START_DATE.getTime() - today.getTime()) / 86_400_000));
+export function daysUntilStart(today: Date = new Date(), batchStart: Date = START_DATE): number {
+  return Math.max(0, Math.ceil((batchStart.getTime() - today.getTime()) / 86_400_000));
 }
 
-export function lifecycleStatus(today = new Date()): "pre-launch" | "active" | "completed" {
-  if (isPreLaunch(today)) return "pre-launch";
-  if (isCompleted(today)) return "completed";
+export function lifecycleStatus(today: Date = new Date(), batchStart: Date = START_DATE): "pre-launch" | "active" | "completed" {
+  if (isPreLaunch(today, batchStart)) return "pre-launch";
+  if (isCompleted(today, batchStart)) return "completed";
   return "active";
 }
 

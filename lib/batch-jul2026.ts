@@ -5,7 +5,8 @@
 // Shares the Block I–IV dept structure and rotation algorithm with the main batch.
 
 import { addDays, format } from "date-fns";
-import { BLOCKS } from "./rotation";
+import { BLOCKS, type Assignment } from "./rotation";
+import type { Student } from "./students";
 
 export type Jul2026Student = {
   slNo: number;
@@ -15,18 +16,8 @@ export type Jul2026Student = {
   subBatch: string; // e.g. "A1", "B13"
 };
 
-export type Jul2026Assignment = {
-  student: Jul2026Student;
-  blockId: 1 | 2 | 3 | 4;
-  subBatch: string;
-  rotation: {
-    weekIdx: number;
-    deptCode: string;
-    deptName: string;
-    deptShort: string;
-    color: string;
-  }[];
-};
+// Same shape as the main-batch Assignment so the shared student view can render it unchanged.
+export type Jul2026Assignment = Assignment;
 
 export const BATCH_JUL2026 = {
   id: "2021-cbme-jul2026",
@@ -129,12 +120,22 @@ function buildRotationFor(subBatch: string) {
 export function buildAssignmentsJul2026(): Jul2026Assignment[] {
   return STUDENTS_JUL2026.map((s) => {
     const { group } = parseSubBatch(s.subBatch);
-    const blockId = (group === "A" ? 1 : 2) as 1 | 2;
+    const blockId = (group === "A" ? 1 : 2) as 1 | 2 | 3 | 4;
+    // Adapt Jul2026Student → Student shape expected by the shared Assignment type.
+    const asStudent: Student = {
+      slNo: s.slNo,
+      name: s.name,
+      regNo: s.regNo,
+      campusId: s.campusId,
+    };
     return {
-      student: s,
+      student: asStudent,
       blockId,
       subBatch: s.subBatch,
       rotation: buildRotationFor(s.subBatch),
+      batchStart: BATCH_JUL2026.startDate,
+      batchId: BATCH_JUL2026.id,
+      batchLabel: BATCH_JUL2026.label,
     };
   });
 }

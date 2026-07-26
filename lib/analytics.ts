@@ -21,14 +21,16 @@ export type PostingSegment = {
 };
 
 // Compress 52 week-cells into contiguous posting segments.
+// Dates are scoped to the assignment's own batch (falls back to main batch when absent).
 export function postingSegments(a: Assignment): PostingSegment[] {
+  const start = a.batchStart;
   const segs: PostingSegment[] = [];
   let cur: PostingSegment | null = null;
   for (let i = 0; i < TOTAL_WEEKS; i++) {
     const cell = a.rotation.find((r) => r.weekIdx === i)!;
     if (!cur || cur.deptCode !== cell.deptCode) {
       if (cur) segs.push(cur);
-      const wk = getWeekDates(i);
+      const wk = getWeekDates(i, start);
       cur = {
         deptCode: cell.deptCode,
         deptName: cell.deptName,
@@ -41,7 +43,7 @@ export function postingSegments(a: Assignment): PostingSegment[] {
         weeks: 1,
       };
     } else {
-      const wk = getWeekDates(i);
+      const wk = getWeekDates(i, start);
       cur.endWeek = i;
       cur.endLabel = wk.label.split(" – ")[1];
       cur.weeks += 1;
@@ -51,8 +53,8 @@ export function postingSegments(a: Assignment): PostingSegment[] {
   return segs;
 }
 
-export function categorizeSegments(segs: PostingSegment[], today = new Date()) {
-  const wk = currentWeekIndex(today);
+export function categorizeSegments(segs: PostingSegment[], today = new Date(), batchStart?: Date) {
+  const wk = currentWeekIndex(today, batchStart);
   return {
     completed: segs.filter((s) => s.endWeek < wk),
     current: segs.find((s) => s.startWeek <= wk && s.endWeek >= wk) || null,

@@ -1,24 +1,27 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/server/prisma";
-import { findStudent } from "@/lib/students";
-import { currentWeekIndex, findAssignmentByCampusId, getWeekDates, isPreLaunch, TOTAL_WEEKS } from "@/lib/rotation";
+import { currentWeekIndex, getWeekDates, isPreLaunch, TOTAL_WEEKS } from "@/lib/rotation";
+import { findOrCreateStudentByRegNo } from "@/lib/server/students";
+import { findAssignmentUnified, findStudentUnified } from "@/lib/find-assignment";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 function rowsForStudent(regNo: string) {
-  const assignment = findAssignmentByCampusId(regNo);
+  const assignment = findAssignmentUnified(regNo);
   if (!assignment) return null;
+  const batchStart = assignment.batchStart; // may be undefined → date helpers use main-batch default
   const weeks = Array.from({ length: TOTAL_WEEKS }, (_, idx) => ({
     idx,
-    ...getWeekDates(idx),
+    ...getWeekDates(idx, batchStart),
     cell: assignment.rotation.find((rotation) => rotation.weekIdx === idx)!,
   }));
+  const now = new Date();
   return {
     assignment,
     weeks,
-    currentWeek: isPreLaunch(new Date()) ? -1 : currentWeekIndex(new Date()),
-    preLaunch: isPreLaunch(new Date()),
+    currentWeek: isPreLaunch(now, batchStart) ? -1 : currentWeekIndex(now, batchStart),
+    preLaunch: isPreLaunch(now, batchStart),
   };
 }
 
@@ -56,8 +59,12 @@ export async function POST(request: Request) {
         name: true,
       },
     });
+    if (!student) {
+      const localStudent = findStudentUnified(query);
+      student = localStudent ? await findOrCreateStudentByRegNo(localStudent.regNo) : null;
+    }
   } else {
-    student = findStudent(query);
+    student = findStudentUnified(query);
   }
 
   if (!student) {
