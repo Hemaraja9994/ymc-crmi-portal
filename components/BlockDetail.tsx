@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Users, Filter, AlertCircle } from "lucide-react";
 import { LEAVE_TYPE_COLORS, loadLeaves, isOnLeave, LeaveRecord } from "@/lib/leaves";
-import { isPreLaunch } from "@/lib/rotation";
+import { isPreLaunch, currentWeekIndex } from "@/lib/rotation";
 
 export default function BlockDetail({
   block,
@@ -101,8 +101,11 @@ export default function BlockDetail({
             </thead>
             <tbody>
               {filtered.map((a) => {
-                const cell = a.rotation.find((r: any) => r.weekIdx === currentWeek.idx);
-                const pre = isPreLaunch();
+                // Evaluate each intern against THEIR OWN batch start (batches differ).
+                const aStart = a.batchStart ? new Date(a.batchStart) : undefined;
+                const pre = isPreLaunch(new Date(), aStart);
+                const aWkIdx = pre ? -1 : currentWeekIndex(new Date(), aStart);
+                const cell = pre ? undefined : a.rotation.find((r: any) => r.weekIdx === aWkIdx);
                 const leave = pre ? undefined : isOnLeave(a.student.regNo, leaves);
                 return (
                   <tr key={a.student.regNo} className="border-t border-slate-100 hover:bg-brand-50/40">
