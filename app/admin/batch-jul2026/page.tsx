@@ -1,8 +1,10 @@
 import Link from "next/link";
 import {
   ArrowLeft,
+  BookOpenCheck,
   CalendarDays,
   Clock3,
+  Download,
   FileText,
   GraduationCap,
   Home,
@@ -11,9 +13,12 @@ import {
 } from "lucide-react";
 import {
   BATCH_JUL2026,
+  JUL2026_CASUAL_LEAVE,
+  JUL2026_CASUAL_LEAVE_TOTAL,
   JUL2026_DUTY_HOURS,
   JUL2026_HOSTEL_RULES,
   JUL2026_TIMELINE,
+  REGULATIONS_JUL2026,
   STUDENTS_JUL2026,
   buildAssignmentsJul2026,
   currentWeekIndexJul2026,
@@ -266,30 +271,78 @@ export default function BatchJul2026Page() {
         </div>
       </section>
 
-      {/* Casual leave & regulations */}
+      {/* Casual leave distribution — verbatim from CRMS notification 24.07.2026 */}
       <section className="card overflow-hidden">
-        <SectionHeader icon={<FileText size={17} />} title="Casual Leave Entitlement" note="As per YMC CRMS notification 24.07.2026" />
+        <SectionHeader
+          icon={<FileText size={17} />}
+          title="Casual Leave Distribution"
+          note={`As per YMC CRMS notification (Ref YMC/1377/2026, 24.07.2026) · Total ${JUL2026_CASUAL_LEAVE_TOTAL} days`}
+        />
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-slate-50 text-[11px] font-semibold uppercase tracking-widest text-slate-500">
               <tr>
-                <th className="px-4 py-3 text-left">Department</th>
-                <th className="px-4 py-3 text-left">CL Days</th>
+                <th className="px-4 py-3 text-left">Posting</th>
+                <th className="px-4 py-3 text-right">Days</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {BLOCKS.flatMap((b) => b.depts).map((d) => (
-                <tr key={d.code} className="hover:bg-slate-50">
-                  <td className="px-4 py-2">
-                    <span className={`dept-chip text-[10px] ${d.color}`}>{d.short}</span>
-                    <span className="ml-2 text-slate-700">{d.name}</span>
-                  </td>
-                  <td className="px-4 py-2 font-mono text-slate-900">{d.casualLeaveDays}</td>
+              {JUL2026_CASUAL_LEAVE.map((row) => (
+                <tr key={row.posting} className="hover:bg-slate-50">
+                  <td className="px-4 py-2 text-slate-700">{row.posting}</td>
+                  <td className="px-4 py-2 text-right font-mono font-semibold text-slate-900">{row.days}</td>
                 </tr>
               ))}
+              <tr className="bg-slate-50 font-semibold">
+                <td className="px-4 py-2 text-slate-900">Total casual leave</td>
+                <td className="px-4 py-2 text-right font-mono text-slate-900">{JUL2026_CASUAL_LEAVE_TOTAL}</td>
+              </tr>
             </tbody>
           </table>
         </div>
+      </section>
+
+      {/* ── Rules & Regulations (separate header + document downloads) ──── */}
+      <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-800 via-slate-900 to-xcel-900 px-6 py-5 text-white shadow-lg">
+        <div className="flex items-center gap-3">
+          <div className="grid h-11 w-11 place-items-center rounded-2xl bg-white/10 text-white ring-1 ring-white/20">
+            <BookOpenCheck size={20} />
+          </div>
+          <div>
+            <div className="text-[11px] font-semibold uppercase tracking-widest text-xcel-100">Batch-specific</div>
+            <h2 className="text-xl font-extrabold tracking-tight">Rules & Regulations — July 2026 Batch</h2>
+            <p className="text-[12px] text-white/70">
+              Official circulars and notices for this batch. Timeline differs from the main batch — refer to these documents.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="grid gap-3 md:grid-cols-2">
+        {REGULATIONS_JUL2026.map((doc) => (
+          <a
+            key={doc.file}
+            href={doc.file}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group card flex items-start gap-3 p-4 transition-all hover:-translate-y-0.5 hover:border-xcel-300 hover:shadow-lg"
+          >
+            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-rose-50 text-rose-600 ring-1 ring-rose-100">
+              <FileText size={20} />
+            </span>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h3 className="font-bold text-slate-900">{doc.title}</h3>
+                <span className="badge bg-slate-100 text-slate-600 ring-1 ring-slate-200">{doc.category}</span>
+              </div>
+              <p className="mt-0.5 text-[13px] leading-snug text-slate-600">{doc.description}</p>
+              <div className="mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-xcel-800 group-hover:gap-2 transition-all">
+                <Download size={14} /> Open PDF
+                {doc.dateAdded && <span className="ml-1 text-[11px] text-slate-400">· {doc.dateAdded}</span>}
+              </div>
+            </div>
+          </a>
+        ))}
       </section>
     </div>
   );

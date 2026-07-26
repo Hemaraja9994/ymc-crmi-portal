@@ -5,9 +5,19 @@ export type Announcement = {
   category: "Rule" | "Attendance" | "Schedule" | "Notice" | "Alert";
   highlight?: boolean;
   date: string;
+  file?: string; // optional linked PDF (served from /public)
 };
 
 export const ANNOUNCEMENTS: Announcement[] = [
+  {
+    id: "a0",
+    title: "BLS Training — mandatory for July 2026 batch",
+    body: "All interns of the July 2026 batch must attend the Basic Life Support (BLS) training. See the official circular for date, venue and instructions.",
+    category: "Alert",
+    highlight: true,
+    date: "2026-07-24",
+    file: "/regulations/jul2026-bls-training.pdf",
+  },
   {
     id: "a1",
     title: "NMC Logbook submission — mandatory weekly upload",

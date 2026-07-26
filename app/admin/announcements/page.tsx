@@ -1,5 +1,5 @@
 import { ANNOUNCEMENTS, CATEGORY_STYLES } from "@/lib/announcements";
-import { Megaphone, TrendingUp } from "lucide-react";
+import { Megaphone, TrendingUp, FileText } from "lucide-react";
 
 export default function Page() {
   return (
@@ -35,6 +35,16 @@ export default function Page() {
                 </div>
                 <h2 className="mt-2 font-semibold">{a.title}</h2>
                 <p className="text-sm text-slate-600 mt-1">{a.body}</p>
+                {a.file && (
+                  <a
+                    href={a.file}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-xcel-800 hover:underline"
+                  >
+                    <FileText size={14} /> View circular (PDF)
+                  </a>
+                )}
               </div>
             </div>
           </li>

@@ -170,11 +170,80 @@ export const JUL2026_HOSTEL_RULES = [
   { window: "No hostel accommodation", dates: "From 27.09.2027", note: "Even on payment" },
 ];
 
+// Casual leave entitlement — transcribed VERBATIM from the CRMS notification
+// (Ref YMC/1377/2026 dated 24.07.2026). Grouped exactly as in the official file.
+// Total = 2+2+2+2+4+2+1 = 15 casual leave days across the year.
+export const JUL2026_CASUAL_LEAVE: { posting: string; days: string }[] = [
+  { posting: "General Medicine", days: "02" },
+  { posting: "ENT / Ophthalmology / Psychiatry", days: "02" },
+  { posting: "General Surgery", days: "02" },
+  { posting: "Anaesthesiology / Orthopaedics / Emergency Medicine", days: "02" },
+  { posting: "Community Medicine", days: "04" },
+  { posting: "OBG", days: "02" },
+  { posting: "Paediatrics", days: "01" },
+  {
+    posting:
+      "Dermatology / Forensic Medicine / Lab Medicine / Geriatric Medicine / Radiodiagnosis / Respiratory Medicine",
+    days: "Nil",
+  },
+];
+
+export const JUL2026_CASUAL_LEAVE_TOTAL = 15;
+
 export const JUL2026_DUTY_HOURS = [
   { duty: "Daily work hours in the hospital", timings: "08:00 – 16:00" },
   { duty: "Extended (depending on unit/dept need)", timings: "16:00 – 19:00" },
   { duty: "Stay duty (major depts — Med, Surg, OBG, Paeds)", timings: "19:00 – 08:00" },
   { duty: "Bus — hospital → hostel", timings: "19:00 & 20:00 (per notice dated 14.07.2025)" },
+];
+
+// ── Regulations & official documents for the July 2026 batch ──
+// PDFs live flat in public/regulations/ with a jul2026- prefix (the .gitignore
+// exemption `!public/regulations/*.pdf` only covers files directly in that folder).
+export type Jul2026Doc = {
+  title: string;
+  description: string;
+  file: string;
+  category: string;
+  dateAdded?: string;
+};
+
+export const REGULATIONS_JUL2026: Jul2026Doc[] = [
+  {
+    title: "Orientation Programme — Notice",
+    description: "Internship Orientation Programme for the July 2026 batch — 27.07.2026, 09:00, Lecture Hall-5.",
+    file: "/regulations/jul2026-orientation-notice.pdf",
+    category: "Notice",
+    dateAdded: "24 Jul 2026",
+  },
+  {
+    title: "Orientation Programme — Schedule",
+    description: "Detailed session-by-session schedule for the 27.07.2026 orientation day.",
+    file: "/regulations/jul2026-orientation-schedule.pdf",
+    category: "Schedule",
+    dateAdded: "24 Jul 2026",
+  },
+  {
+    title: "Internship Roster — 2021 Supplementary",
+    description: "Official batch-wise rotation roster (Blocks I–IV, sub-batches A1–B13) for the July 2026 batch.",
+    file: "/regulations/jul2026-internship-roster.pdf",
+    category: "Roster",
+    dateAdded: "24 Jul 2026",
+  },
+  {
+    title: "BLS Training — Circular",
+    description: "Mandatory Basic Life Support training circular for the July 2026 internship batch.",
+    file: "/regulations/jul2026-bls-training.pdf",
+    category: "Circular",
+    dateAdded: "24 Jul 2026",
+  },
+  {
+    title: "Campus Transport Facility — Extension Notice",
+    description: "Extension of campus transport facility (9:00 pm to 6:00 am) for interns.",
+    file: "/regulations/jul2026-transport-facility.pdf",
+    category: "Notice",
+    dateAdded: "Jul 2026",
+  },
 ];
 
 export function findJul2026Student(query: string): Jul2026Student | undefined {
