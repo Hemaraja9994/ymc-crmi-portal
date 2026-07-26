@@ -5,7 +5,7 @@ import {
   getWeekDates,
   TOTAL_WEEKS,
 } from "@/lib/rotation";
-import { studentsInDeptThisWeek, deptWeeklyHistory } from "@/lib/analytics";
+import { studentsInDeptThisWeekAll, deptWeeklyHistory } from "@/lib/analytics";
 import DeptDetail from "@/components/DeptDetail";
 
 export default function Page({ params }: { params: { code: string } }) {
@@ -13,7 +13,7 @@ export default function Page({ params }: { params: { code: string } }) {
   if (!dept) notFound();
   const wk = currentWeekIndex();
   const wkInfo = getWeekDates(wk);
-  const roster = studentsInDeptThisWeek(params.code, wk);
+  const roster = studentsInDeptThisWeekAll(params.code);
   const history = deptWeeklyHistory(params.code);
   return (
     <DeptDetail

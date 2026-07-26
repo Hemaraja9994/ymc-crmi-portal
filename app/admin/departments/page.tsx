@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { BLOCKS, currentWeekIndex, departmentDistribution } from "@/lib/rotation";
+import { BLOCKS } from "@/lib/rotation";
+import { departmentDistributionAll } from "@/lib/analytics";
 import { ArrowUpRight } from "lucide-react";
 
 export default function DeptsPage() {
-  const wk = currentWeekIndex();
-  const dist = departmentDistribution(wk);
+  const dist = departmentDistributionAll();
   return (
     <div className="space-y-5">
       <header>

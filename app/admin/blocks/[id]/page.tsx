@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { BLOCKS, currentWeekIndex, getWeekDates } from "@/lib/rotation";
-import { studentsInBlock } from "@/lib/analytics";
+import { studentsInBlockAll } from "@/lib/analytics";
 import BlockDetail from "@/components/BlockDetail";
 
 export default function Page({ params }: { params: { id: string } }) {
@@ -12,7 +12,7 @@ export default function Page({ params }: { params: { id: string } }) {
   return (
     <BlockDetail
       block={JSON.parse(JSON.stringify(block))}
-      students={JSON.parse(JSON.stringify(studentsInBlock(id)))}
+      students={JSON.parse(JSON.stringify(studentsInBlockAll(id)))}
       currentWeek={{ idx: wk, label: wkLabel }}
     />
   );

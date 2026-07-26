@@ -231,7 +231,14 @@ export default function DeptDetail({
                         {a.student.regNo}
                       </Link>
                     </td>
-                    <td className="px-3 py-2 font-medium">{a.student.name}</td>
+                    <td className="px-3 py-2 font-medium">
+                      {a.student.name}
+                      {a.batchId === "2021-cbme-jul2026" && (
+                        <span className="ml-2 inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800 ring-1 ring-amber-200">
+                          Jul 2026
+                        </span>
+                      )}
+                    </td>
                     <td className="px-3 py-2 text-slate-600">
                       Block {a.blockId} · <span className="font-mono">{a.subBatch}</span>
                     </td>

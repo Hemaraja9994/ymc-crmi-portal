@@ -1,5 +1,5 @@
 import { prisma } from "./prisma";
-import { findStudent } from "../students";
+import { findStudentUnified, isJul2026RegNo } from "../find-assignment";
 
 export async function findOrCreateStudentByRegNo(regNo: string) {
   const normalized = regNo.trim().toUpperCase();
@@ -8,8 +8,13 @@ export async function findOrCreateStudentByRegNo(regNo: string) {
   const existing = await prisma.student.findUnique({ where: { regNo: normalized } });
   if (existing) return existing;
 
-  const local = findStudent(normalized);
+  // Resolve across BOTH batches (main 2021 CBME + July 2026), not just the main list.
+  const local = findStudentUnified(normalized);
   if (!local) return null;
+
+  const jul2026 = isJul2026RegNo(local.regNo);
+  const batchYear = jul2026 ? 2021 : 2021;
+  const batchSlug = jul2026 ? "2021-cbme-jul2026" : "2021-cbme";
 
   return prisma.student.upsert({
     where: { regNo: local.regNo },
@@ -19,8 +24,8 @@ export async function findOrCreateStudentByRegNo(regNo: string) {
       campusId: local.campusId,
       phone: local.phone,
       email: local.email,
-      batchYear: 2021,
-      batchSlug: "2021-cbme",
+      batchYear,
+      batchSlug,
     },
     create: {
       slNo: local.slNo,
@@ -29,8 +34,8 @@ export async function findOrCreateStudentByRegNo(regNo: string) {
       campusId: local.campusId,
       phone: local.phone,
       email: local.email,
-      batchYear: 2021,
-      batchSlug: "2021-cbme",
+      batchYear,
+      batchSlug,
     },
   });
 }

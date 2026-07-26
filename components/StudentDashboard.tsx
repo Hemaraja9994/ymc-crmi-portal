@@ -122,7 +122,7 @@ export default function StudentDashboard({
           `Reg No: ${assignment.student.regNo}`,
           `Block ${assignment.blockId} · ${assignment.subBatch}`,
           ``,
-          `🗓️ Internship begins ${weeks[0].start} (in ${daysToStart} day${daysToStart === 1 ? "" : "s"})`,
+          `🗓️ Internship begins ${weeks[0].label.split(" – ")[0]} (in ${daysToStart} day${daysToStart === 1 ? "" : "s"})`,
           `First posting: ${weeks[0].cell.deptName}`,
         ]
       : [
@@ -264,7 +264,7 @@ export default function StudentDashboard({
 
       {/* Pre-launch / active / completed states */}
       {preLaunch ? (
-        <PreLaunchCard daysToStart={daysToStart} firstSeg={segments[0]} startDate={weeks[0].start} />
+        <PreLaunchCard daysToStart={daysToStart} firstSeg={segments[0]} startDate={weeks[0].label.split(" – ")[0]} />
       ) : lifecycle === "completed" ? (
         <CompletedCard segments={segments} />
       ) : (

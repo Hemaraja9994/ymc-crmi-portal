@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { BLOCKS, buildAssignments } from "@/lib/rotation";
+import { BLOCKS } from "@/lib/rotation";
+import { allAssignments } from "@/lib/analytics";
 import { ArrowUpRight } from "lucide-react";
 
 export default function BlocksPage() {
-  const all = buildAssignments();
+  const all = allAssignments();
   return (
     <div className="space-y-5">
       <header>
